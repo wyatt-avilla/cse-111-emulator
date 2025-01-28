@@ -4,4 +4,4 @@
 
 - Ryan Welter
 - Wyatt Avilla
-- Monisha Garika
+- Monisha
