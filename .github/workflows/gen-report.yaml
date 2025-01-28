@@ -18,27 +18,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y pandoc texlive-xetex
 
-      - name: Find changed markdown files
-        id: changed-files
-        uses: tj-actions/changed-files@v41
-        with:
-          files: |
-            report.md
-
       - name: Convert Markdown to PDF
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            if [[ $file == report.md ]]; then
-              filename=$(basename "$file" .md)
-              directory=$(dirname "$file")
-              echo "Converting $file to PDF"
-              pandoc "$file" \
+          pandoc report.md \
                 -f markdown \
                 -t pdf \
                 --pdf-engine=xelatex \
-                -o "$directory/$report.pdf"
-            fi
-          done
+                -o report.pdf
 
       - name: Commit PDFs
         run: |
