@@ -1,0 +1,44 @@
+name: Clang Format
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  formatting-check:
+    name: Formatting Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install clang-format
+        run: sudo apt-get install -y clang-format
+
+      - name: Verify .clang-format exists
+        run: |
+          if [ ! -f .clang-format ]; then
+            echo "Error: .clang-format file not found in repository root"
+            exit 1
+          fi
+
+      - name: Check formatting
+        run: |
+          FORMATTING_ISSUES=0
+          for file in $(find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
+            echo "Checking $file..."
+            clang-format -style=file "$file" | diff "$file" -
+            if [ $? -ne 0 ]; then
+              FORMATTING_ISSUES=1
+              echo "::error::Formatting issues found in $file"
+            fi
+          done
+
+          if [ $FORMATTING_ISSUES -ne 0 ]; then
+            echo "Formatting check failed. Please run clang-format locally and commit the changes."
+            exit 1
+          else
+            echo "All files are properly formatted."
+          fi
