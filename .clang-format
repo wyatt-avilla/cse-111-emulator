@@ -1,0 +1,29 @@
+﻿---
+BasedOnStyle: LLVM
+AlignTrailingComments: "true"
+ColumnLimit: "80"
+IncludeBlocks: Regroup
+IndentWidth: "4"
+MaxEmptyLinesToKeep: "2"
+PointerAlignment: Left
+SortIncludes: "true"
+SpaceAfterCStyleCast: "true"
+SpaceBeforeParens: ControlStatements
+SpacesBeforeTrailingComments: "1"
+SpacesInParentheses: "false"
+SpacesInSquareBrackets: "false"
+UseTab: Never
+
+# function declaration/call formatting
+BinPackArguments: "false"
+BinPackParameters: "false"
+AllowAllParametersOfDeclarationOnNextLine: "false"
+AllowAllArgumentsOnNextLine: "false"
+AlignAfterOpenBracket: BlockIndent
+PenaltyBreakBeforeFirstCallParameter: 1
+BraceWrapping:
+  AfterControlStatement: false
+  AfterFunction: false
+  BeforeCatch: false
+  BeforeElse: false
+BreakBeforeBraces: Attach
