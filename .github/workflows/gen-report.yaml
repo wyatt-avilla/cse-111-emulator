@@ -1,0 +1,49 @@
+name: Convert Markdown to PDF
+on:
+  push:
+    paths:
+      - 'report.md'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install pandoc and LaTeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc texlive-xetex
+
+      - name: Find changed markdown files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            report.md
+
+      - name: Convert Markdown to PDF
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ $file == report.md ]]; then
+              filename=$(basename "$file" .md)
+              directory=$(dirname "$file")
+              echo "Converting $file to PDF"
+              pandoc "$file" \
+                -f markdown \
+                -t pdf \
+                --pdf-engine=xelatex \
+                -o "$directory/$report.pdf"
+            fi
+          done
+
+      - name: Commit PDFs
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add *.pdf
+          git commit -m "Convert Markdown to PDF" -a || echo "No changes to commit"
+          git push
