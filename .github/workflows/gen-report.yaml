@@ -2,7 +2,7 @@ name: Convert Markdown to PDF
 on:
   push:
     paths:
-      - 'report.md'
+      - "report.md"
     branches:
       - main
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install pandoc and LaTeX
         run: |
           sudo apt-get update
