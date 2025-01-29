@@ -19,10 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "18"
-          cache: "npm"
-
-      - name: Install Prettier
-        run: npm install --global prettier
 
       - name: Verify .prettierrc exists
         run: |
@@ -35,11 +31,11 @@ jobs:
           FORMATTING_ISSUES=0
           for file in $(find . -type f \( -name "*.md" -o -name "*.yaml" -o -name "*.yml" \)); do
             echo "Checking $file..."
-            prettier --check "$file" || {
+            npx prettier --check "$file" || {
               FORMATTING_ISSUES=1
               echo "::error::Formatting issues found in $file"
-              prettier --list-different "$file"
-              echo "To fix, run: prettier --write $file"
+              npx prettier --list-different "$file"
+              echo "To fix, run: npx prettier --write $file"
             }
           done
 
