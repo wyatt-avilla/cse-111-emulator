@@ -1,0 +1,47 @@
+name: Prettier Format
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  formatting-check:
+    name: Prettier Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Verify .prettierrc exists
+        run: |
+          if [ ! -f .prettierrc ]; then
+            echo "Warning: No .prettierrc found, using Prettier defaults"
+          fi
+
+      - name: Check formatting
+        run: |
+          FORMATTING_ISSUES=0
+          for file in $(find . -type f \( -name "*.md" -o -name "*.yaml" -o -name "*.yml" \)); do
+            echo "Checking $file..."
+            npx prettier --check "$file" || {
+              FORMATTING_ISSUES=1
+              echo "::error::Formatting issues found in $file"
+              npx prettier --list-different "$file"
+              echo "To fix, run: npx prettier --write $file"
+            }
+          done
+
+          if [ $FORMATTING_ISSUES -ne 0 ]; then
+            echo "Formatting check failed. Please run prettier locally and commit the changes."
+            exit 1
+          else
+            echo "All files are properly formatted."
+          fi

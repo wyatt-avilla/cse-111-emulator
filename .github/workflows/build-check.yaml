@@ -21,8 +21,7 @@ jobs:
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
       - name: Build
-        run:
-          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Cache Build
         uses: actions/cache@v3
@@ -30,8 +29,6 @@ jobs:
           path: |
             ${{github.workspace}}/build
             !${{github.workspace}}/build/CMakeCache.txt
-          key:
-            ${{ runner.os }}-build-${{ hashFiles('**/*.cpp', '**/*.h',
-            'CMakeLists.txt') }}
+          key: ${{ runner.os }}-build-${{ hashFiles('**/*.cpp', '**/*.h', 'CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-build-
