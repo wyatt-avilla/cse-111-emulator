@@ -6,3 +6,4 @@
 - Wyatt Avilla
 - Monisha Garika
 - Michelle Gurovith
+- Michael Kamensky
