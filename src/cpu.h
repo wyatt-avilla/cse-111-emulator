@@ -32,8 +32,12 @@ class CPU {
 
   private:
     uint16_t program_counter;
-    const uint16_t* registers;
-    const void (CPU::* jump_table[])();
+
+    static const std::size_t num_registers = 32;
+    std::array<uint16_t, num_registers> registers{};
+
+    static const std::size_t jump_table_size = 64;
+    std::array<void (CPU::*)(), jump_table_size> jump_table{};
 
     void executeTypeI(uint16_t instruction);
     void executeTypeR(uint16_t instruction);
