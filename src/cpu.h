@@ -32,6 +32,9 @@ class CPU {
 
   private:
     uint16_t program_counter;
-    uint16_t* registers;
-    void (CPU::* jump_table[])();
+    const uint16_t* registers;
+    const void (CPU::* jump_table[])();
+
+    void executeTypeI(uint16_t instruction);
+    void executeTypeR(uint16_t instruction);
 };
