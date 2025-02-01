@@ -11,4 +11,5 @@ include_directories(.)
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/cpu.cpp
+    src/console.cpp
 )
