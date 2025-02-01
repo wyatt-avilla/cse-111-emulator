@@ -6,7 +6,7 @@ class CPU {
   public:
     CPU();
 
-    void execute(uint16_t instruction);
+    void execute(uint32_t instruction);
 
     // I TYPE
     void BEQ();
@@ -45,6 +45,6 @@ class CPU {
     static const std::size_t jump_table_size = 64;
     std::array<void (CPU::*)(), jump_table_size> jump_table{};
 
-    void executeTypeI(uint16_t instruction);
-    void executeTypeR(uint16_t instruction);
+    void executeTypeI(uint32_t instruction);
+    void executeTypeR(uint32_t instruction);
 };

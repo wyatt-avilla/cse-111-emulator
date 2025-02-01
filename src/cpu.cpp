@@ -2,6 +2,23 @@
 
 #include <cstdlib>
 
+struct ITypeInstruction {
+    uint16_t immediate : 16;
+    uint16_t reg_b : 5;
+    uint16_t reg_a : 5;
+    uint16_t opcode : 6;
+};
+
+struct RTypeInstruction {
+    uint16_t function : 6;
+    uint16_t shift_value : 5;
+    uint16_t reg_c : 5;
+    uint16_t reg_b : 5;
+    uint16_t reg_a : 5;
+    uint16_t opcode : 6;
+};
+
+
 CPU::CPU() {
     jump_table[0] = &CPU::BEQ;
     jump_table[2] = &CPU::L16;
@@ -24,6 +41,43 @@ CPU::CPU() {
     jump_table[32] = &CPU::SLL;
     jump_table[35] = &CPU::SRL;
     jump_table[36] = &CPU::SLT;
+}
+
+
+void CPU::execute(uint32_t instruction) {
+    uint16_t opcode = instruction >> 26;
+    if (opcode & 62) {
+        executeTypeI(instruction);
+    } else {
+        executeTypeR(instruction);
+    }
+
+    // TODO: increment pc appropriately
+}
+
+void CPU::executeTypeI(uint32_t instruction) {
+    ITypeInstruction* parsed_instruction =
+        reinterpret_cast<ITypeInstruction*>(&instruction);
+    instruction_context.immediate = parsed_instruction->immediate;
+    instruction_context.reg_a = parsed_instruction->reg_a;
+    instruction_context.reg_b = parsed_instruction->reg_b;
+
+    if (jump_table[parsed_instruction->opcode] != nullptr) {
+        (this->*jump_table[parsed_instruction->opcode])();
+    }
+}
+
+void CPU::executeTypeR(uint32_t instruction) {
+    RTypeInstruction* parsed_instruction =
+        reinterpret_cast<RTypeInstruction*>(&instruction);
+    instruction_context.reg_a = parsed_instruction->reg_a;
+    instruction_context.reg_b = parsed_instruction->reg_b;
+    instruction_context.reg_c = parsed_instruction->reg_c;
+    instruction_context.shift_value = parsed_instruction->shift_value;
+
+    if (jump_table[parsed_instruction->function] != nullptr) {
+        (this->*jump_table[parsed_instruction->opcode])();
+    }
 }
 
 void CPU::BEQ() {
