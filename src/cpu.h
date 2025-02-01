@@ -4,31 +4,30 @@
 
 class CPU {
   public:
-    constexpr const static struct {
-        uint16_t BEQ, L16, L8U, J, S16, S8, ADDI, BNE, JAL, SUB, OR, NOR, ADD,
-            SRA, XOR, AND, JR, SLL, SRL, SLT;
-    } opcodes{
-        .BEQ = 0,
-        .L16 = 2,
-        .L8U = 16,
-        .J = 36,
-        .S16 = 48,
-        .S8 = 50,
-        .ADDI = 54,
-        .BNE = 59,
-        .JAL = 61,
+    enum class Opcode : uint16_t {
+        BEQ = 0,
+        L16 = 2,
+        L8U = 16,
+        J = 36,
+        S16 = 48,
+        S8 = 50,
+        ADDI = 54,
+        BNE = 59,
+        JAL = 61,
 
-        .SUB = 0,
-        .OR = 4,
-        .NOR = 7,
-        .ADD = 9,
-        .SRA = 11,
-        .XOR = 19,
-        .AND = 24,
-        .JR = 28,
-        .SLL = 32,
-        .SRL = 35,
-        .SLT = 36,
+        SUB = 0,
+        OR = 4,
+        NOR = 7,
+        ADD = 9,
+        SRA = 11,
+        XOR = 19,
+        AND = 24,
+        JR = 28,
+        SLL = 32,
+        SRL = 35,
+        SLT = 36,
+
+        RTYPE = 62,
     };
 
     CPU();

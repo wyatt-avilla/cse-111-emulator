@@ -20,39 +20,37 @@ struct RTypeInstruction {
 
 
 CPU::CPU() {
-    jump_table[opcodes.BEQ] = &CPU::BEQ;
-    jump_table[opcodes.L16] = &CPU::L16;
-    jump_table[opcodes.L8U] = &CPU::L8U;
-    jump_table[opcodes.J] = &CPU::J;
-    jump_table[opcodes.S16] = &CPU::S16;
-    jump_table[opcodes.S8] = &CPU::S8;
-    jump_table[opcodes.ADDI] = &CPU::ADDI;
-    jump_table[opcodes.BNE] = &CPU::BNE;
-    jump_table[opcodes.JAL] = &CPU::JAL;
+    jump_table[static_cast<uint16_t>(Opcode::BEQ)] = &CPU::BEQ;
+    jump_table[static_cast<uint16_t>(Opcode::L16)] = &CPU::L16;
+    jump_table[static_cast<uint16_t>(Opcode::L8U)] = &CPU::L8U;
+    jump_table[static_cast<uint16_t>(Opcode::J)] = &CPU::J;
+    jump_table[static_cast<uint16_t>(Opcode::S16)] = &CPU::S16;
+    jump_table[static_cast<uint16_t>(Opcode::S8)] = &CPU::S8;
+    jump_table[static_cast<uint16_t>(Opcode::ADDI)] = &CPU::ADDI;
+    jump_table[static_cast<uint16_t>(Opcode::BNE)] = &CPU::BNE;
+    jump_table[static_cast<uint16_t>(Opcode::JAL)] = &CPU::JAL;
 
-    jump_table[opcodes.SUB] = &CPU::SUB;
-    jump_table[opcodes.OR] = &CPU::OR;
-    jump_table[opcodes.NOR] = &CPU::NOR;
-    jump_table[opcodes.ADD] = &CPU::ADD;
-    jump_table[opcodes.SRA] = &CPU::SRA;
-    jump_table[opcodes.XOR] = &CPU::XOR;
-    jump_table[opcodes.AND] = &CPU::AND;
-    jump_table[opcodes.JR] = &CPU::JR;
-    jump_table[opcodes.SLL] = &CPU::SLL;
-    jump_table[opcodes.SRL] = &CPU::SRL;
-    jump_table[opcodes.SLT] = &CPU::SLT;
+    jump_table[static_cast<uint16_t>(Opcode::SUB)] = &CPU::SUB;
+    jump_table[static_cast<uint16_t>(Opcode::OR)] = &CPU::OR;
+    jump_table[static_cast<uint16_t>(Opcode::NOR)] = &CPU::NOR;
+    jump_table[static_cast<uint16_t>(Opcode::ADD)] = &CPU::ADD;
+    jump_table[static_cast<uint16_t>(Opcode::SRA)] = &CPU::SRA;
+    jump_table[static_cast<uint16_t>(Opcode::XOR)] = &CPU::XOR;
+    jump_table[static_cast<uint16_t>(Opcode::AND)] = &CPU::AND;
+    jump_table[static_cast<uint16_t>(Opcode::JR)] = &CPU::JR;
+    jump_table[static_cast<uint16_t>(Opcode::SLL)] = &CPU::SLL;
+    jump_table[static_cast<uint16_t>(Opcode::SRL)] = &CPU::SRL;
+    jump_table[static_cast<uint16_t>(Opcode::SLT)] = &CPU::SLT;
 }
 
 
 void CPU::execute(uint32_t instruction) {
     uint16_t opcode = instruction >> 26;
-    if (opcode & 62) {
-        executeTypeI(instruction);
-    } else {
+    if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         executeTypeR(instruction);
+    } else {
+        executeTypeI(instruction);
     }
-
-    // TODO: increment pc appropriately
 }
 
 void CPU::executeTypeI(uint32_t instruction) {
