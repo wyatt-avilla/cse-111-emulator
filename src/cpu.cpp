@@ -20,27 +20,27 @@ struct RTypeInstruction {
 
 
 CPU::CPU() {
-    jump_table[0] = &CPU::BEQ;
-    jump_table[2] = &CPU::L16;
-    jump_table[16] = &CPU::L8U;
-    jump_table[36] = &CPU::J;
-    jump_table[48] = &CPU::S16;
-    jump_table[50] = &CPU::S8;
-    jump_table[54] = &CPU::ADDI;
-    jump_table[59] = &CPU::BNE;
-    jump_table[61] = &CPU::JAL;
+    jump_table[opcodes.BEQ] = &CPU::BEQ;
+    jump_table[opcodes.L16] = &CPU::L16;
+    jump_table[opcodes.L8U] = &CPU::L8U;
+    jump_table[opcodes.J] = &CPU::J;
+    jump_table[opcodes.S16] = &CPU::S16;
+    jump_table[opcodes.S8] = &CPU::S8;
+    jump_table[opcodes.ADDI] = &CPU::ADDI;
+    jump_table[opcodes.BNE] = &CPU::BNE;
+    jump_table[opcodes.JAL] = &CPU::JAL;
 
-    jump_table[0] = &CPU::SUB;
-    jump_table[4] = &CPU::OR;
-    jump_table[7] = &CPU::NOR;
-    jump_table[9] = &CPU::ADD;
-    jump_table[11] = &CPU::SRA;
-    jump_table[19] = &CPU::XOR;
-    jump_table[24] = &CPU::AND;
-    jump_table[28] = &CPU::JR;
-    jump_table[32] = &CPU::SLL;
-    jump_table[35] = &CPU::SRL;
-    jump_table[36] = &CPU::SLT;
+    jump_table[opcodes.SUB] = &CPU::SUB;
+    jump_table[opcodes.OR] = &CPU::OR;
+    jump_table[opcodes.NOR] = &CPU::NOR;
+    jump_table[opcodes.ADD] = &CPU::ADD;
+    jump_table[opcodes.SRA] = &CPU::SRA;
+    jump_table[opcodes.XOR] = &CPU::XOR;
+    jump_table[opcodes.AND] = &CPU::AND;
+    jump_table[opcodes.JR] = &CPU::JR;
+    jump_table[opcodes.SLL] = &CPU::SLL;
+    jump_table[opcodes.SRL] = &CPU::SRL;
+    jump_table[opcodes.SLT] = &CPU::SLT;
 }
 
 
