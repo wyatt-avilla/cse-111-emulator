@@ -48,8 +48,16 @@ void CPU::execute(uint32_t instruction) {
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         executeTypeR(instruction);
+        if (opcode != static_cast<uint16_t>(Opcode::BEQ) &&
+            opcode != static_cast<uint16_t>(Opcode::BNE) &&
+            opcode != static_cast<uint16_t>(Opcode::JAL)) {
+            program_counter += 4;
+        }
     } else {
         executeTypeI(instruction);
+        if (opcode != static_cast<uint16_t>(Opcode::JR)) {
+            program_counter += 4;
+        }
     }
 }
 
