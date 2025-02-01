@@ -1,3 +1,5 @@
+#include <array>
+#include <cstddef>
 #include <cstdint>
 
 class CPU {
@@ -31,6 +33,10 @@ class CPU {
     void SLT();
 
   private:
+    struct {
+        uint16_t reg_a, reg_b, reg_c, shift_value, immediate;
+    } instruction_context{};
+
     uint16_t program_counter;
 
     static const std::size_t num_registers = 32;
