@@ -1,5 +1,7 @@
 #include "cpu.h"
 
+#include "console.h"
+
 #include <cstdlib>
 
 struct ITypeInstruction {
@@ -19,7 +21,7 @@ struct RTypeInstruction {
 };
 
 
-CPU::CPU() {
+CPU::CPU(Console* console) : console(console) {
     jump_table[static_cast<uint16_t>(Opcode::BEQ)] = &CPU::BEQ;
     jump_table[static_cast<uint16_t>(Opcode::L16)] = &CPU::L16;
     jump_table[static_cast<uint16_t>(Opcode::L8U)] = &CPU::L8U;

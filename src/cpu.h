@@ -1,6 +1,11 @@
+#pragma once
+
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
+
+class Console;
 
 class CPU {
   public:
@@ -30,7 +35,7 @@ class CPU {
         RTYPE = 62,
     };
 
-    CPU();
+    CPU(Console* console);
 
     void execute(uint32_t instruction);
 
@@ -59,6 +64,8 @@ class CPU {
     void SLT();
 
   private:
+    Console* console;
+
     struct {
         uint16_t reg_a, reg_b, reg_c, shift_value, immediate;
     } instruction_context{};
