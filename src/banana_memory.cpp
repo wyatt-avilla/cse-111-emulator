@@ -1,14 +1,14 @@
 #include "banana_memory.h"
-#include "bananaConsole.h" // change to to the correct name later
+#include "console.h" // change to to the correct name later
 
 #include <iostream>
 #include <fstream>  // For file handling
 #include <string.h> // For the memset of the array 
 
-BananaMemory::BananaMemory(BananaConsole * console, const std::string filename) {
+BananaMemory::BananaMemory(Console * console, const std::string filename) {
     // setting the memory array to all zeros
     memset(mem_array, 0, 0x7000);
-    std::ifstream file(filename, std::ios::binary | std::ios::ate); // Open the file\
+    std::ifstream file(filename, std::ios::binary | std::ios::ate); // Open the file
 
     // now to check if the file can open
     if (!file.is_open()) {
@@ -37,7 +37,7 @@ uint8_t BananaMemory::l8u(uint16_t load_address) const {
     } else if (load_address == 0x7100) {
         out = getchar();
     } else {
-        out = mem_array.load(load_address);
+        out = mem_array[load_address];
     }
     return out;
 
@@ -90,3 +90,4 @@ void BananaMemory::writeInstrcution(uint16_t address, uint32_t value) {
     mem_array[address + 1] = (value >> 16) & 0xFF;
     mem_array[address + 2] = (value >> 8) & 0xFF;
     mem_array[address + 3] = value & 0xFF;   // Lowest byte
+}
