@@ -64,6 +64,15 @@ void CPU::execute(uint32_t instruction) {
     }
 }
 
+void CPU::set_program_counter_to(uint16_t counter_value) {
+    this->program_counter = counter_value;
+}
+
+void CPU::set_stack_pointer_to(uint16_t pointer_value) {
+    this->registers[29] = pointer_value;
+}
+
+
 void CPU::executeTypeI(uint32_t instruction) {
     ITypeInstruction* parsed_instruction =
         reinterpret_cast<ITypeInstruction*>(&instruction);
@@ -145,6 +154,11 @@ void CPU::BNE() {
 void CPU::JAL() {
     registers[31] = program_counter + 4;
     program_counter = 4 * instruction_context.immediate;
+}
+
+void CPU::JAL(uint16_t immediate) {
+    instruction_context.immediate = immediate;
+    JAL();
 }
 
 void CPU::SUB() {
