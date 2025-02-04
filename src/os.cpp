@@ -12,11 +12,15 @@ OS::OS(Console* c_) : c(c_) {}
 void OS::reset(const std::string& filename) {
     // 1. Clear all of RAM with zeros
     for (uint16_t i = 0; i < 0x7000; i += 16) {
-        // m->w16u(i, 0);
+        this->c->memory.w16u(i, 0);
     }
 
     // 2. Copy data section to RAM
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        throw std::invalid_argument("couldn't open " + filename);
+    }
+
     file.seekg(0, std::ios::beg);
     uint16_t i = 0x8000;
     char ch;
@@ -26,18 +30,16 @@ void OS::reset(const std::string& filename) {
     }
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
-    // cpu->L16(); // TODO implement memory/cpu into console
+    this->c->cpu.set_stack_pointer_to(0x3000);
 
     // 4. Call setup()
-
-
-    // 5. Begin Game Loop Sequence
-    loop();
+    this->c->cpu.set_program_counter_to(0xfffc);
+    this->c->cpu.JAL(0x81e0);
 }
 
 void OS::loop() {
     // 1. Run loop()
-
+    this->c->cpu.JAL(0x81e4);
 
     // 2. The GPU frame buffer is displayed
 }
