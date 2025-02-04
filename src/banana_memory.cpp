@@ -5,6 +5,8 @@
 #include <fstream>  // For file handling
 #include <string.h> // For the memset of the array 
 
+BananaMemory::BananaMemory(Console * console) : console(console) {}
+
 uint8_t BananaMemory::l8u(uint16_t load_address) const {
     uint8_t out = 0;
     if (load_address == 0x70000) {

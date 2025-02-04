@@ -1,12 +1,12 @@
 #include "os.h"
+#include "console.h"
 
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <cstdint>
 
-OS::OS(Console* c_) {
-    c = c_;
-}
+OS::OS(Console* c_) : c(c_) {}
 
 void OS::reset(std::string& filename) {
     // 1. Clear all of RAM with zeros
@@ -20,7 +20,7 @@ void OS::reset(std::string& filename) {
     uint16_t i = 0x8000;
     char ch;
     while (file.get(ch)) {
-        c->memory->w8u(i, (uint8_t) ch);
+        c->memory.w8u(i, (uint8_t) ch);
         i += 8;
     }
 

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "console.h"
 
 #include <string>
-#include <iostream>
 
 class Console;
 
