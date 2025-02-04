@@ -1,18 +1,17 @@
 #include "banana_memory.h"
 
-#include "console.h" // change to to the correct name later
+#include "console.h"
 
-#include <fstream> // For file handling
+#include <cstdio>
 #include <iostream>
-#include <string.h> // For the memset of the array
 
 BananaMemory::BananaMemory(Console* console) : console(console) {}
 
 uint8_t BananaMemory::l8u(uint16_t load_address) const {
     uint8_t out = 0;
-    if (load_address == 0x7000) {
-        // get controller data
-    } else if (load_address == 0x7100) {
+    if (load_address == controller_data_address) {
+        // TODO: get controller data
+    } else if (load_address == stdin_address) {
         out = getchar();
     } else {
         out = mem_array[load_address];
@@ -49,7 +48,19 @@ uint32_t BananaMemory::loadInstruction(uint16_t load_address) const {
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
 
 void BananaMemory::w8u(uint16_t address, uint8_t value) {
-    mem_array[address] = value;
+    if (address & 1) {
+        std::cerr << "warning: trying to write word on an unaligned address"
+                  << std::endl;
+    }
+    if (address == stdout_address) {
+        std::cout << char(value);
+    } else if (address == stderr_address)
+        std::cerr << char(value);
+    else if (address == stop_execution_address) {
+        throw std::runtime_error("stop execution");
+    } else {
+        mem_array[address] = value;
+    }
 }
 
 void BananaMemory::w16u(uint16_t address, uint16_t value) {
@@ -57,8 +68,8 @@ void BananaMemory::w16u(uint16_t address, uint16_t value) {
         std::cerr << "warning: trying to write word on an unaligned address"
                   << std::endl;
     }
-    mem_array[address] = (value >> 8) & 0xFF; // High byte
-    mem_array[address + 1] = value & 0xFF;    // Low byte
+    w8u(address, (value >> 8) & 0xFF); // High byte
+    w8u(address + 1, value & 0xFF);    // Low byte
 }
 
 void BananaMemory::writeInstrcution(uint16_t address, uint32_t value) {
@@ -66,8 +77,12 @@ void BananaMemory::writeInstrcution(uint16_t address, uint32_t value) {
         std::cerr << "warning: trying to write word on an unaligned address"
                   << std::endl;
     }
-    mem_array[address] = (value >> 24) & 0xFF; // Highest byte
-    mem_array[address + 1] = (value >> 16) & 0xFF;
-    mem_array[address + 2] = (value >> 8) & 0xFF;
-    mem_array[address + 3] = value & 0xFF; // Lowest byte
+    w8u(address, (value >> 24) & 0xFF); // Highest byte
+    w8u(address + 1, (value >> 16) & 0xFF);
+    w8u(address + 2, (value >> 8) & 0xFF);
+    w8u(address + 3, value & 0xFF); // Lowest byte
 }
+
+uint16_t BananaMemory::getSetupAddress() const { return l16u(0x81e0 + 2); }
+
+uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
