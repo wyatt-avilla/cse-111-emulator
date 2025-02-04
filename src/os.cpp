@@ -9,7 +9,7 @@
 
 OS::OS(Console* c_) : c(c_) {}
 
-void OS::reset(std::string& filename) {
+void OS::reset(const std::string& filename) {
     // 1. Clear all of RAM with zeros
     for (uint16_t i = 0; i < 0x7000; i += 16) {
         // m->w16u(i, 0);

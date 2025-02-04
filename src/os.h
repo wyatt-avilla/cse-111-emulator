@@ -12,6 +12,6 @@ class OS {
   public:
     OS(Console* c_);
 
-    void reset(std::string& filename);
+    void reset(const std::string& filename);
     void loop();
 };
