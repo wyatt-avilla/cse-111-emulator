@@ -13,7 +13,6 @@ class Console {
     CPU cpu;
     OS os;
     BananaMemory memory;
-    
 
   private:
 };
