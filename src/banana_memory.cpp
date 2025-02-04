@@ -5,29 +5,7 @@
 #include <fstream>  // For file handling
 #include <string.h> // For the memset of the array 
 
-BananaMemory::BananaMemory(Console * console, const std::string filename) {
-    // setting the memory array to all zeros
-    memset(mem_array, 0, 0x7000);
-    std::ifstream file(filename, std::ios::binary | std::ios::ate); // Open the file
-
-    // now to check if the file can open
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        exit(1);
-    }
-
-    size_t file_size = file.tellg();
-    if (file_size != 0x8000) {
-        std::cerr << "bad file size" << std::endl;
-        exit(1);
-    }
-
-    file.seekg(0, std::ios::beg);
-
-    file.read(reinterpret_cast<char*>(mem_array + 0x8000), 0x8000);
-
-    file.close(); // Close the file (optional, done automatically when `file` goes out of scope)
-
+BananaMemory::BananaMemory(Console * console): console(console){
 }
 
 uint8_t BananaMemory::l8u(uint16_t load_address) const {
