@@ -9,6 +9,8 @@
 #include <string>
 
 int32_t main(int32_t argc, char* argv[]) {
+    test_for_mem();
+    return 0; // used for testing reasons
     const int32_t expected_args = 1;
     if (argc - 1 != expected_args) {
         std::cerr << "Wrong number of command line arguments. (got " << argc - 1

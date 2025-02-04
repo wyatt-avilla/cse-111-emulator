@@ -9,11 +9,10 @@ class Console;
 
 class OS {
     private:
-        std::string filename;
         Console* c;
     public:
-        OS(Console* c_, std::string& filename_);
+        OS(Console* c_);
 
-        void reset();
+        void reset(std::string& filename);
         void loop();
 };
