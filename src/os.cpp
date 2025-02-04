@@ -1,10 +1,11 @@
 #include "os.h"
+
 #include "console.h"
 
-#include <string>
-#include <iostream>
-#include <fstream>
 #include <cstdint>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 OS::OS(Console* c_) : c(c_) {}
 
@@ -39,5 +40,4 @@ void OS::loop() {
 
 
     // 2. The GPU frame buffer is displayed
-    
 }

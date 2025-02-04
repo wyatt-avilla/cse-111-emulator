@@ -98,25 +98,28 @@ void CPU::BEQ() {
 }
 
 void CPU::L16() {
-    registers[instruction_context.reg_b] =  this->console->memory.l16u(instruction_context.reg_a + instruction_context.immediate);
- }
-
+    registers[instruction_context.reg_b] = this->console->memory.l16u(
+        instruction_context.reg_a + instruction_context.immediate
+    );
+}
 
 
 void CPU::L8U() {
-    uint32_t effective_address = registers[instruction_context.reg_a] + instruction_context.immediate;
-    registers[instruction_context.reg_b] = static_cast<uint16_t>(this->console->memory.l8u(effective_address));
+    uint32_t effective_address =
+        registers[instruction_context.reg_a] + instruction_context.immediate;
+    registers[instruction_context.reg_b] =
+        static_cast<uint16_t>(this->console->memory.l8u(effective_address));
 }
 
 
 void CPU::J() { program_counter = 4 * instruction_context.immediate; }
 
 void CPU::S16() {
-    //URGENT: error due to S16 not found in banana_memory
+    // URGENT: error due to S16 not found in banana_memory
 }
 
 void CPU::S8() {
-    //URGENT: error due to S8 not found in banana_memory
+    // URGENT: error due to S8 not found in banana_memory
 }
 
 void CPU::ADDI() {
