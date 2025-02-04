@@ -108,8 +108,10 @@ void CPU::L16() {
 
 
 void CPU::L8U() {
-    // TODO: needs memory
+    uint32_t effective_address = registers[instruction_context.reg_a] + instruction_context.immediate;
+    registers[instruction_context.reg_b] = static_cast<uint16_t>(this->console->memory.l8u(effective_address));
 }
+
 
 void CPU::J() { program_counter = 4 * instruction_context.immediate; }
 
