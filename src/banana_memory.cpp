@@ -10,7 +10,7 @@ BananaMemory::BananaMemory(Console* console) : console(console) {}
 
 uint8_t BananaMemory::l8u(uint16_t load_address) const {
     uint8_t out = 0;
-    if (load_address == 0x70000) {
+    if (load_address == 0x7000) {
         // get controller data
     } else if (load_address == 0x7100) {
         out = getchar();
