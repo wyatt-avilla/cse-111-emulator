@@ -98,7 +98,7 @@ void CPU::BEQ() {
 }
 
 void CPU::L16() {
-    // TODO: needs memory
+    registers[instruction_context.reg_b] =  this->console->memory.l16u(instruction_context.reg_a + instruction_context.immediate);
 }
 
 void CPU::L8U() {
