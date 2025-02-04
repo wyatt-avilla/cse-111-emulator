@@ -112,7 +112,7 @@ void CPU::L8U() {
 void CPU::J() { program_counter = 4 * instruction_context.immediate; }
 
 void CPU::S16() {
-    //Urgent: error due to S16 not found in banana_memory
+    //URGENT: error due to S16 not found in banana_memory
 }
 
 void CPU::S8() {
