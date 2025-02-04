@@ -6,11 +6,12 @@
 class Console;
 
 class OS {
-    private:
-        Console* c;
-    public:
-        OS(Console* c_);
+  private:
+    Console* c;
 
-        void reset(std::string& filename);
-        void loop();
+  public:
+    OS(Console* c_);
+
+    void reset(std::string& filename);
+    void loop();
 };
