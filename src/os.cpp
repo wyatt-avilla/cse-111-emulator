@@ -51,6 +51,8 @@ void OS::reset(const std::string& filename) {
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }
+
+    loop();
 }
 
 void OS::loop() {
