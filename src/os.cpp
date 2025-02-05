@@ -36,32 +36,23 @@ void OS::reset(const std::string& filename) {
     this->c->cpu.set_program_counter_to(0xfffc);
     this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
-    std::cout << "setup addr: 0x" << std::hex
-              << this->c->memory.getSetupAddress() << " contains instruction 0x"
-              << this->c->memory.loadInstruction(
-                     this->c->memory.getSetupAddress()
-                 )
-              << std::endl;
-
     while (this->c->cpu.get_program_counter() != 0) {
-        std::cout << "PC-> 0x" << std::hex << this->c->cpu.get_program_counter()
-                  << std::endl;
-
         uint16_t program_counter = this->c->cpu.get_program_counter();
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }
-
-    loop();
 }
 
 void OS::loop() {
     // 1. Run loop()
-    std::cout << "loop addr " << std::hex << this->c->memory.getLoopAddress()
-              << std::endl;
-
     this->c->cpu.set_program_counter_to(0xfffc);
-    this->c->cpu.JAL(this->c->memory.getLoopAddress());
+    this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
+
+    while (this->c->cpu.get_program_counter() != 0) {
+        uint16_t program_counter = this->c->cpu.get_program_counter();
+        uint32_t instruction = this->c->memory.loadInstruction(program_counter);
+        this->c->cpu.execute(instruction);
+    }
 
     // 2. The GPU frame buffer is displayed
 }

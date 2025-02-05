@@ -134,7 +134,7 @@ void CPU::J() { program_counter = 4 * instruction_context.immediate; }
 void CPU::S16() {
     uint16_t effective_address =
         registers[instruction_context.reg_a] + instruction_context.immediate;
-    this->console->memory.w16u(effective_address, instruction_context.reg_b);
+    this->console->memory.w16u(effective_address, registers[instruction_context.reg_b]);
 }
 
 void CPU::S8() {
@@ -142,7 +142,7 @@ void CPU::S8() {
         registers[instruction_context.reg_a] + instruction_context.immediate;
     this->console->memory.w8u(
         effective_address,
-        static_cast<uint8_t>(instruction_context.reg_b)
+        registers[instruction_context.reg_b]
     );
 }
 

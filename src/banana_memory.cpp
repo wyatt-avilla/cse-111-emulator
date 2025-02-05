@@ -57,7 +57,7 @@ void BananaMemory::w8u(uint16_t address, uint8_t value) {
     } else if (address == stderr_address)
         std::cerr << char(value);
     else if (address == stop_execution_address) {
-        throw std::runtime_error("stop execution");
+        exit(0);
     } else {
         mem_array[address] = value;
     }
