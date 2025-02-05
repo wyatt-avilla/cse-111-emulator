@@ -3,6 +3,7 @@
 #include "console.h"
 
 #include <cstdlib>
+#include <iostream>
 
 struct ITypeInstruction {
     uint16_t immediate : 16;
@@ -62,7 +63,23 @@ void CPU::execute(uint32_t instruction) {
             program_counter += 4;
         }
     }
+
+    if (registers[0] != 0) {
+        std::cerr << "zero register wasn't zero" << std::endl;
+        registers[0] = 0;
+    }
 }
+
+void CPU::set_program_counter_to(uint16_t counter_value) {
+    this->program_counter = counter_value;
+}
+
+uint16_t CPU::get_program_counter() { return this->program_counter; }
+
+void CPU::set_stack_pointer_to(uint16_t pointer_value) {
+    this->registers[29] = pointer_value;
+}
+
 
 void CPU::executeTypeI(uint32_t instruction) {
     ITypeInstruction* parsed_instruction =
@@ -115,17 +132,20 @@ void CPU::L8U() {
 void CPU::J() { program_counter = 4 * instruction_context.immediate; }
 
 void CPU::S16() {
-    uint32_t effective_address =
-        registers[instruction_context.reg_a] + instruction_context.immediate;
-    this->console->memory.w16u(effective_address, instruction_context.reg_b);
-}
-
-void CPU::S8() {
-    uint32_t effective_address =
+    uint16_t effective_address =
         registers[instruction_context.reg_a] + instruction_context.immediate;
     this->console->memory.w16u(
         effective_address,
-        static_cast<uint8_t>(instruction_context.reg_b)
+        registers[instruction_context.reg_b]
+    );
+}
+
+void CPU::S8() {
+    uint16_t effective_address =
+        registers[instruction_context.reg_a] + instruction_context.immediate;
+    this->console->memory.w8u(
+        effective_address,
+        registers[instruction_context.reg_b]
     );
 }
 
@@ -145,6 +165,11 @@ void CPU::BNE() {
 void CPU::JAL() {
     registers[31] = program_counter + 4;
     program_counter = 4 * instruction_context.immediate;
+}
+
+void CPU::JAL(uint16_t immediate) {
+    instruction_context.immediate = immediate;
+    JAL();
 }
 
 void CPU::SUB() {

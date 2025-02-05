@@ -8,7 +8,9 @@
 
 class Console {
   public:
-    Console(const std::string& slug_file_path);
+    Console();
+
+    void run(const std::string& slug_file_path);
 
     CPU cpu;
     OS os;

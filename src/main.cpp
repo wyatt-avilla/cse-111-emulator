@@ -15,11 +15,13 @@ int32_t main(int32_t argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    Console banana;
+
     try {
-        Console banana(argv[1]);
+        banana.run(argv[1]);
     } catch (const std::exception& e) {
-        std::cerr << "Couldn't initialize emulator {" << e.what() << "}"
-                  << std::endl;
+        std::cerr << "Couldn't run " << "\"" << argv[1] << "\":" << std::endl
+                  << "    " << e.what() << std::endl;
     }
 
     exit(EXIT_SUCCESS);

@@ -39,6 +39,12 @@ class CPU {
 
     void execute(uint32_t instruction);
 
+    void set_program_counter_to(uint16_t counter_value);
+
+    uint16_t get_program_counter();
+
+    void set_stack_pointer_to(uint16_t pointer_value);
+
     // I TYPE
     void BEQ();
     void L16();
@@ -49,6 +55,8 @@ class CPU {
     void ADDI();
     void BNE();
     void JAL();
+
+    void JAL(uint16_t immediate);
 
     // R TYPE
     void SUB();
