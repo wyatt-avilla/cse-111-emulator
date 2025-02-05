@@ -26,7 +26,7 @@ void OS::reset(const std::string& filename) {
     char ch;
     while (file.get(ch)) {
         c->memory.w8u(i, (uint8_t) ch);
-        i += 8;
+        i += 1;
     }
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
