@@ -3,6 +3,7 @@
 #include "console.h"
 
 #include <cstdlib>
+#include <iostream>
 
 struct ITypeInstruction {
     uint16_t immediate : 16;
@@ -61,6 +62,11 @@ void CPU::execute(uint32_t instruction) {
             opcode != static_cast<uint16_t>(Opcode::JAL)) {
             program_counter += 4;
         }
+    }
+
+    if (registers[0] != 0) {
+        std::cerr << "zero register wasn't zero" << std::endl;
+        registers[0] = 0;
     }
 }
 
