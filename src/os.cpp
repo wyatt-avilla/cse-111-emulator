@@ -11,8 +11,8 @@ OS::OS(Console* c_) : c(c_) {}
 
 void OS::reset(const std::string& filename) {
     // 1. Clear all of RAM with zeros
-    for (uint16_t i = 0; i < 0x7000; i += 16) {
-        this->c->memory.w16u(i, 0);
+    for (uint16_t i = 0; i < 0x7000; ++i) {
+        this->c->memory.w8u(i, 0);
     }
 
     // 2. Copy data section to RAM
