@@ -34,7 +34,7 @@ void OS::reset(const std::string& filename) {
 
     // 4. Call setup()
     this->c->cpu.set_program_counter_to(0xfffc);
-    this->c->cpu.JAL(this->c->memory.getSetupAddress());
+    this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
     std::cout << "setup addr: 0x" << std::hex
               << this->c->memory.getSetupAddress() << " contains instruction 0x"
