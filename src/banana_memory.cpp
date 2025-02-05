@@ -64,19 +64,11 @@ void BananaMemory::w8u(uint16_t address, uint8_t value) {
 }
 
 void BananaMemory::w16u(uint16_t address, uint16_t value) {
-    if (address & 1) {
-        std::cerr << "warning: trying to write word on an unaligned address"
-                  << std::endl;
-    }
     w8u(address, (value >> 8) & 0xFF); // High byte
     w8u(address + 1, value & 0xFF);    // Low byte
 }
 
 void BananaMemory::writeInstrcution(uint16_t address, uint32_t value) {
-    if (address & 1) {
-        std::cerr << "warning: trying to write word on an unaligned address"
-                  << std::endl;
-    }
     w8u(address, (value >> 24) & 0xFF); // Highest byte
     w8u(address + 1, (value >> 16) & 0xFF);
     w8u(address + 2, (value >> 8) & 0xFF);
