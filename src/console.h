@@ -14,7 +14,7 @@ class Console {
 
     CPU cpu;
     OS os;
-    BananaMemory memory;
+    Memory memory;
 
   private:
 };

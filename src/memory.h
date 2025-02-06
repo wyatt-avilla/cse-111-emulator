@@ -6,7 +6,7 @@
 
 class Console;
 
-class BananaMemory {
+class Memory {
   private:
     Console* console;
     uint8_t mem_array[0X10000]; // the size of the array full address space for the
@@ -16,7 +16,7 @@ class BananaMemory {
     bool isExecutable(uint16_t address) const;
 
   public:
-    BananaMemory(Console* console);
+    Memory(Console* console);
 
     const uint16_t stdin_address = 0x7100;
     const uint16_t stdout_address = 0x7110;
