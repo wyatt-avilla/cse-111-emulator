@@ -18,7 +18,7 @@ class BananaMemory {
     const uint16_t stdout_address = 0x7110;
     const uint16_t stderr_address = 0x7120;
     const uint16_t stop_execution_address = 0x7200;
-    const uint16_t controller_data_address = 0x7200;
+    const uint16_t controller_data_address = 0x7000;
 
     uint8_t l8u(uint16_t load_address) const;
     uint16_t l16u(uint16_t load_address) const;

@@ -1,4 +1,3 @@
-#include "memory.h"
 #include "console.h"
 
 #include <cstdio>
@@ -56,7 +55,7 @@ void BananaMemory::w8u(uint16_t address, uint8_t value) {
     } else if (address == stderr_address)
         std::cerr << char(value);
     else if (address == stop_execution_address) {
-        exit(0);
+        exit(EXIT_SUCCESS);
     } else {
         mem_array[address] = value;
     }
