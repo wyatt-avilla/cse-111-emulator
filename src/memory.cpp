@@ -4,7 +4,8 @@
 #include <iostream>
 
 BananaMemory::BananaMemory(Console* console) : console(console) {}
-
+//Link for code for permission checks found from ChatGPT
+//https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e 
 
 bool BananaMemory::isReadable(uint16_t address) const {
     return (address >= 0x0000 && address < 0x7000) || // RAM
