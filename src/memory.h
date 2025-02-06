@@ -9,8 +9,12 @@ class Console;
 class BananaMemory {
   private:
     Console* console;
-    uint8_t mem_array[0X10000]; // the size of array full adress sapce for the
+    uint8_t mem_array[0X10000]; // the size of the array full address space for the
                                 // banana
+    bool isReadable(uint16_t address) const;
+    bool isWritable(uint16_t address) const;
+    bool isExecutable(uint16_t address) const;
+
   public:
     BananaMemory(Console* console);
 
@@ -30,3 +34,4 @@ class BananaMemory {
     uint16_t getSetupAddress() const;
     uint16_t getLoopAddress() const;
 };
+
