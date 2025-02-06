@@ -7,6 +7,31 @@
 
 BananaMemory::BananaMemory(Console* console) : console(console) {}
 
+
+bool BananaMemory::isReadable(uint16_t address) const {
+    return (address >= 0x0000 && address < 0x7000) || // RAM
+           (address >= 0x1000 && address < 0x2000) || // Stack
+           (address >= 0x3000 && address < 0x4000) || // VRAM
+           (address == controller_data_address) ||
+           (address == stdin_address) ||
+           (address >= 0x8000 && address < 0x10000); // SLUG
+}
+
+
+bool BananaMemory::isWritable(uint16_t address) const {
+    return (address >= 0x0000 && address < 0x7000) || // RAM
+           (address >= 0x1000 && address < 0x2000) || // Stack
+           (address >= 0x3000 && address < 0x4000) || // VRAM
+           (address == stdout_address) ||
+           (address == stderr_address) ||
+           (address == stop_execution_address);
+}
+
+bool BananaMemory::isExecutable(uint16_t address) const {
+    return (address >= 0x8000 && address < 0x10000); // SLUG file
+}
+
+
 uint8_t BananaMemory::l8u(uint16_t load_address) const {
     uint8_t out = 0;
     if (load_address == controller_data_address) {
