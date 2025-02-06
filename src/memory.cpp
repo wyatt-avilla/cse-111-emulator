@@ -1,18 +1,19 @@
 #include "memory.h"
+
 #include "console.h"
+
 #include <cstdio>
 #include <iostream>
 
 BananaMemory::BananaMemory(Console* console) : console(console) {}
-//Link for code for permission checks found from ChatGPT
-//https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e 
+// Link for code for permission checks found from ChatGPT
+// https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool BananaMemory::isReadable(uint16_t address) const {
     return (address >= 0x0000 && address < 0x7000) || // RAM
            (address >= 0x1000 && address < 0x2000) || // Stack
            (address >= 0x3000 && address < 0x4000) || // VRAM
-           (address == controller_data_address) ||
-           (address == stdin_address) ||
+           (address == controller_data_address) || (address == stdin_address) ||
            (address >= 0x8000 && address < 0x10000); // SLUG
 }
 
@@ -21,8 +22,7 @@ bool BananaMemory::isWritable(uint16_t address) const {
     return (address >= 0x0000 && address < 0x7000) || // RAM
            (address >= 0x1000 && address < 0x2000) || // Stack
            (address >= 0x3000 && address < 0x4000) || // VRAM
-           (address == stdout_address) ||
-           (address == stderr_address) ||
+           (address == stdout_address) || (address == stderr_address) ||
            (address == stop_execution_address);
 }
 
@@ -47,7 +47,7 @@ uint16_t BananaMemory::l16u(uint16_t load_address) const {
     // checking if the alignment is right
     uint16_t out = 0;
     if (load_address & 1) {
-        //The address is odd and therefore wrong
+        // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -59,7 +59,7 @@ uint32_t BananaMemory::loadInstruction(uint16_t load_address) const {
     // checking if the alignment is right
     uint32_t out = 0;
     if (load_address & 1) {
-        //The address is odd and therefore wrong
+        // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -102,27 +102,6 @@ void BananaMemory::writeInstrcution(uint16_t address, uint32_t value) {
 uint16_t BananaMemory::getSetupAddress() const { return l16u(0x81e0 + 2); }
 
 uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
