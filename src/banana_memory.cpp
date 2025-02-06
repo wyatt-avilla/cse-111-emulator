@@ -49,7 +49,7 @@ uint16_t BananaMemory::l16u(uint16_t load_address) const {
     uint16_t out = 0;
     if (load_address & 1) {
         // the adress is odd and there fore wrong
-        std::cerr << "warning trying to read word on a false word adress"
+        std::cerr << "warning trying to read word on a false word address"
                   << std::endl;
     }
     out = (l8u(load_address) << 8) | l8u(load_address + 1);
@@ -61,7 +61,7 @@ uint32_t BananaMemory::loadInstruction(uint16_t load_address) const {
     uint32_t out = 0;
     if (load_address & 1) {
         // the adress is odd and there fore wrong
-        std::cerr << "warning trying to read word on a false word adress"
+        std::cerr << "warning trying to read word on a false word address"
                   << std::endl;
     }
     out = (l8u(load_address) << 24) | (l8u(load_address + 1) << 16) |
