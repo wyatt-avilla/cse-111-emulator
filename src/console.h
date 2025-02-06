@@ -1,6 +1,6 @@
 #pragma once
 
-#include "banana_memory.h"
+#include "memory.h"
 #include "cpu.h"
 #include "os.h"
 

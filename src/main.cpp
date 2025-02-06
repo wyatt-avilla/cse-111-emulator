@@ -1,4 +1,4 @@
-#include "banana_memory.h"
+#include "memory.h"
 #include "console.h"
 #include "cpu.h"
 
