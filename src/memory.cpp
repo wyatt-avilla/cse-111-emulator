@@ -1,9 +1,34 @@
+#include "banana_memory.h"
 #include "console.h"
-
 #include <cstdio>
 #include <iostream>
 
 BananaMemory::BananaMemory(Console* console) : console(console) {}
+
+
+bool BananaMemory::isReadable(uint16_t address) const {
+    return (address >= 0x0000 && address < 0x7000) || // RAM
+           (address >= 0x1000 && address < 0x2000) || // Stack
+           (address >= 0x3000 && address < 0x4000) || // VRAM
+           (address == controller_data_address) ||
+           (address == stdin_address) ||
+           (address >= 0x8000 && address < 0x10000); // SLUG
+}
+
+
+bool BananaMemory::isWritable(uint16_t address) const {
+    return (address >= 0x0000 && address < 0x7000) || // RAM
+           (address >= 0x1000 && address < 0x2000) || // Stack
+           (address >= 0x3000 && address < 0x4000) || // VRAM
+           (address == stdout_address) ||
+           (address == stderr_address) ||
+           (address == stop_execution_address);
+}
+
+bool BananaMemory::isExecutable(uint16_t address) const {
+    return (address >= 0x8000 && address < 0x10000); // SLUG file
+}
+
 
 uint8_t BananaMemory::l8u(uint16_t load_address) const {
     uint8_t out = 0;
@@ -21,8 +46,8 @@ uint16_t BananaMemory::l16u(uint16_t load_address) const {
     // checking if the alignment is right
     uint16_t out = 0;
     if (load_address & 1) {
-        // the adress is odd and there fore wrong
-        std::cerr << "warning trying to read word on a false word adress"
+        //The address is odd and therefore wrong
+        std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
     out = (l8u(load_address) << 8) | l8u(load_address + 1);
@@ -33,8 +58,8 @@ uint32_t BananaMemory::loadInstruction(uint16_t load_address) const {
     // checking if the alignment is right
     uint32_t out = 0;
     if (load_address & 1) {
-        // the adress is odd and there fore wrong
-        std::cerr << "warning trying to read word on a false word adress"
+        //The address is odd and therefore wrong
+        std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
     out = (l8u(load_address) << 24) | (l8u(load_address + 1) << 16) |
@@ -47,7 +72,7 @@ uint32_t BananaMemory::loadInstruction(uint16_t load_address) const {
 
 void BananaMemory::w8u(uint16_t address, uint8_t value) {
     if (address & 1) {
-        std::cerr << "warning: trying to write word on an unaligned address"
+        std::cerr << "warning: trying to write the word on an unaligned address"
                   << std::endl;
     }
     if (address == stdout_address) {
@@ -55,7 +80,7 @@ void BananaMemory::w8u(uint16_t address, uint8_t value) {
     } else if (address == stderr_address)
         std::cerr << char(value);
     else if (address == stop_execution_address) {
-        exit(EXIT_SUCCESS);
+        exit(0);
     } else {
         mem_array[address] = value;
     }
@@ -74,5 +99,29 @@ void BananaMemory::writeInstrcution(uint16_t address, uint32_t value) {
 }
 
 uint16_t BananaMemory::getSetupAddress() const { return l16u(0x81e0 + 2); }
+
+uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
