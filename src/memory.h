@@ -33,5 +33,7 @@ class BananaMemory {
 
     uint16_t getSetupAddress() const;
     uint16_t getLoopAddress() const;
+
+    void clearRAM();
 };
 

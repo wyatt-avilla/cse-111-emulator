@@ -1,6 +1,7 @@
 #include "memory.h"
 #include "console.h"
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 
 BananaMemory::BananaMemory(Console* console) : console(console) {}
@@ -103,26 +104,6 @@ uint16_t BananaMemory::getSetupAddress() const { return l16u(0x81e0 + 2); }
 
 uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-uint16_t BananaMemory::getLoopAddress() const { return l16u(0x81e4 + 2); }
+void BananaMemory::clearRAM() {
+    memset(mem_array, 0, 0x10000);
+}
