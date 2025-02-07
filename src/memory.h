@@ -11,6 +11,8 @@
 #define VRAM_END 0x4000
 #define SLUG_START 0x8000
 #define SLUG_END 0xFFFF
+#define SETUP_ADDRESS 0x81e0
+#define LOOP_ADDRESS 0x81e4
 
 class Console;
 

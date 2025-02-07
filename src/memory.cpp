@@ -103,8 +103,8 @@ void Memory::writeInstrcution(uint16_t address, uint32_t value) {
     w8u(address + 3, value & 0xFF); // Lowest byte
 }
 
-uint16_t Memory::getSetupAddress() const { return l16u(0x81e0 + 2); }
+uint16_t Memory::getSetupAddress() const { return l16u(SETUP_ADDRESS + 2); }
 
-uint16_t Memory::getLoopAddress() const { return l16u(0x81e4 + 2); }
+uint16_t Memory::getLoopAddress() const { return l16u(LOOP_ADDRESS + 2); }
 
 void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
