@@ -51,7 +51,7 @@ CPU::CPU(Console* console) : console(console) {
 
 
 void CPU::execute(uint32_t instruction) {
-    std::cerr << std::hex << instruction << std::endl;
+    // std::cerr << std::hex << instruction << std::endl;
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         executeTypeR(instruction);
