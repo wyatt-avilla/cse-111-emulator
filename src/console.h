@@ -1,7 +1,7 @@
 #pragma once
 
-#include "memory.h"
 #include "cpu.h"
+#include "memory.h"
 #include "os.h"
 
 #include <string>

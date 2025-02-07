@@ -20,7 +20,8 @@ int32_t main(int32_t argc, char* argv[]) {
     try {
         banana.run(argv[FILENAME_INDEX]);
     } catch (const std::exception& e) {
-        std::cerr << "Couldn't run " << "\"" << argv[FILENAME_INDEX] << "\":" << std::endl
+        std::cerr << "Couldn't run " << "\"" << argv[FILENAME_INDEX]
+                  << "\":" << std::endl
                   << "    " << e.what() << std::endl;
     }
 

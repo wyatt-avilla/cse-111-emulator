@@ -1,29 +1,29 @@
 #include "memory.h"
+
 #include "console.h"
+
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 
 Memory::Memory(Console* console) : console(console) {}
-//Link for code for permission checks found from ChatGPT
-//https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e 
+// Link for code for permission checks found from ChatGPT
+// https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(uint16_t address) const {
-    return (address >= RAM_START && address < IO_START) || // RAM
+    return (address >= RAM_START && address < IO_START) ||   // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
-           (address >= VRAM_START && address < VRAM_END) || // VRAM
-           (address == controller_data_address) ||
-           (address == stdin_address) ||
+           (address >= VRAM_START && address < VRAM_END) ||  // VRAM
+           (address == controller_data_address) || (address == stdin_address) ||
            (address >= SLUG_START && address < SLUG_END); // SLUG
 }
 
 
 bool Memory::isWritable(uint16_t address) const {
-    return (address >= RAM_START && address < IO_START) || // RAM
+    return (address >= RAM_START && address < IO_START) ||   // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
-           (address >= VRAM_START && address < VRAM_END) || // VRAM
-           (address == stdout_address) ||
-           (address == stderr_address) ||
+           (address >= VRAM_START && address < VRAM_END) ||  // VRAM
+           (address == stdout_address) || (address == stderr_address) ||
            (address == stop_execution_address);
 }
 
@@ -48,7 +48,7 @@ uint16_t Memory::l16u(uint16_t load_address) const {
     // checking if the alignment is right
     uint16_t out = 0;
     if (load_address & 1) {
-        //The address is odd and therefore wrong
+        // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -60,7 +60,7 @@ uint32_t Memory::loadInstruction(uint16_t load_address) const {
     // checking if the alignment is right
     uint32_t out = 0;
     if (load_address & 1) {
-        //The address is odd and therefore wrong
+        // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -108,6 +108,4 @@ uint16_t Memory::getSetupAddress() const { return l16u(0x81e0 + 2); }
 
 uint16_t Memory::getLoopAddress() const { return l16u(0x81e4 + 2); }
 
-void Memory::clearRAM() {
-    memset(mem_array, 0, 0x7000);
-}
+void Memory::clearRAM() { memset(mem_array, 0, 0x7000); }

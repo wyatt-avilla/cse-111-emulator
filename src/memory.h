@@ -17,8 +17,8 @@ class Console;
 class Memory {
   private:
     Console* console;
-    uint8_t mem_array[0X10000]; // the size of the array full address space for the
-                                // banana
+    uint8_t mem_array[0X10000]; // the size of the array full address space for
+                                // the banana
     bool isReadable(uint16_t address) const;
     bool isWritable(uint16_t address) const;
     bool isExecutable(uint16_t address) const;
@@ -44,4 +44,3 @@ class Memory {
 
     void clearRAM();
 };
-
