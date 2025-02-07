@@ -10,7 +10,7 @@
 #define VRAM_START 0x3000
 #define VRAM_END 0x4000
 #define SLUG_START 0x8000
-#define SLUG_END 0x10000
+#define SLUG_END 0xFFFF
 
 class Console;
 
