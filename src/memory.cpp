@@ -107,4 +107,4 @@ uint16_t Memory::getSetupAddress() const { return l16u(0x81e0 + 2); }
 
 uint16_t Memory::getLoopAddress() const { return l16u(0x81e4 + 2); }
 
-void Memory::clearRAM() { memset(mem_array, 0, 0x7000); }
+void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
