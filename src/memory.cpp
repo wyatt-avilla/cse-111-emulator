@@ -9,26 +9,26 @@ Memory::Memory(Console* console) : console(console) {}
 //https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e 
 
 bool Memory::isReadable(uint16_t address) const {
-    return (address >= 0x0000 && address < 0x7000) || // RAM
-           (address >= 0x1000 && address < 0x2000) || // Stack
-           (address >= 0x3000 && address < 0x4000) || // VRAM
+    return (address >= RAM_START && address < IO_START) || // RAM
+           (address >= STK_START && address < VRAM_START) || // Stack
+           (address >= VRAM_START && address < VRAM_END) || // VRAM
            (address == controller_data_address) ||
            (address == stdin_address) ||
-           (address >= 0x8000 && address < 0x10000); // SLUG
+           (address >= SLUG_START && address < SLUG_END); // SLUG
 }
 
 
 bool Memory::isWritable(uint16_t address) const {
-    return (address >= 0x0000 && address < 0x7000) || // RAM
-           (address >= 0x1000 && address < 0x2000) || // Stack
-           (address >= 0x3000 && address < 0x4000) || // VRAM
+    return (address >= RAM_START && address < IO_START) || // RAM
+           (address >= STK_START && address < VRAM_START) || // Stack
+           (address >= VRAM_START && address < VRAM_END) || // VRAM
            (address == stdout_address) ||
            (address == stderr_address) ||
            (address == stop_execution_address);
 }
 
 bool Memory::isExecutable(uint16_t address) const {
-    return (address >= 0x8000 && address < 0x10000); // SLUG file
+    return (address >= SLUG_START && address < SLUG_END); // SLUG file
 }
 
 

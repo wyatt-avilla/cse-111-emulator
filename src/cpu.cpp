@@ -6,6 +6,7 @@
 #define PC_INCREMENT 4
 #define STK_PTR_REG 29
 #define ZERO_REG 0
+#define JAL_REG 31
 
 struct ITypeInstruction {
     uint16_t immediate : 16;
@@ -50,6 +51,7 @@ CPU::CPU(Console* console) : console(console) {
 
 
 void CPU::execute(uint32_t instruction) {
+    std::cerr << std::hex << instruction << std::endl;
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         executeTypeR(instruction);
@@ -165,7 +167,7 @@ void CPU::BNE() {
 }
 
 void CPU::JAL() {
-    registers[31] = program_counter + PC_INCREMENT;
+    registers[JAL_REG] = program_counter + PC_INCREMENT;
     program_counter = 4 * instruction_context.immediate;
 }
 
