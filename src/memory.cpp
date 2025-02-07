@@ -73,10 +73,6 @@ uint32_t Memory::loadInstruction(uint16_t load_address) const {
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
 
 void Memory::w8u(uint16_t address, uint8_t value) {
-    if (address & 1) {
-        std::cerr << "warning: trying to write the word on an unaligned address"
-                  << std::endl;
-    }
     if (address == stdout_address) {
         std::cout << char(value);
     } else if (address == stderr_address)
@@ -89,11 +85,19 @@ void Memory::w8u(uint16_t address, uint8_t value) {
 }
 
 void Memory::w16u(uint16_t address, uint16_t value) {
+    if (address & 1) {
+        std::cerr << "warning: trying to write the word on an unaligned address"
+                  << std::endl;
+    }
     w8u(address, (value >> 8) & 0xFF); // High byte
     w8u(address + 1, value & 0xFF);    // Low byte
 }
 
 void Memory::writeInstrcution(uint16_t address, uint32_t value) {
+    if (address & 3) {
+        std::cerr << "warning: trying to write the word on an unaligned address"
+                  << std::endl;
+    }
     w8u(address, (value >> 24) & 0xFF); // Highest byte
     w8u(address + 1, (value >> 16) & 0xFF);
     w8u(address + 2, (value >> 8) & 0xFF);
@@ -105,5 +109,5 @@ uint16_t Memory::getSetupAddress() const { return l16u(0x81e0 + 2); }
 uint16_t Memory::getLoopAddress() const { return l16u(0x81e4 + 2); }
 
 void Memory::clearRAM() {
-    memset(mem_array, 0, 0x10000);
+    memset(mem_array, 0, 0x7000);
 }
