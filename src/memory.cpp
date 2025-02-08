@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 
 Memory::Memory(Console* console) : console(console) {}
@@ -115,3 +116,8 @@ uint16_t Memory::getSetupAddress() const { return l16u(SETUP_ADDRESS + 2); }
 uint16_t Memory::getLoopAddress() const { return l16u(LOOP_ADDRESS + 2); }
 
 void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
+
+void Memory::loadFile(std::ifstream& file_stream) {
+    file_stream.seekg(0, std::ios::beg);
+    file_stream.read((char*) mem_array + SLUG_START, SLUG_SIZE);
+}

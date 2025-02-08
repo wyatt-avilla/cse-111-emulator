@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 #define IO_START 0x7000
@@ -9,6 +10,7 @@
 #define VRAM_START 0x3000
 #define VRAM_END 0x4000
 #define SLUG_START 0x8000
+#define SLUG_SIZE 0x8000
 #define MEM_SIZE 0x10000
 #define SETUP_ADDRESS 0x81e0
 #define LOOP_ADDRESS 0x81e4
@@ -38,10 +40,10 @@ class Memory {
     uint32_t loadInstruction(uint16_t load_address) const;
     void w8u(uint16_t address, uint8_t value);
     void w16u(uint16_t address, uint16_t value);
-    void writeInstrcution(uint16_t address, uint32_t value);
 
     uint16_t getSetupAddress() const;
     uint16_t getLoopAddress() const;
 
     void clearRAM();
+    void loadFile(std::ifstream& file_stream);
 };

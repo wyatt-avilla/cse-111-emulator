@@ -18,14 +18,8 @@ void OS::reset(const std::string& filename) {
     if (!file.is_open()) {
         throw std::invalid_argument("couldn't open " + filename);
     }
-
-    file.seekg(0, std::ios::beg);
-    uint16_t i = SLUG_START;
-    char ch;
-    while (file.get(ch)) {
-        this->c->memory.w8u(i, (uint8_t) ch);
-        i += 1;
-    }
+    this->c->memory.loadFile(file);
+    file.close();
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
     this->c->cpu.set_stack_pointer_to(STK_END);
