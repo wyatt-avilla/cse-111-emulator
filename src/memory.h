@@ -3,7 +3,6 @@
 #include <memory>
 #include <string>
 
-#define RAM_START 0x0000
 #define IO_START 0x7000
 #define STK_START 0x1000
 #define STK_END 0x3000
