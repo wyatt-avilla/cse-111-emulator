@@ -117,6 +117,8 @@ void CPU::BEQ() {
         registers[instruction_context.reg_b]) {
         program_counter =
             program_counter + 4 + 4 * instruction_context.immediate;
+    } else {
+        program_counter += PC_INCREMENT;
     }
 }
 
@@ -166,6 +168,8 @@ void CPU::BNE() {
         registers[instruction_context.reg_b]) {
         program_counter =
             program_counter + 4 + 4 * instruction_context.immediate;
+    } else {
+        program_counter += PC_INCREMENT;
     }
 }
 
