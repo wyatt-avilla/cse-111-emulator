@@ -4,7 +4,7 @@ Checks: >
   readability-*, bugprone-*, modernize-*, performance-*, clang-analyzer-*,
   cppcoreguidelines-avoid-goto, cppcoreguidelines-init-variables,
   cppcoreguidelines-prefer-member-initializer, cppcoreguidelines-slicing, misc-unused-parameters,
-  misc-unused-using-decls, -modernize-use-trailing-return-type, -readability-magic-numbers,
+  misc-unused-using-decls, -modernize-use-trailing-return-type,
   -readability-braces-around-statements, -performance-avoid-endl
 
 # Naming convention settings
