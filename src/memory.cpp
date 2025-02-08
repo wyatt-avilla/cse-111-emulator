@@ -10,25 +10,25 @@ Memory::Memory(Console* console) : console(console) {}
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
-bool Memory::isReadable(uint16_t address) const {
-    return (address >= RAM_START && address < IO_START) ||   // RAM
+bool Memory::isReadable(uint32_t address) const {
+    return (address < IO_START) ||                           // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == controller_data_address) || (address == stdin_address) ||
-           (address >= SLUG_START && address < SLUG_END); // SLUG
+           (address >= SLUG_START && address < MEM_SIZE); // SLUG
 }
 
 
-bool Memory::isWritable(uint16_t address) const {
-    return (address >= RAM_START && address < IO_START) ||   // RAM
+bool Memory::isWritable(uint32_t address) const {
+    return (address < IO_START) ||                           // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == stdout_address) || (address == stderr_address) ||
            (address == stop_execution_address);
 }
 
-bool Memory::isExecutable(uint16_t address) const {
-    return (address >= SLUG_START && address < SLUG_END); // SLUG file
+bool Memory::isExecutable(uint32_t address) const {
+    return (address >= SLUG_START && address < MEM_SIZE); // SLUG file
 }
 
 

@@ -3,14 +3,13 @@
 #include <memory>
 #include <string>
 
-#define RAM_START 0x0000
 #define IO_START 0x7000
 #define STK_START 0x1000
 #define STK_END 0x3000
 #define VRAM_START 0x3000
 #define VRAM_END 0x4000
 #define SLUG_START 0x8000
-#define SLUG_END 0xFFFF
+#define MEM_SIZE 0x10000
 #define SETUP_ADDRESS 0x81e0
 #define LOOP_ADDRESS 0x81e4
 
@@ -19,11 +18,11 @@ class Console;
 class Memory {
   private:
     Console* console;
-    uint8_t mem_array[0X10000]; // the size of the array full address space for
-                                // the banana
-    bool isReadable(uint16_t address) const;
-    bool isWritable(uint16_t address) const;
-    bool isExecutable(uint16_t address) const;
+    uint8_t mem_array[MEM_SIZE]; // the size of the array full address space for
+                                 // the banana
+    bool isReadable(uint32_t address) const;
+    bool isWritable(uint32_t address) const;
+    bool isExecutable(uint32_t address) const;
 
   public:
     Memory(Console* console);
