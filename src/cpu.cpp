@@ -54,8 +54,10 @@ void CPU::execute(uint32_t instruction) {
     // std::cerr << std::hex << instruction << std::endl;
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
+        const uint16_t first_six_bits_mask = 0x3f;
+        uint16_t function = instruction & first_six_bits_mask;
         executeTypeR(instruction);
-        if (opcode != static_cast<uint16_t>(Opcode::JR)) {
+        if (function != static_cast<uint16_t>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
         }
     } else {
@@ -106,7 +108,7 @@ void CPU::executeTypeR(uint32_t instruction) {
     instruction_context.shift_value = parsed_instruction->shift_value;
 
     if (jump_table[parsed_instruction->function] != nullptr) {
-        (this->*jump_table[parsed_instruction->opcode])();
+        (this->*jump_table[parsed_instruction->function])();
     }
 }
 
