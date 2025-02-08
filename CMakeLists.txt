@@ -24,8 +24,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 
 target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:-ggdb -O0>
-    $<$<CONFIG:Release>:-O3>
-    $<$<CONFIG:CI>:-Werror>
+    $<$<CONFIG:Release>:-O3 -Werror>
 )
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
