@@ -10,7 +10,7 @@ Memory::Memory(Console* console) : console(console) {}
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
-bool Memory::isReadable(uint16_t address) const {
+bool Memory::isReadable(uint32_t address) const {
     return (address >= RAM_START && address < IO_START) ||   // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
@@ -19,7 +19,7 @@ bool Memory::isReadable(uint16_t address) const {
 }
 
 
-bool Memory::isWritable(uint16_t address) const {
+bool Memory::isWritable(uint32_t address) const {
     return (address >= RAM_START && address < IO_START) ||   // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
@@ -27,7 +27,7 @@ bool Memory::isWritable(uint16_t address) const {
            (address == stop_execution_address);
 }
 
-bool Memory::isExecutable(uint16_t address) const {
+bool Memory::isExecutable(uint32_t address) const {
     return (address >= SLUG_START && address < SLUG_END); // SLUG file
 }
 
