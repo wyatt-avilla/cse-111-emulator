@@ -20,6 +20,9 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall
     -Wextra
     -Wpedantic
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:-ggdb -O0>
     $<$<CONFIG:Release>:-O3>
     $<$<CONFIG:CI>:-Werror>
