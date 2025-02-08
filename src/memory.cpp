@@ -15,7 +15,7 @@ bool Memory::isReadable(uint32_t address) const {
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == controller_data_address) || (address == stdin_address) ||
-           (address >= SLUG_START && address < SLUG_END); // SLUG
+           (address >= SLUG_START && address < MEM_SIZE); // SLUG
 }
 
 
@@ -28,7 +28,7 @@ bool Memory::isWritable(uint32_t address) const {
 }
 
 bool Memory::isExecutable(uint32_t address) const {
-    return (address >= SLUG_START && address < SLUG_END); // SLUG file
+    return (address >= SLUG_START && address < MEM_SIZE); // SLUG file
 }
 
 
