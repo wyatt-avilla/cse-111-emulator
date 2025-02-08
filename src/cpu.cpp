@@ -123,39 +123,54 @@ void CPU::BEQ() {
 }
 
 void CPU::L16() {
-    uint32_t effective_address =
-        registers[instruction_context.reg_a] + instruction_context.immediate;
-    registers[instruction_context.reg_b] =
-        this->console->memory.l16u(effective_address);
+    try {
+        uint32_t effective_address = registers[instruction_context.reg_a] +
+                                     instruction_context.immediate;
+        registers[instruction_context.reg_b] =
+            this->console->memory.l16u(effective_address);
+    } catch (const std::invalid_argument&) {
+    }
 }
 
 
 void CPU::L8U() {
-    uint32_t effective_address =
-        registers[instruction_context.reg_a] + instruction_context.immediate;
-    registers[instruction_context.reg_b] =
-        static_cast<uint16_t>(this->console->memory.l8u(effective_address));
+    try {
+        uint32_t effective_address = registers[instruction_context.reg_a] +
+                                     instruction_context.immediate;
+        registers[instruction_context.reg_b] =
+            static_cast<uint16_t>(this->console->memory.l8u(effective_address));
+
+    } catch (const std::invalid_argument&) {
+    }
 }
 
 
 void CPU::J() { program_counter = 4 * instruction_context.immediate; }
 
 void CPU::S16() {
-    uint16_t effective_address =
-        registers[instruction_context.reg_a] + instruction_context.immediate;
-    this->console->memory.w16u(
-        effective_address,
-        registers[instruction_context.reg_b]
-    );
+    try {
+        uint16_t effective_address = registers[instruction_context.reg_a] +
+                                     instruction_context.immediate;
+        this->console->memory.w16u(
+            effective_address,
+            registers[instruction_context.reg_b]
+        );
+
+    } catch (const std::invalid_argument&) {
+    }
 }
 
 void CPU::S8() {
-    uint16_t effective_address =
-        registers[instruction_context.reg_a] + instruction_context.immediate;
-    this->console->memory.w8u(
-        effective_address,
-        registers[instruction_context.reg_b]
-    );
+    try {
+        uint16_t effective_address = registers[instruction_context.reg_a] +
+                                     instruction_context.immediate;
+        this->console->memory.w8u(
+            effective_address,
+            registers[instruction_context.reg_b]
+        );
+
+    } catch (const std::invalid_argument&) {
+    }
 }
 
 void CPU::ADDI() {
