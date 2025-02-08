@@ -108,7 +108,7 @@ void CPU::executeTypeR(uint32_t instruction) {
     instruction_context.shift_value = parsed_instruction->shift_value;
 
     if (jump_table[parsed_instruction->function] != nullptr) {
-        (this->*jump_table[parsed_instruction->opcode])();
+        (this->*jump_table[parsed_instruction->function])();
     }
 }
 
