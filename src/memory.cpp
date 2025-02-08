@@ -11,7 +11,7 @@ Memory::Memory(Console* console) : console(console) {}
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(uint32_t address) const {
-    return (address >= RAM_START && address < IO_START) ||   // RAM
+    return (address < IO_START) ||                           // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == controller_data_address) || (address == stdin_address) ||
@@ -20,7 +20,7 @@ bool Memory::isReadable(uint32_t address) const {
 
 
 bool Memory::isWritable(uint32_t address) const {
-    return (address >= RAM_START && address < IO_START) ||   // RAM
+    return (address < IO_START) ||                           // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == stdout_address) || (address == stderr_address) ||
