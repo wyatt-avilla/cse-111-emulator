@@ -54,8 +54,9 @@ void CPU::execute(uint32_t instruction) {
     // std::cerr << std::hex << instruction << std::endl;
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
+        uint16_t function = instruction & 0x3f;
         executeTypeR(instruction);
-        if (opcode != static_cast<uint16_t>(Opcode::JR)) {
+        if (function != static_cast<uint16_t>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
         }
     } else {
