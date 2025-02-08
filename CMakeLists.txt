@@ -24,3 +24,5 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>:-O3>
     $<$<CONFIG:CI>:-Werror>
 )
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
