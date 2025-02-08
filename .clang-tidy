@@ -1,0 +1,86 @@
+# https://claude.site/artifacts/3dbb9601-33bc-4ac2-9cdb-84240d61b661
+
+Checks: >
+  readability-*, bugprone-*, modernize-*, performance-*, clang-analyzer-*,
+  cppcoreguidelines-avoid-goto, cppcoreguidelines-init-variables,
+  cppcoreguidelines-prefer-member-initializer, cppcoreguidelines-slicing, misc-unused-parameters,
+  misc-unused-using-decls, -modernize-use-trailing-return-type, -readability-magic-numbers,
+  -readability-braces-around-statements, -performance-avoid-endl
+
+# Naming convention settings
+CheckOptions:
+  # Class names should be in PascalCase
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.ClassPrefix
+    value: ""
+  - key: readability-identifier-naming.ClassSuffix
+    value: ""
+
+  # Method names should be in camelCase
+  - key: readability-identifier-naming.MethodCase
+    value: camelBack
+  - key: readability-identifier-naming.MethodPrefix
+    value: ""
+  - key: readability-identifier-naming.MethodSuffix
+    value: ""
+
+  # Function names should be in camelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key: readability-identifier-naming.FunctionPrefix
+    value: ""
+  - key: readability-identifier-naming.FunctionSuffix
+    value: ""
+
+  # Variable names should be in snake_case
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.VariablePrefix
+    value: ""
+  - key: readability-identifier-naming.VariableSuffix
+    value: ""
+
+  # Parameter names should also be in snake_case
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.ParameterPrefix
+    value: ""
+  - key: readability-identifier-naming.ParameterSuffix
+    value: ""
+
+  # Private member variables should be in snake_case
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: lower_case
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: ""
+  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: ""
+
+  # Protected member variables should be in snake_case
+  - key: readability-identifier-naming.ProtectedMemberCase
+    value: lower_case
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: ""
+  - key: readability-identifier-naming.ProtectedMemberSuffix
+    value: ""
+
+  # Constants should be in UPPER_CASE
+  - key: readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+
+  # Enums should be in PascalCase
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+
+  # Enum constants should be in UPPER_CASE
+  - key: readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+
+  # Maximum number of lines in a function
+  - key: readability-function-size.LineThreshold
+    value: 50
+
+  # Require at least this many lines between functions
+  - key: readability-function-spacing.MinEmptyLines
+    value: 1
