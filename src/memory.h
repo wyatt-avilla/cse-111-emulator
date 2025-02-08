@@ -3,22 +3,36 @@
 #include <memory>
 #include <string>
 
+#define RAM_START 0x0000
+#define IO_START 0x7000
+#define STK_START 0x1000
+#define STK_END 0x3000
+#define VRAM_START 0x3000
+#define VRAM_END 0x4000
+#define SLUG_START 0x8000
+#define SLUG_END 0xFFFF
+#define SETUP_ADDRESS 0x81e0
+#define LOOP_ADDRESS 0x81e4
 
 class Console;
 
-class BananaMemory {
+class Memory {
   private:
     Console* console;
-    uint8_t mem_array[0X10000]; // the size of array full adress sapce for the
-                                // banana
+    uint8_t mem_array[0X10000]; // the size of the array full address space for
+                                // the banana
+    bool isReadable(uint16_t address) const;
+    bool isWritable(uint16_t address) const;
+    bool isExecutable(uint16_t address) const;
+
   public:
-    BananaMemory(Console* console);
+    Memory(Console* console);
 
     const uint16_t stdin_address = 0x7100;
     const uint16_t stdout_address = 0x7110;
     const uint16_t stderr_address = 0x7120;
     const uint16_t stop_execution_address = 0x7200;
-    const uint16_t controller_data_address = 0x7200;
+    const uint16_t controller_data_address = 0x7000;
 
     uint8_t l8u(uint16_t load_address) const;
     uint16_t l16u(uint16_t load_address) const;
@@ -29,4 +43,6 @@ class BananaMemory {
 
     uint16_t getSetupAddress() const;
     uint16_t getLoopAddress() const;
+
+    void clearRAM();
 };

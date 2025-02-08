@@ -1,7 +1,7 @@
 #pragma once
 
-#include "banana_memory.h"
 #include "cpu.h"
+#include "memory.h"
 #include "os.h"
 
 #include <string>
@@ -14,7 +14,7 @@ class Console {
 
     CPU cpu;
     OS os;
-    BananaMemory memory;
+    Memory memory;
 
   private:
 };

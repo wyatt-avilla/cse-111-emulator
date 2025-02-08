@@ -1,9 +1,12 @@
-#include "cpu.h"
-
 #include "console.h"
 
 #include <cstdlib>
 #include <iostream>
+
+#define PC_INCREMENT 4
+#define STK_PTR_REG 29
+#define ZERO_REG 0
+#define JAL_REG 31
 
 struct ITypeInstruction {
     uint16_t immediate : 16;
@@ -48,11 +51,12 @@ CPU::CPU(Console* console) : console(console) {
 
 
 void CPU::execute(uint32_t instruction) {
+    // std::cerr << std::hex << instruction << std::endl;
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         executeTypeR(instruction);
         if (opcode != static_cast<uint16_t>(Opcode::JR)) {
-            program_counter += 4;
+            program_counter += PC_INCREMENT;
         }
     } else {
         executeTypeI(instruction);
@@ -60,13 +64,13 @@ void CPU::execute(uint32_t instruction) {
             opcode != static_cast<uint16_t>(Opcode::J) &&
             opcode != static_cast<uint16_t>(Opcode::BNE) &&
             opcode != static_cast<uint16_t>(Opcode::JAL)) {
-            program_counter += 4;
+            program_counter += PC_INCREMENT;
         }
     }
 
-    if (registers[0] != 0) {
+    if (registers[ZERO_REG] != 0) {
         std::cerr << "zero register wasn't zero" << std::endl;
-        registers[0] = 0;
+        registers[ZERO_REG] = 0;
     }
 }
 
@@ -77,7 +81,7 @@ void CPU::set_program_counter_to(uint16_t counter_value) {
 uint16_t CPU::get_program_counter() { return this->program_counter; }
 
 void CPU::set_stack_pointer_to(uint16_t pointer_value) {
-    this->registers[29] = pointer_value;
+    this->registers[STK_PTR_REG] = pointer_value;
 }
 
 
@@ -163,7 +167,7 @@ void CPU::BNE() {
 }
 
 void CPU::JAL() {
-    registers[31] = program_counter + 4;
+    registers[JAL_REG] = program_counter + PC_INCREMENT;
     program_counter = 4 * instruction_context.immediate;
 }
 
