@@ -139,7 +139,6 @@ void CPU::L8U() {
                                      instruction_context.immediate;
         registers[instruction_context.reg_b] =
             static_cast<uint16_t>(this->console->memory.l8u(effective_address));
-
     } catch (const std::invalid_argument&) {
     }
 }
@@ -155,7 +154,6 @@ void CPU::S16() {
             effective_address,
             registers[instruction_context.reg_b]
         );
-
     } catch (const std::invalid_argument&) {
     }
 }
@@ -168,7 +166,6 @@ void CPU::S8() {
             effective_address,
             registers[instruction_context.reg_b]
         );
-
     } catch (const std::invalid_argument&) {
     }
 }
