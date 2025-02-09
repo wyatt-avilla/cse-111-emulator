@@ -25,88 +25,7 @@ struct RTypeInstruction {
 };
 
 
-CPU::CPU(Console* console) : console(console) {
-    i_type_jump_table[static_cast<uint16_t>(Opcode::BEQ)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->BEQ(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::L16)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->L16(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::L8U)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->L8U(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::J)] =
-        [this](uint16_t, uint16_t, uint16_t immediate) { this->J(immediate); };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::S16)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->S16(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::S8)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->S8(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::ADDI)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->ADDI(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::BNE)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->BNE(reg_a, reg_b, immediate);
-        };
-    i_type_jump_table[static_cast<uint16_t>(Opcode::JAL)] =
-        [this](uint16_t, uint16_t, uint16_t immediate) {
-            this->JAL(immediate);
-        };
-
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SUB)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->SUB(reg_a, reg_b, reg_c);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::OR)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->OR(reg_a, reg_b, reg_c);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::NOR)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->NOR(reg_a, reg_b, reg_c);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::ADD)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->ADD(reg_a, reg_b, reg_c);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SRA)] =
-        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
-            this->SRA(reg_b, reg_c, shift_value);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::XOR)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->XOR(reg_a, reg_b, reg_c);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::AND)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->AND(reg_a, reg_b, reg_c);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::JR)] =
-        [this](uint16_t reg_a, uint16_t, uint16_t, uint16_t) {
-            this->JR(reg_a);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SLL)] =
-        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
-            this->SLL(reg_b, reg_c, shift_value);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SRL)] =
-        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
-            this->SRL(reg_b, reg_c, shift_value);
-        };
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SLT)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
-            this->SLT(reg_a, reg_b, reg_c);
-        };
-}
-
+CPU::CPU(Console* console) : console(console) {}
 
 void CPU::execute(uint32_t instruction) {
     uint16_t opcode = instruction >> 26;
@@ -148,27 +67,59 @@ void CPU::executeTypeI(uint32_t instruction) {
     ITypeInstruction* parsed_instruction =
         reinterpret_cast<ITypeInstruction*>(&instruction);
 
-    if (i_type_jump_table[parsed_instruction->opcode] != nullptr) {
-        (this->i_type_jump_table[parsed_instruction->opcode])(
-            parsed_instruction->reg_a,
-            parsed_instruction->reg_b,
-            parsed_instruction->immediate
-        );
+    const auto& func_variant = i_type_jump_table[parsed_instruction->opcode];
+    if (func_variant.valueless_by_exception()) {
+        return;
     }
+
+    std::visit(
+        overloaded{
+            [&](RegularIType wrapper) {
+                (this->*wrapper.func)(
+                    parsed_instruction->reg_a,
+                    parsed_instruction->reg_b,
+                    parsed_instruction->immediate
+                );
+            },
+            [&](OnlyImmediateIType wrapper) {
+                (this->*wrapper.func)(parsed_instruction->immediate);
+            }
+        },
+        func_variant
+    );
 }
 
 void CPU::executeTypeR(uint32_t instruction) {
     RTypeInstruction* parsed_instruction =
         reinterpret_cast<RTypeInstruction*>(&instruction);
 
-    if (r_type_jump_table[parsed_instruction->function] != nullptr) {
-        (this->r_type_jump_table[parsed_instruction->function])(
-            parsed_instruction->reg_a,
-            parsed_instruction->reg_b,
-            parsed_instruction->reg_c,
-            parsed_instruction->shift_value
-        );
+    const auto& func_variant = r_type_jump_table[parsed_instruction->function];
+    if (func_variant.valueless_by_exception()) {
+        return;
     }
+
+    std::visit(
+        overloaded{
+            [&](RegularRType wrapper) {
+                (this->*wrapper.func)(
+                    parsed_instruction->reg_a,
+                    parsed_instruction->reg_b,
+                    parsed_instruction->reg_c
+                );
+            },
+            [&](JumpRegisterRType wrapper) {
+                (this->*wrapper.func)(parsed_instruction->reg_a);
+            },
+            [&](ShiftRType wrapper) {
+                (this->*wrapper.func)(
+                    parsed_instruction->reg_b,
+                    parsed_instruction->reg_c,
+                    parsed_instruction->shift_value
+                );
+            }
+        },
+        func_variant
+    );
 }
 
 void CPU::BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
