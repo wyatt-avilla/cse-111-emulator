@@ -78,8 +78,8 @@ CPU::CPU(Console* console) : console(console) {
             this->ADD(reg_a, reg_b, reg_c);
         };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SRA)] =
-        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t immediate) {
-            this->SRA(reg_b, reg_c, immediate);
+        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
+            this->SRA(reg_b, reg_c, shift_value);
         };
     r_type_jump_table[static_cast<uint16_t>(Opcode::XOR)] =
         [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
@@ -94,12 +94,12 @@ CPU::CPU(Console* console) : console(console) {
             this->JR(reg_a);
         };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SLL)] =
-        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t immediate) {
-            this->SLL(reg_b, reg_c, immediate);
+        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
+            this->SLL(reg_b, reg_c, shift_value);
         };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SRL)] =
-        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t immediate) {
-            this->SRL(reg_b, reg_c, immediate);
+        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
+            this->SRL(reg_b, reg_c, shift_value);
         };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SLT)] =
         [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {

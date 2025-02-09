@@ -86,7 +86,7 @@ class CPU {
         uint16_t reg_a,
         uint16_t reg_b,
         uint16_t reg_c,
-        uint16_t immediate
+        uint16_t shift_value
     )>;
 
     std::array<ImmediateFuncType, jump_table_size> i_type_jump_table{};
