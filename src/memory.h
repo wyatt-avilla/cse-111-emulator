@@ -14,6 +14,9 @@
 #define MEM_SIZE 0x10000
 #define SETUP_ADDRESS 0x81e0
 #define LOOP_ADDRESS 0x81e4
+#define LOAD_DATA_ADDRESS 0x81e8
+#define PROGRAM_DATA_ADDRESS 0x81ec
+#define DATA_SIZE_ADDRESS 0x81f0
 
 class Console;
 
@@ -49,5 +52,6 @@ class Memory {
     uint16_t getDataSize() const;
 
     void clearRAM();
+    void copyDataSectionToRam();
     void loadFile(std::ifstream& file_stream);
 };

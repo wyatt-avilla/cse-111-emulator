@@ -130,6 +130,18 @@ uint16_t Memory::getDataSize() const { return l16u(DATA_SIZE_ADDRESS + 2); }
 
 void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
 
+void Memory::copyDataSectionToRam() {
+    uint16_t data_size = getDataSize();
+    uint16_t load_data_address = getLoadDataAddress();
+    uint16_t program_data_address = getProgramDataAddress();
+
+    std::memcpy(
+        mem_array + program_data_address,
+        mem_array + load_data_address,
+        data_size
+    );
+}
+
 void Memory::loadFile(std::ifstream& file_stream) {
     file_stream.seekg(0, std::ios::beg);
     file_stream.read((char*) mem_array + SLUG_START, SLUG_SIZE);
