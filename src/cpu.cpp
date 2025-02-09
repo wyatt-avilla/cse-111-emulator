@@ -90,168 +90,191 @@ void CPU::set_stack_pointer_to(uint16_t pointer_value) {
 void CPU::executeTypeI(uint32_t instruction) {
     ITypeInstruction* parsed_instruction =
         reinterpret_cast<ITypeInstruction*>(&instruction);
-    instruction_context.immediate = parsed_instruction->immediate;
-    instruction_context.reg_a = parsed_instruction->reg_a;
-    instruction_context.reg_b = parsed_instruction->reg_b;
 
     if (i_type_jump_table[parsed_instruction->opcode] != nullptr) {
-        (this->*i_type_jump_table[parsed_instruction->opcode])();
+        (this->*i_type_jump_table[parsed_instruction->opcode])(
+            parsed_instruction->reg_a,
+            parsed_instruction->reg_b,
+            parsed_instruction->immediate
+        );
     }
 }
 
 void CPU::executeTypeR(uint32_t instruction) {
     RTypeInstruction* parsed_instruction =
         reinterpret_cast<RTypeInstruction*>(&instruction);
-    instruction_context.reg_a = parsed_instruction->reg_a;
-    instruction_context.reg_b = parsed_instruction->reg_b;
-    instruction_context.reg_c = parsed_instruction->reg_c;
-    instruction_context.shift_value = parsed_instruction->shift_value;
 
     if (r_type_jump_table[parsed_instruction->function] != nullptr) {
-        (this->*r_type_jump_table[parsed_instruction->function])();
+        (this->*r_type_jump_table[parsed_instruction->function])(
+            parsed_instruction->reg_a,
+            parsed_instruction->reg_b,
+            parsed_instruction->reg_c,
+            parsed_instruction->shift_value
+        );
     }
 }
 
-void CPU::BEQ() {
-    if (registers[instruction_context.reg_a] ==
-        registers[instruction_context.reg_b]) {
-        program_counter =
-            program_counter + 4 + 4 * instruction_context.immediate;
+void CPU::BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+    if (registers[reg_a] == registers[reg_b]) {
+        program_counter = program_counter + 4 + 4 * immediate;
     } else {
         program_counter += PC_INCREMENT;
     }
 }
 
-void CPU::L16() {
+void CPU::L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint32_t effective_address = registers[instruction_context.reg_a] +
-                                     instruction_context.immediate;
-        registers[instruction_context.reg_b] =
-            this->console->memory.l16u(effective_address);
+        uint32_t effective_address = registers[reg_a] + immediate;
+        registers[reg_b] = this->console->memory.l16u(effective_address);
     } catch (const std::invalid_argument&) {
     }
 }
 
 
-void CPU::L8U() {
+void CPU::L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint32_t effective_address = registers[instruction_context.reg_a] +
-                                     instruction_context.immediate;
-        registers[instruction_context.reg_b] =
+        uint32_t effective_address = registers[reg_a] + immediate;
+        registers[reg_b] =
             static_cast<uint16_t>(this->console->memory.l8u(effective_address));
     } catch (const std::invalid_argument&) {
     }
 }
 
 
-void CPU::J() { program_counter = 4 * instruction_context.immediate; }
+void CPU::J(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+    program_counter = 4 * immediate;
+}
 
-void CPU::S16() {
+void CPU::S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint16_t effective_address = registers[instruction_context.reg_a] +
-                                     instruction_context.immediate;
-        this->console->memory.w16u(
-            effective_address,
-            registers[instruction_context.reg_b]
-        );
+        uint16_t effective_address = registers[reg_a] + immediate;
+        this->console->memory.w16u(effective_address, registers[reg_b]);
     } catch (const std::invalid_argument&) {
     }
 }
 
-void CPU::S8() {
+void CPU::S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint16_t effective_address = registers[instruction_context.reg_a] +
-                                     instruction_context.immediate;
-        this->console->memory.w8u(
-            effective_address,
-            registers[instruction_context.reg_b]
-        );
+        uint16_t effective_address = registers[reg_a] + immediate;
+        this->console->memory.w8u(effective_address, registers[reg_b]);
     } catch (const std::invalid_argument&) {
     }
 }
 
-void CPU::ADDI() {
-    registers[instruction_context.reg_b] =
-        registers[instruction_context.reg_a] + instruction_context.immediate;
+void CPU::ADDI(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+    registers[reg_b] = registers[reg_a] + immediate;
 }
 
-void CPU::BNE() {
-    if (registers[instruction_context.reg_a] !=
-        registers[instruction_context.reg_b]) {
-        program_counter =
-            program_counter + 4 + 4 * instruction_context.immediate;
+void CPU::BNE(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+    if (registers[reg_a] != registers[reg_b]) {
+        program_counter = program_counter + 4 + 4 * immediate;
     } else {
         program_counter += PC_INCREMENT;
     }
 }
 
-void CPU::JAL() {
+void CPU::JAL(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     registers[JAL_REG] = program_counter + PC_INCREMENT;
-    program_counter = 4 * instruction_context.immediate;
+    program_counter = 4 * immediate;
 }
 
-void CPU::JAL(uint16_t immediate) {
-    instruction_context.immediate = immediate;
-    JAL();
+void CPU::JAL(uint16_t immediate) { JAL(0, 0, immediate); }
+
+void CPU::SUB(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = registers[reg_a] - registers[reg_b];
 }
 
-void CPU::SUB() {
-    registers[instruction_context.reg_c] =
-        registers[instruction_context.reg_a] -
-        registers[instruction_context.reg_b];
+void CPU::OR(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = registers[reg_a] | registers[reg_b];
 }
 
-void CPU::OR() {
-    registers[instruction_context.reg_c] =
-        registers[instruction_context.reg_a] |
-        registers[instruction_context.reg_b];
+void CPU::NOR(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = ~(registers[reg_a] | registers[reg_b]);
 }
 
-void CPU::NOR() {
-    registers[instruction_context.reg_c] =
-        ~(registers[instruction_context.reg_a] |
-          registers[instruction_context.reg_b]);
+void CPU::ADD(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = registers[reg_a] + registers[reg_b];
 }
 
-void CPU::ADD() {
-    registers[instruction_context.reg_c] =
-        registers[instruction_context.reg_a] +
-        registers[instruction_context.reg_b];
+void CPU::SRA(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = (signed) registers[reg_b] >> shift_value;
 }
 
-void CPU::SRA() {
-    registers[instruction_context.reg_c] =
-        (signed) registers[instruction_context.reg_b] >>
-        instruction_context.shift_value;
+void CPU::XOR(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = registers[reg_a] ^ registers[reg_b];
 }
 
-void CPU::XOR() {
-    registers[instruction_context.reg_c] =
-        registers[instruction_context.reg_a] ^
-        registers[instruction_context.reg_b];
+void CPU::AND(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = registers[reg_a] & registers[reg_b];
 }
 
-void CPU::AND() {
-    registers[instruction_context.reg_c] =
-        registers[instruction_context.reg_a] &
-        registers[instruction_context.reg_b];
+void CPU::JR(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    program_counter = registers[reg_a];
 }
 
-void CPU::JR() { program_counter = registers[instruction_context.reg_a]; }
-
-void CPU::SLL() {
-    registers[instruction_context.reg_c] = registers[instruction_context.reg_b]
-                                           << instruction_context.shift_value;
+void CPU::SLL(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = registers[reg_b] << shift_value;
 }
 
-void CPU::SRL() {
-    registers[instruction_context.reg_c] =
-        (unsigned) registers[instruction_context.reg_b] >>
-        instruction_context.shift_value;
+void CPU::SRL(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = (unsigned) registers[reg_b] >> shift_value;
 }
 
-void CPU::SLT() {
-    registers[instruction_context.reg_c] =
-        (registers[instruction_context.reg_a] <
-         registers[instruction_context.reg_b]);
+void CPU::SLT(
+    uint16_t reg_a,
+    uint16_t reg_b,
+    uint16_t reg_c,
+    uint16_t shift_value
+) {
+    registers[reg_c] = (registers[reg_a] < registers[reg_b]);
 }

@@ -45,37 +45,44 @@ class CPU {
     void set_stack_pointer_to(uint16_t pointer_value);
 
     // I TYPE
-    void BEQ();
-    void L16();
-    void L8U();
-    void J();
-    void S16();
-    void S8();
-    void ADDI();
-    void BNE();
-    void JAL();
+    void BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void J(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void ADDI(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void BNE(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void JAL(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
 
     void JAL(uint16_t immediate);
 
     // R TYPE
-    void SUB();
-    void OR();
-    void NOR();
-    void ADD();
-    void SRA();
-    void XOR();
-    void AND();
-    void JR();
-    void SLL();
-    void SRL();
-    void SLT();
+    void
+    SUB(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    OR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    NOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    ADD(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    SRA(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    XOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    AND(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    JR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    SLL(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    SRL(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void
+    SLT(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
 
   private:
     Console* console;
-
-    struct {
-        uint16_t reg_a, reg_b, reg_c, shift_value, immediate;
-    } instruction_context{};
 
     uint16_t program_counter;
 
@@ -83,8 +90,12 @@ class CPU {
     std::array<uint16_t, num_registers> registers{};
 
     static const std::size_t jump_table_size = 64;
-    std::array<void (CPU::*)(), jump_table_size> i_type_jump_table{};
-    std::array<void (CPU::*)(), jump_table_size> r_type_jump_table{};
+    std::array<void (CPU::*)(uint16_t, uint16_t, uint16_t), jump_table_size>
+        i_type_jump_table{};
+    std::array<
+        void (CPU::*)(uint16_t, uint16_t, uint16_t, uint16_t),
+        jump_table_size>
+        r_type_jump_table{};
 
     void executeTypeI(uint32_t instruction);
     void executeTypeR(uint32_t instruction);
