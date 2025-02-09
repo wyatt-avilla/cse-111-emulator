@@ -63,13 +63,7 @@ uint16_t Memory::l16u(uint16_t load_address) const {
     return out;
 }
 
-uint32_t Memory::loadInstruction(uint16_t load_address) const {
-    if (!isExecutable(load_address)) {
-        throw std::invalid_argument(
-            std::to_string(load_address) + " is not executable"
-        );
-    }
-
+uint32_t Memory::l32u(uint16_t load_address) const {
     // checking if the alignment is right
     uint32_t out = 0;
     if (load_address & 1) {
@@ -80,6 +74,15 @@ uint32_t Memory::loadInstruction(uint16_t load_address) const {
     out = (l8u(load_address) << 24) | (l8u(load_address + 1) << 16) |
           (l8u(load_address + 2) << 8) | (l8u(load_address + 3));
     return out;
+}
+
+uint32_t Memory::loadInstruction(uint16_t load_address) const {
+    if (!isExecutable(load_address)) {
+        throw std::invalid_argument(
+            std::to_string(load_address) + " is not executable"
+        );
+    }
+    return l32u(load_address);
 }
 
 // got the write code from chat gpt
@@ -114,6 +117,16 @@ void Memory::w16u(uint16_t address, uint16_t value) {
 uint16_t Memory::getSetupAddress() const { return l16u(SETUP_ADDRESS + 2); }
 
 uint16_t Memory::getLoopAddress() const { return l16u(LOOP_ADDRESS + 2); }
+
+uint16_t Memory::getLoadDataAddress() const {
+    return l32u(LOAD_DATA_ADDRESS + 2);
+}
+
+uint16_t Memory::getProgramDataAddress() const {
+    return l32u(PROGRAM_DATA_ADDRESS + 2);
+}
+
+uint16_t Memory::getDataSize() const { return l32u(DATA_SIZE_ADDRESS + 2); }
 
 void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
 
