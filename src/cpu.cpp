@@ -26,27 +26,120 @@ struct RTypeInstruction {
 
 
 CPU::CPU(Console* console) : console(console) {
-    i_type_jump_table[static_cast<uint16_t>(Opcode::BEQ)] = &CPU::BEQ;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::L16)] = &CPU::L16;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::L8U)] = &CPU::L8U;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::J)] = &CPU::J;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::S16)] = &CPU::S16;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::S8)] = &CPU::S8;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::ADDI)] = &CPU::ADDI;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::BNE)] = &CPU::BNE;
-    i_type_jump_table[static_cast<uint16_t>(Opcode::JAL)] = &CPU::JAL;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::BEQ)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->BEQ(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::L16)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->L16(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::L8U)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->L8U(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::J)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->J(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::S16)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->S16(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::S8)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->S8(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::ADDI)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->ADDI(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::BNE)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->BNE(reg_a, reg_b, immediate);
+        };
+    i_type_jump_table[static_cast<uint16_t>(Opcode::JAL)] =
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+            this->JAL(reg_a, reg_b, immediate);
+        };
 
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SUB)] = &CPU::SUB;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::OR)] = &CPU::OR;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::NOR)] = &CPU::NOR;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::ADD)] = &CPU::ADD;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SRA)] = &CPU::SRA;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::XOR)] = &CPU::XOR;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::AND)] = &CPU::AND;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::JR)] = &CPU::JR;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SLL)] = &CPU::SLL;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SRL)] = &CPU::SRL;
-    r_type_jump_table[static_cast<uint16_t>(Opcode::SLT)] = &CPU::SLT;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SUB)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->SUB(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::OR)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->OR(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::NOR)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->NOR(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::ADD)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->ADD(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SRA)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->SRA(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::XOR)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->XOR(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::AND)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->AND(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::JR)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->JR(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SLL)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->SLL(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SRL)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->SRL(reg_a, reg_b, reg_c, immediate); };
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SLT)] =
+        [this](
+            uint16_t reg_a,
+            uint16_t reg_b,
+            uint16_t reg_c,
+            uint16_t immediate
+        ) { this->SLT(reg_a, reg_b, reg_c, immediate); };
 }
 
 
@@ -91,7 +184,7 @@ void CPU::executeTypeI(uint32_t instruction) {
         reinterpret_cast<ITypeInstruction*>(&instruction);
 
     if (i_type_jump_table[parsed_instruction->opcode] != nullptr) {
-        (this->*i_type_jump_table[parsed_instruction->opcode])(
+        (this->i_type_jump_table[parsed_instruction->opcode])(
             parsed_instruction->reg_a,
             parsed_instruction->reg_b,
             parsed_instruction->immediate
@@ -104,7 +197,7 @@ void CPU::executeTypeR(uint32_t instruction) {
         reinterpret_cast<RTypeInstruction*>(&instruction);
 
     if (r_type_jump_table[parsed_instruction->function] != nullptr) {
-        (this->*r_type_jump_table[parsed_instruction->function])(
+        (this->r_type_jump_table[parsed_instruction->function])(
             parsed_instruction->reg_a,
             parsed_instruction->reg_b,
             parsed_instruction->reg_c,

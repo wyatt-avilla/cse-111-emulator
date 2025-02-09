@@ -3,6 +3,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 
 class Console;
 
@@ -90,12 +91,19 @@ class CPU {
     std::array<uint16_t, num_registers> registers{};
 
     static const std::size_t jump_table_size = 64;
-    std::array<void (CPU::*)(uint16_t, uint16_t, uint16_t), jump_table_size>
-        i_type_jump_table{};
-    std::array<
-        void (CPU::*)(uint16_t, uint16_t, uint16_t, uint16_t),
-        jump_table_size>
-        r_type_jump_table{};
+
+    using ImmediateFuncType =
+        std::function<void(uint16_t reg_a, uint16_t reg_b, uint16_t immediate)>;
+
+    using RegisterFuncType = std::function<void(
+        uint16_t reg_a,
+        uint16_t reg_b,
+        uint16_t reg_c,
+        uint16_t immediate
+    )>;
+
+    std::array<ImmediateFuncType, jump_table_size> i_type_jump_table{};
+    std::array<RegisterFuncType, jump_table_size> r_type_jump_table{};
 
     void executeTypeI(uint32_t instruction);
     void executeTypeR(uint32_t instruction);
