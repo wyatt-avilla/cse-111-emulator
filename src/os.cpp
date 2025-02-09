@@ -38,8 +38,8 @@ void OS::reset(const std::string& filename) {
     }
 }
 
-void OS::loop() {
-    // 1. Run loop()
+void OS::loop_iteration() {
+    // 1. Run iteration of loop()
     this->c->cpu.set_program_counter_to(0xfffc);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
