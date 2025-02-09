@@ -49,38 +49,25 @@ class CPU {
     void BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
-    void J(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
+    void J(uint16_t immediate);
     void S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void ADDI(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void BNE(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
-    void JAL(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
-
     void JAL(uint16_t immediate);
 
     // R TYPE
-    void
-    SUB(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    OR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    NOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    ADD(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    SRA(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    XOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    AND(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    JR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    SLL(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    SRL(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
-    void
-    SLT(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void SUB(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
+    void OR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
+    void NOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
+    void ADD(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
+    void SRA(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void XOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
+    void AND(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
+    void JR(uint16_t reg_a);
+    void SLL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void SRL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    void SLT(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c);
 
   private:
     Console* console;

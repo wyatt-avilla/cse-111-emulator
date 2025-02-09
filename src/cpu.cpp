@@ -39,9 +39,7 @@ CPU::CPU(Console* console) : console(console) {
             this->L8U(reg_a, reg_b, immediate);
         };
     i_type_jump_table[static_cast<uint16_t>(Opcode::J)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->J(reg_a, reg_b, immediate);
-        };
+        [this](uint16_t, uint16_t, uint16_t immediate) { this->J(immediate); };
     i_type_jump_table[static_cast<uint16_t>(Opcode::S16)] =
         [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
             this->S16(reg_a, reg_b, immediate);
@@ -59,87 +57,54 @@ CPU::CPU(Console* console) : console(console) {
             this->BNE(reg_a, reg_b, immediate);
         };
     i_type_jump_table[static_cast<uint16_t>(Opcode::JAL)] =
-        [this](uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-            this->JAL(reg_a, reg_b, immediate);
+        [this](uint16_t, uint16_t, uint16_t immediate) {
+            this->JAL(immediate);
         };
 
     r_type_jump_table[static_cast<uint16_t>(Opcode::SUB)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->SUB(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->SUB(reg_a, reg_b, reg_c);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::OR)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->OR(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->OR(reg_a, reg_b, reg_c);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::NOR)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->NOR(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->NOR(reg_a, reg_b, reg_c);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::ADD)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->ADD(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->ADD(reg_a, reg_b, reg_c);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SRA)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->SRA(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t immediate) {
+            this->SRA(reg_b, reg_c, immediate);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::XOR)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->XOR(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->XOR(reg_a, reg_b, reg_c);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::AND)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->AND(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->AND(reg_a, reg_b, reg_c);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::JR)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->JR(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t, uint16_t, uint16_t) {
+            this->JR(reg_a);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SLL)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->SLL(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t immediate) {
+            this->SLL(reg_b, reg_c, immediate);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SRL)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->SRL(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t, uint16_t reg_b, uint16_t reg_c, uint16_t immediate) {
+            this->SRL(reg_b, reg_c, immediate);
+        };
     r_type_jump_table[static_cast<uint16_t>(Opcode::SLT)] =
-        [this](
-            uint16_t reg_a,
-            uint16_t reg_b,
-            uint16_t reg_c,
-            uint16_t immediate
-        ) { this->SLT(reg_a, reg_b, reg_c, immediate); };
+        [this](uint16_t reg_a, uint16_t reg_b, uint16_t reg_c, uint16_t) {
+            this->SLT(reg_a, reg_b, reg_c);
+        };
 }
 
 
@@ -233,9 +198,7 @@ void CPU::L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
 }
 
 
-void CPU::J(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    program_counter = 4 * immediate;
-}
+void CPU::J(uint16_t immediate) { program_counter = 4 * immediate; }
 
 void CPU::S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
@@ -265,108 +228,49 @@ void CPU::BNE(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     }
 }
 
-void CPU::JAL(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+void CPU::JAL(uint16_t immediate) {
     registers[JAL_REG] = program_counter + PC_INCREMENT;
     program_counter = 4 * immediate;
 }
 
-void CPU::JAL(uint16_t immediate) { JAL(0, 0, immediate); }
-
-void CPU::SUB(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::SUB(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = registers[reg_a] - registers[reg_b];
 }
 
-void CPU::OR(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::OR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = registers[reg_a] | registers[reg_b];
 }
 
-void CPU::NOR(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::NOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = ~(registers[reg_a] | registers[reg_b]);
 }
 
-void CPU::ADD(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::ADD(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = registers[reg_a] + registers[reg_b];
 }
 
-void CPU::SRA(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::SRA(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
     registers[reg_c] = (signed) registers[reg_b] >> shift_value;
 }
 
-void CPU::XOR(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::XOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = registers[reg_a] ^ registers[reg_b];
 }
 
-void CPU::AND(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::AND(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = registers[reg_a] & registers[reg_b];
 }
 
-void CPU::JR(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
-    program_counter = registers[reg_a];
-}
+void CPU::JR(uint16_t reg_a) { program_counter = registers[reg_a]; }
 
-void CPU::SLL(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::SLL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
     registers[reg_c] = registers[reg_b] << shift_value;
 }
 
-void CPU::SRL(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::SRL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
     registers[reg_c] = (unsigned) registers[reg_b] >> shift_value;
 }
 
-void CPU::SLT(
-    uint16_t reg_a,
-    uint16_t reg_b,
-    uint16_t reg_c,
-    uint16_t shift_value
-) {
+void CPU::SLT(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
     registers[reg_c] = (registers[reg_a] < registers[reg_b]);
 }
