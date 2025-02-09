@@ -26,27 +26,27 @@ struct RTypeInstruction {
 
 
 CPU::CPU(Console* console) : console(console) {
-    jump_table[static_cast<uint16_t>(Opcode::BEQ)] = &CPU::BEQ;
-    jump_table[static_cast<uint16_t>(Opcode::L16)] = &CPU::L16;
-    jump_table[static_cast<uint16_t>(Opcode::L8U)] = &CPU::L8U;
-    jump_table[static_cast<uint16_t>(Opcode::J)] = &CPU::J;
-    jump_table[static_cast<uint16_t>(Opcode::S16)] = &CPU::S16;
-    jump_table[static_cast<uint16_t>(Opcode::S8)] = &CPU::S8;
-    jump_table[static_cast<uint16_t>(Opcode::ADDI)] = &CPU::ADDI;
-    jump_table[static_cast<uint16_t>(Opcode::BNE)] = &CPU::BNE;
-    jump_table[static_cast<uint16_t>(Opcode::JAL)] = &CPU::JAL;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::BEQ)] = &CPU::BEQ;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::L16)] = &CPU::L16;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::L8U)] = &CPU::L8U;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::J)] = &CPU::J;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::S16)] = &CPU::S16;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::S8)] = &CPU::S8;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::ADDI)] = &CPU::ADDI;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::BNE)] = &CPU::BNE;
+    i_type_jump_table[static_cast<uint16_t>(Opcode::JAL)] = &CPU::JAL;
 
-    jump_table[static_cast<uint16_t>(Opcode::SUB)] = &CPU::SUB;
-    jump_table[static_cast<uint16_t>(Opcode::OR)] = &CPU::OR;
-    jump_table[static_cast<uint16_t>(Opcode::NOR)] = &CPU::NOR;
-    jump_table[static_cast<uint16_t>(Opcode::ADD)] = &CPU::ADD;
-    jump_table[static_cast<uint16_t>(Opcode::SRA)] = &CPU::SRA;
-    jump_table[static_cast<uint16_t>(Opcode::XOR)] = &CPU::XOR;
-    jump_table[static_cast<uint16_t>(Opcode::AND)] = &CPU::AND;
-    jump_table[static_cast<uint16_t>(Opcode::JR)] = &CPU::JR;
-    jump_table[static_cast<uint16_t>(Opcode::SLL)] = &CPU::SLL;
-    jump_table[static_cast<uint16_t>(Opcode::SRL)] = &CPU::SRL;
-    jump_table[static_cast<uint16_t>(Opcode::SLT)] = &CPU::SLT;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SUB)] = &CPU::SUB;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::OR)] = &CPU::OR;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::NOR)] = &CPU::NOR;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::ADD)] = &CPU::ADD;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SRA)] = &CPU::SRA;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::XOR)] = &CPU::XOR;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::AND)] = &CPU::AND;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::JR)] = &CPU::JR;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SLL)] = &CPU::SLL;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SRL)] = &CPU::SRL;
+    r_type_jump_table[static_cast<uint16_t>(Opcode::SLT)] = &CPU::SLT;
 }
 
 
@@ -94,8 +94,8 @@ void CPU::executeTypeI(uint32_t instruction) {
     instruction_context.reg_a = parsed_instruction->reg_a;
     instruction_context.reg_b = parsed_instruction->reg_b;
 
-    if (jump_table[parsed_instruction->opcode] != nullptr) {
-        (this->*jump_table[parsed_instruction->opcode])();
+    if (i_type_jump_table[parsed_instruction->opcode] != nullptr) {
+        (this->*i_type_jump_table[parsed_instruction->opcode])();
     }
 }
 
@@ -107,8 +107,8 @@ void CPU::executeTypeR(uint32_t instruction) {
     instruction_context.reg_c = parsed_instruction->reg_c;
     instruction_context.shift_value = parsed_instruction->shift_value;
 
-    if (jump_table[parsed_instruction->function] != nullptr) {
-        (this->*jump_table[parsed_instruction->function])();
+    if (r_type_jump_table[parsed_instruction->function] != nullptr) {
+        (this->*r_type_jump_table[parsed_instruction->function])();
     }
 }
 

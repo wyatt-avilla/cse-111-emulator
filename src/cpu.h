@@ -83,7 +83,8 @@ class CPU {
     std::array<uint16_t, num_registers> registers{};
 
     static const std::size_t jump_table_size = 64;
-    std::array<void (CPU::*)(), jump_table_size> jump_table{};
+    std::array<void (CPU::*)(), jump_table_size> i_type_jump_table{};
+    std::array<void (CPU::*)(), jump_table_size> r_type_jump_table{};
 
     void executeTypeI(uint32_t instruction);
     void executeTypeR(uint32_t instruction);
