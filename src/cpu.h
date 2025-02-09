@@ -79,6 +79,8 @@ class CPU {
 
     static const std::size_t jump_table_size = 64;
 
+    // variants and constexprs by claude
+    // https://claude.site/artifacts/a672ce20-f93d-44fe-b36c-49a426778c92
     struct RegularIType {
         void (CPU::*func)(uint16_t, uint16_t, uint16_t);
     };
