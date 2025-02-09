@@ -119,14 +119,14 @@ uint16_t Memory::getSetupAddress() const { return l16u(SETUP_ADDRESS + 2); }
 uint16_t Memory::getLoopAddress() const { return l16u(LOOP_ADDRESS + 2); }
 
 uint16_t Memory::getLoadDataAddress() const {
-    return l32u(LOAD_DATA_ADDRESS + 2);
+    return l16u(LOAD_DATA_ADDRESS + 2);
 }
 
 uint16_t Memory::getProgramDataAddress() const {
-    return l32u(PROGRAM_DATA_ADDRESS + 2);
+    return l16u(PROGRAM_DATA_ADDRESS + 2);
 }
 
-uint16_t Memory::getDataSize() const { return l32u(DATA_SIZE_ADDRESS + 2); }
+uint16_t Memory::getDataSize() const { return l16u(DATA_SIZE_ADDRESS + 2); }
 
 void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
 
