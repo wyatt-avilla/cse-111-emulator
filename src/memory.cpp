@@ -66,7 +66,7 @@ uint8_t Memory::l8u(uint16_t load_address) const {
 uint16_t Memory::l16u(uint16_t load_address) const {
     // checking if the alignment is right
     uint16_t out = 0;
-    if (load_address & 1) {
+    if ((load_address & 1) != 0) {
         // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
@@ -78,7 +78,7 @@ uint16_t Memory::l16u(uint16_t load_address) const {
 uint32_t Memory::l32u(uint16_t load_address) const {
     // checking if the alignment is right
     uint32_t out = 0;
-    if (load_address & 1) {
+    if ((load_address & 1) != 0) {
         // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
@@ -118,7 +118,7 @@ void Memory::w8u(uint16_t address, uint8_t value) {
 }
 
 void Memory::w16u(uint16_t address, uint16_t value) {
-    if (address & 1) {
+    if ((address & 1) != 0) {
         std::cerr << "warning: trying to write the word on an unaligned address"
                   << std::endl;
     }
