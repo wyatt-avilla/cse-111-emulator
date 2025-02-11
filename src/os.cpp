@@ -13,19 +13,16 @@ void OS::reset(const std::string& filename) {
     // 1. Clear all of RAM with zeros
     this->c->memory.clearRAM();
 
-    // 2. Copy data section to RAM
+    // Load in slug file
     std::ifstream file(filename, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
         throw std::invalid_argument("couldn't open " + filename);
     }
+    this->c->memory.loadFile(file);
+    file.close();
 
-    file.seekg(0, std::ios::beg);
-    uint16_t i = SLUG_START;
-    char ch;
-    while (file.get(ch)) {
-        this->c->memory.w8u(i, (uint8_t) ch);
-        i += 1;
-    }
+    // 2. Copy data section to RAM
+    this->c->memory.copyDataSectionToRam();
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
     this->c->cpu.set_stack_pointer_to(STK_END);
@@ -41,8 +38,8 @@ void OS::reset(const std::string& filename) {
     }
 }
 
-void OS::loop() {
-    // 1. Run loop()
+void OS::loop_iteration() {
+    // 1. Run iteration of loop()
     this->c->cpu.set_program_counter_to(0xfffc);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
