@@ -131,11 +131,8 @@ void CPU::BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
 }
 
 void CPU::L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    try {
-        uint32_t effective_address = registers[reg_a] + immediate;
-        registers[reg_b] = this->console->memory.l16u(effective_address);
-    } catch (const std::invalid_argument&) {
-    }
+    uint32_t effective_address = registers[reg_a] + immediate;
+    registers[reg_b] = this->console->memory.l16u(effective_address);
 }
 
 
@@ -145,6 +142,7 @@ void CPU::L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
         registers[reg_b] =
             static_cast<uint16_t>(this->console->memory.l8u(effective_address));
     } catch (const std::invalid_argument&) {
+        std::cerr << "Tried to load out of bounds." << std::endl;
     }
 }
 
@@ -156,6 +154,7 @@ void CPU::S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
         uint16_t effective_address = registers[reg_a] + immediate;
         this->console->memory.w16u(effective_address, registers[reg_b]);
     } catch (const std::invalid_argument&) {
+        std::cerr << "Tried to store out of bounds." << std::endl;
     }
 }
 
@@ -164,6 +163,7 @@ void CPU::S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
         uint16_t effective_address = registers[reg_a] + immediate;
         this->console->memory.w8u(effective_address, registers[reg_b]);
     } catch (const std::invalid_argument&) {
+        std::cerr << "Tried to store out of bounds." << std::endl;
     }
 }
 
