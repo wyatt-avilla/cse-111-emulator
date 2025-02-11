@@ -4,7 +4,7 @@
 #include <iostream>
 
 #define PC_INCREMENT 4
-#define STK_PTR_REG 29
+#define STACK_PTR_REG 29
 #define ZERO_REG 0
 #define JAL_REG 31
 
