@@ -1,6 +1,7 @@
 #include "memory.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -167,9 +168,19 @@ void Memory::copyDataSectionToRam() {
 }
 
 void Memory::loadFile(std::ifstream& file_stream) {
+    file_stream.seekg(0, std::ios::end);
+    std::streamsize file_size = file_stream.tellg();
     file_stream.seekg(0, std::ios::beg);
+
+    if (file_size > static_cast<uint32_t>(Address::SLUG_SIZE)) {
+        throw std::runtime_error("ROM file is too large to fit in memory.");
+    }
+    // Reads only the actual file size to avoid reading past the end of a
+    // smaller file.
     file_stream.read(
-        (char*) mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START),
-        static_cast<uint32_t>(Address::SLUG_SIZE)
+        reinterpret_cast<char*>(
+            mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START)
+        ),
+        file_size
     );
 }
