@@ -24,6 +24,7 @@ class Memory {
     bool isReadable(uint16_t address) const;
     bool isWritable(uint16_t address) const;
     bool isExecutable(uint16_t address) const;
+    bool isStopAddressWritten() const; //for loop
 
   public:
     Memory(Console* console);
