@@ -12,24 +12,24 @@ Memory::Memory(Console* console) : console(console) {}
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(uint32_t address) const {
-    return (address < IO_START) ||                           // RAM
-           (address >= STK_START && address < VRAM_START) || // Stack
-           (address >= VRAM_START && address < VRAM_END) ||  // VRAM
+    return (address < IO_START) ||
+           (address >= STACK_START && address < VRAM_START) ||
+           (address >= VRAM_START && address < VRAM_END) ||
            (address == controller_data_address) || (address == stdin_address) ||
-           (address >= SLUG_START && address < MEM_SIZE); // SLUG
+           (address >= SLUG_START && address < MEM_SIZE);
 }
 
 
 bool Memory::isWritable(uint32_t address) const {
-    return (address < IO_START) ||                           // RAM
-           (address >= STK_START && address < VRAM_START) || // Stack
-           (address >= VRAM_START && address < VRAM_END) ||  // VRAM
+    return (address < IO_START) ||
+           (address >= STACK_START && address < VRAM_START) ||
+           (address >= VRAM_START && address < VRAM_END) ||
            (address == stdout_address) || (address == stderr_address) ||
            (address == stop_execution_address);
 }
 
 bool Memory::isExecutable(uint32_t address) const {
-    return (address >= SLUG_START && address < MEM_SIZE); // SLUG file
+    return (address >= SLUG_START && address < MEM_SIZE);
 }
 
 
@@ -143,6 +143,23 @@ void Memory::copyDataSectionToRam() {
 }
 
 void Memory::loadFile(std::ifstream& file_stream) {
-    file_stream.seekg(0, std::ios::beg);
-    file_stream.read((char*) mem_array + SLUG_START, SLUG_SIZE);
+    file_stream.seekg(
+        0,
+        std::ios::end
+    ); // Seeks to the end of the file to determine its size.
+    std::streamsize file_size = file_stream.tellg();
+    file_stream.seekg(
+        0,
+        std::ios::beg
+    ); // Checks if file_size is greater than SLUG_SIZE
+
+    if (file_size > SLUG_SIZE) {
+        throw std::runtime_error("ROM file is too large to fit in memory.");
+    }
+    // Reads only the actual file size to avoid reading past the end of a
+    // smaller file.
+    file_stream.read(
+        reinterpret_cast<char*>(mem_array + SLUG_START),
+        file_size
+    );
 }
