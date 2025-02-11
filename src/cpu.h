@@ -112,12 +112,12 @@ class CPU {
     createITypeTable() {
         std::array<ITypeVariant, JUMP_TABLE_SIZE> table{};
 
-        auto set_regular = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = RegularIType{func_ptr};
+        auto set_regular = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = RegularIType{func_ptr};
         };
 
-        auto set_immediate = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = OnlyImmediateIType{func_ptr};
+        auto set_immediate = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = OnlyImmediateIType{func_ptr};
         };
 
         set_regular(Opcode::BEQ, &CPU::BEQ);
@@ -138,16 +138,16 @@ class CPU {
     createRTypeTable() {
         std::array<RTypeVariant, JUMP_TABLE_SIZE> table{};
 
-        auto set_regular = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = RegularRType{func_ptr};
+        auto set_regular = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = RegularRType{func_ptr};
         };
 
-        auto set_shift = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = ShiftRType{func_ptr};
+        auto set_shift = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = ShiftRType{func_ptr};
         };
 
-        auto set_jump = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = JumpRegisterRType{func_ptr};
+        auto set_jump = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = JumpRegisterRType{func_ptr};
         };
 
         set_regular(Opcode::SUB, &CPU::SUB);
