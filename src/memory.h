@@ -5,8 +5,8 @@
 #include <string>
 
 #define IO_START 0x7000
-#define STACK_START 0x1000
-#define STACK_END 0x3000
+#define STK_START 0x1000
+#define STK_END 0x3000
 #define VRAM_START 0x3000
 #define VRAM_END 0x4000
 #define SLUG_START 0x8000
