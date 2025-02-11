@@ -12,7 +12,7 @@ Memory::Memory(Console* console) : console(console) {}
 
 bool Memory::isReadable(uint16_t address) const {
     return (address >= RAM_START && address < IO_START) ||   // RAM
-           (address >= STK_START && address < VRAM_START) || // Stack
+           (address >= STACK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == controller_data_address) || (address == stdin_address) ||
            (address >= SLUG_START && address < SLUG_END); // SLUG
@@ -21,7 +21,7 @@ bool Memory::isReadable(uint16_t address) const {
 
 bool Memory::isWritable(uint16_t address) const {
     return (address >= RAM_START && address < IO_START) ||   // RAM
-           (address >= STK_START && address < VRAM_START) || // Stack
+           (address >= STACK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
            (address == stdout_address) || (address == stderr_address) ||
            (address == stop_execution_address);
