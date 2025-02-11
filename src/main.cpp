@@ -5,8 +5,8 @@
 #include <iostream>
 #include <string>
 
-#define EXPECTED_ARGS 1
-#define FILENAME_INDEX 1
+const uint8_t EXPECTED_ARGS = 1;
+const uint8_t FILENAME_INDEX = 1;
 
 int32_t main(int32_t argc, char* argv[]) {
     if (argc - 1 != EXPECTED_ARGS) {
