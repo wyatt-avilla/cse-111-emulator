@@ -41,7 +41,7 @@ class CPU {
 
     void set_program_counter_to(uint16_t counter_value);
 
-    uint16_t get_program_counter() const;
+    [[nodiscard]] uint16_t get_program_counter() const;
 
     void set_stack_pointer_to(uint16_t pointer_value);
 
