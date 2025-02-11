@@ -1,7 +1,5 @@
 #include "memory.h"
 
-#include "console.h"
-
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
