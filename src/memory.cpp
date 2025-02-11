@@ -83,6 +83,11 @@ void Memory::w8u(uint16_t address, uint8_t value) {
     }
 }
 
+bool Memory::isStopAddressWritten() const {
+    constexpr uint16_t STOP_ADDRESS = 0xFFFF; // Replace with actual stop address
+    return read(STOP_ADDRESS) != 0;  // Assuming nonzero value indicates writing occurred
+}
+
 void Memory::w16u(uint16_t address, uint16_t value) {
     if (address & 1) {
         std::cerr << "warning: trying to write the word on an unaligned address"
