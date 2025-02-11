@@ -39,11 +39,11 @@ class CPU {
 
     void execute(uint32_t instruction);
 
-    void set_program_counter_to(uint16_t counter_value);
+    void setProgramCounterTo(uint16_t counter_value);
 
     [[nodiscard]] uint16_t get_program_counter() const;
 
-    void set_stack_pointer_to(uint16_t pointer_value);
+    void setStackPointerTo(uint16_t pointer_value);
 
     // I TYPE
     void BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
@@ -107,7 +107,7 @@ class CPU {
 
 
     static constexpr std::array<ITypeVariant, jump_table_size>
-    create_i_type_table() {
+    createITypeTable() {
         std::array<ITypeVariant, jump_table_size> table{};
 
         auto set_regular = [&table](Opcode op, auto func_ptr) {
@@ -133,7 +133,7 @@ class CPU {
     }
 
     static constexpr std::array<RTypeVariant, jump_table_size>
-    create_r_type_table() {
+    createRTypeTable() {
         std::array<RTypeVariant, jump_table_size> table{};
 
         auto set_regular = [&table](Opcode op, auto func_ptr) {
@@ -166,9 +166,9 @@ class CPU {
     }
 
     const std::array<ITypeVariant, jump_table_size> i_type_jump_table =
-        create_i_type_table();
+        createITypeTable();
     const std::array<RTypeVariant, jump_table_size> r_type_jump_table =
-        create_r_type_table();
+        createRTypeTable();
 
 
     template <class... Ts> struct overloaded : Ts... {
