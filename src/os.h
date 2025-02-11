@@ -13,5 +13,5 @@ class OS {
     OS(Console* c_);
 
     void reset(const std::string& filename);
-    void loop();
+    void loop_iteration();
 };
