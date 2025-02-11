@@ -25,7 +25,9 @@ void OS::reset(const std::string& filename) {
     this->c->memory.copyDataSectionToRam();
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
-    this->c->cpu.setStackPointerTo(STK_END);
+    this->c->cpu.setStackPointerTo(
+        static_cast<uint16_t>(Memory::Address::STACK_START)
+    );
 
     // 4. Call setup()
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);

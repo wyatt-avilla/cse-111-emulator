@@ -12,24 +12,35 @@ Memory::Memory(Console* console) : console(console) {}
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(uint32_t address) const {
-    return (address < IO_START) ||                           // RAM
-           (address >= STK_START && address < VRAM_START) || // Stack
-           (address >= VRAM_START && address < VRAM_END) ||  // VRAM
-           (address == CONTROLLER_DATA_ADDRESS) || (address == STDIN_ADDRESS) ||
-           (address >= SLUG_START && address < MEM_SIZE); // SLUG
+    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+           (address >= static_cast<uint32_t>(Address::STACK_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+           (address >= static_cast<uint32_t>(Address::VRAM_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+           (address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) ||
+           (address == static_cast<uint32_t>(Address::STDIN)) ||
+           (address >= static_cast<uint32_t>(Address::SLUG_START) &&
+            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
+           ); // SLUG
 }
 
 
 bool Memory::isWritable(uint32_t address) const {
-    return (address < IO_START) ||                           // RAM
-           (address >= STK_START && address < VRAM_START) || // Stack
-           (address >= VRAM_START && address < VRAM_END) ||  // VRAM
-           (address == STDOUT_ADDRESS) || (address == STDERR_ADDRESS) ||
-           (address == STOP_EXECUTION_ADDRESS);
+    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+           (address >= static_cast<uint32_t>(Address::STACK_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+           (address >= static_cast<uint32_t>(Address::VRAM_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+           (address == static_cast<uint32_t>(Address::STDOUT)) ||
+           (address == static_cast<uint32_t>(Address::STDERR)) ||
+           (address == static_cast<uint32_t>(Address::STOP_EXECUTION));
 }
 
 bool Memory::isExecutable(uint32_t address) const {
-    return (address >= SLUG_START && address < MEM_SIZE); // SLUG file
+    return (
+        address >= static_cast<uint32_t>(Address::SLUG_START) &&
+        address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
+    ); // SLUG file
 }
 
 
@@ -41,9 +52,9 @@ uint8_t Memory::l8u(uint16_t load_address) const {
     }
 
     uint8_t out = 0;
-    if (load_address == CONTROLLER_DATA_ADDRESS) {
+    if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
         // TODO: get controller data
-    } else if (load_address == STDIN_ADDRESS) {
+    } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
         out = mem_array[load_address];
@@ -94,11 +105,11 @@ void Memory::w8u(uint16_t address, uint8_t value) {
         );
     }
 
-    if (address == STDOUT_ADDRESS) {
+    if (address == static_cast<uint32_t>(Address::STDOUT)) {
         std::cout << char(value);
-    } else if (address == STDERR_ADDRESS)
+    } else if (address == static_cast<uint32_t>(Address::STDERR))
         std::cerr << char(value);
-    else if (address == STOP_EXECUTION_ADDRESS) {
+    else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
         exit(0);
     } else {
         mem_array[address] = value;
@@ -114,21 +125,29 @@ void Memory::w16u(uint16_t address, uint16_t value) {
     w8u(address + 1, value & 0xFF);    // Low byte
 }
 
-uint16_t Memory::getSetupAddress() const { return l16u(SETUP_ADDRESS + 2); }
+uint16_t Memory::getSetupAddress() const {
+    return l16u(static_cast<uint32_t>(Address::SETUP) + 2);
+}
 
-uint16_t Memory::getLoopAddress() const { return l16u(LOOP_ADDRESS + 2); }
+uint16_t Memory::getLoopAddress() const {
+    return l16u(static_cast<uint32_t>(Address::LOOP) + 2);
+}
 
 uint16_t Memory::getLoadDataAddress() const {
-    return l16u(LOAD_DATA_ADDRESS + 2);
+    return l16u(static_cast<uint32_t>(Address::LOAD_DATA) + 2);
 }
 
 uint16_t Memory::getProgramDataAddress() const {
-    return l16u(PROGRAM_DATA_ADDRESS + 2);
+    return l16u(static_cast<uint32_t>(Address::PROGRAM_DATA) + 2);
 }
 
-uint16_t Memory::getDataSize() const { return l16u(DATA_SIZE_ADDRESS + 2); }
+uint16_t Memory::getDataSize() const {
+    return l16u(static_cast<uint32_t>(Address::DATA_SIZE) + 2);
+}
 
-void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
+void Memory::clearRAM() {
+    memset(mem_array, 0, static_cast<uint32_t>(Address::IO_START));
+}
 
 void Memory::copyDataSectionToRam() {
     uint16_t data_size = getDataSize();
@@ -144,5 +163,8 @@ void Memory::copyDataSectionToRam() {
 
 void Memory::loadFile(std::ifstream& file_stream) {
     file_stream.seekg(0, std::ios::beg);
-    file_stream.read((char*) mem_array + SLUG_START, SLUG_SIZE);
+    file_stream.read(
+        (char*) mem_array + static_cast<uint32_t>(Address::SLUG_START),
+        static_cast<uint32_t>(Address::SLUG_SIZE)
+    );
 }
