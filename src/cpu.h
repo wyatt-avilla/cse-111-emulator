@@ -9,7 +9,7 @@ class Console;
 
 class CPU {
   public:
-    enum class Opcode : uint16_t {
+    enum class Opcode : uint8_t {
         BEQ = 0,
         L16 = 2,
         L8U = 16,
