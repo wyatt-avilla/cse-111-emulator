@@ -23,7 +23,7 @@ void OS::reset(const std::string& filename) {
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
     this->c->cpu.setStackPointerTo(
-        static_cast<uint16_t>(Memory::Address::STACK_START)
+        static_cast<uint16_t>(Memory::Address::STACK_END)
     );
 
     // 4. Call setup()

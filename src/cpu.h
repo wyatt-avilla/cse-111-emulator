@@ -76,7 +76,7 @@ class CPU {
     uint16_t program_counter;
 
     static const uint8_t PC_INCREMENT = 4;
-    static const uint8_t STK_PTR_REG = 29;
+    static const uint8_t STACK_PTR_REG = 29;
     static const uint8_t ZERO_REG = 0;
     static const uint8_t JAL_REG = 31;
     static const uint8_t NUM_REGISTERS = 32;

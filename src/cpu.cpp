@@ -55,7 +55,7 @@ void CPU::setProgramCounterTo(uint16_t counter_value) {
 uint16_t CPU::getProgramCounter() const { return this->program_counter; }
 
 void CPU::setStackPointerTo(uint16_t pointer_value) {
-    this->registers[STK_PTR_REG] = pointer_value;
+    this->registers[STACK_PTR_REG] = pointer_value;
 }
 
 
