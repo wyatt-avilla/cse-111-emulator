@@ -15,7 +15,7 @@ bool Memory::isReadable(uint32_t address) const {
     return (address < IO_START) ||                           // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
-           (address == controller_data_address) || (address == stdin_address) ||
+           (address == CONTROLLER_DATA_ADDRESS) || (address == STDIN_ADDRESS) ||
            (address >= SLUG_START && address < MEM_SIZE); // SLUG
 }
 
@@ -24,8 +24,8 @@ bool Memory::isWritable(uint32_t address) const {
     return (address < IO_START) ||                           // RAM
            (address >= STK_START && address < VRAM_START) || // Stack
            (address >= VRAM_START && address < VRAM_END) ||  // VRAM
-           (address == stdout_address) || (address == stderr_address) ||
-           (address == stop_execution_address);
+           (address == STDOUT_ADDRESS) || (address == STDERR_ADDRESS) ||
+           (address == STOP_EXECUTION_ADDRESS);
 }
 
 bool Memory::isExecutable(uint32_t address) const {
@@ -41,9 +41,9 @@ uint8_t Memory::l8u(uint16_t load_address) const {
     }
 
     uint8_t out = 0;
-    if (load_address == controller_data_address) {
+    if (load_address == CONTROLLER_DATA_ADDRESS) {
         // TODO: get controller data
-    } else if (load_address == stdin_address) {
+    } else if (load_address == STDIN_ADDRESS) {
         out = getchar();
     } else {
         out = mem_array[load_address];
@@ -94,11 +94,11 @@ void Memory::w8u(uint16_t address, uint8_t value) {
         );
     }
 
-    if (address == stdout_address) {
+    if (address == STDOUT_ADDRESS) {
         std::cout << char(value);
-    } else if (address == stderr_address)
+    } else if (address == STDERR_ADDRESS)
         std::cerr << char(value);
-    else if (address == stop_execution_address) {
+    else if (address == STOP_EXECUTION_ADDRESS) {
         exit(0);
     } else {
         mem_array[address] = value;

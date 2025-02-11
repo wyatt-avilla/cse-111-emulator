@@ -32,11 +32,11 @@ class Memory {
   public:
     Memory(Console* console);
 
-    const uint16_t stdin_address = 0x7100;
-    const uint16_t stdout_address = 0x7110;
-    const uint16_t stderr_address = 0x7120;
-    const uint16_t stop_execution_address = 0x7200;
-    const uint16_t controller_data_address = 0x7000;
+    const uint16_t STDIN_ADDRESS = 0x7100;
+    const uint16_t STDOUT_ADDRESS = 0x7110;
+    const uint16_t STDERR_ADDRESS = 0x7120;
+    const uint16_t STOP_EXECUTION_ADDRESS = 0x7200;
+    const uint16_t CONTROLLER_DATA_ADDRESS = 0x7000;
 
     [[nodiscard]] uint8_t l8u(uint16_t load_address) const;
     [[nodiscard]] uint16_t l16u(uint16_t load_address) const;

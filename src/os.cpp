@@ -31,8 +31,8 @@ void OS::reset(const std::string& filename) {
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
-    while (this->c->cpu.get_program_counter() != 0) {
-        uint16_t program_counter = this->c->cpu.get_program_counter();
+    while (this->c->cpu.getProgramCounter() != 0) {
+        uint16_t program_counter = this->c->cpu.getProgramCounter();
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }
@@ -43,8 +43,8 @@ void OS::loopIteration() {
     this->c->cpu.setProgramCounterTo(0xfffc);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
-    while (this->c->cpu.get_program_counter() != 0) {
-        uint16_t program_counter = this->c->cpu.get_program_counter();
+    while (this->c->cpu.getProgramCounter() != 0) {
+        uint16_t program_counter = this->c->cpu.getProgramCounter();
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }

@@ -30,8 +30,8 @@ CPU::CPU(Console* console) : console(console) {}
 void CPU::execute(uint32_t instruction) {
     uint16_t opcode = instruction >> 26;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
-        const uint16_t first_six_bits_mask = 0x3f;
-        uint16_t function = instruction & first_six_bits_mask;
+        const uint16_t FIRST_SIX_BITS_MASK = 0x3f;
+        uint16_t function = instruction & FIRST_SIX_BITS_MASK;
         executeTypeR(instruction);
         if (function != static_cast<uint16_t>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
@@ -56,7 +56,7 @@ void CPU::setProgramCounterTo(uint16_t counter_value) {
     this->program_counter = counter_value;
 }
 
-uint16_t CPU::get_program_counter() const { return this->program_counter; }
+uint16_t CPU::getProgramCounter() const { return this->program_counter; }
 
 void CPU::setStackPointerTo(uint16_t pointer_value) {
     this->registers[STK_PTR_REG] = pointer_value;
@@ -67,13 +67,13 @@ void CPU::executeTypeI(uint32_t instruction) {
     ITypeInstruction* parsed_instruction =
         reinterpret_cast<ITypeInstruction*>(&instruction);
 
-    const auto& func_variant = i_type_jump_table[parsed_instruction->opcode];
+    const auto& func_variant = I_TYPE_JUMP_TABLE[parsed_instruction->opcode];
     if (func_variant.valueless_by_exception()) {
         return;
     }
 
     std::visit(
-        overloaded{
+        Overloaded{
             [&](RegularIType wrapper) {
                 (this->*wrapper.func)(
                     parsed_instruction->reg_a,
@@ -93,13 +93,13 @@ void CPU::executeTypeR(uint32_t instruction) {
     RTypeInstruction* parsed_instruction =
         reinterpret_cast<RTypeInstruction*>(&instruction);
 
-    const auto& func_variant = r_type_jump_table[parsed_instruction->function];
+    const auto& func_variant = R_TYPE_JUMP_TABLE[parsed_instruction->function];
     if (func_variant.valueless_by_exception()) {
         return;
     }
 
     std::visit(
-        overloaded{
+        Overloaded{
             [&](RegularRType wrapper) {
                 (this->*wrapper.func)(
                     parsed_instruction->reg_a,

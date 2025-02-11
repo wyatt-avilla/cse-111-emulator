@@ -41,7 +41,7 @@ class CPU {
 
     void setProgramCounterTo(uint16_t counter_value);
 
-    [[nodiscard]] uint16_t get_program_counter() const;
+    [[nodiscard]] uint16_t getProgramCounter() const;
 
     void setStackPointerTo(uint16_t pointer_value);
 
@@ -74,10 +74,10 @@ class CPU {
 
     uint16_t program_counter;
 
-    static const std::size_t num_registers = 32;
-    std::array<uint16_t, num_registers> registers{};
+    static const std::size_t NUM_REGISTERS = 32;
+    std::array<uint16_t, NUM_REGISTERS> registers{};
 
-    static const std::size_t jump_table_size = 64;
+    static const std::size_t JUMP_TABLE_SIZE = 64;
 
     // variants and constexprs by claude
     // https://claude.site/artifacts/a672ce20-f93d-44fe-b36c-49a426778c92
@@ -106,9 +106,9 @@ class CPU {
         std::variant<RegularRType, JumpRegisterRType, ShiftRType>;
 
 
-    static constexpr std::array<ITypeVariant, jump_table_size>
+    static constexpr std::array<ITypeVariant, JUMP_TABLE_SIZE>
     createITypeTable() {
-        std::array<ITypeVariant, jump_table_size> table{};
+        std::array<ITypeVariant, JUMP_TABLE_SIZE> table{};
 
         auto set_regular = [&table](Opcode op, auto func_ptr) {
             table[static_cast<uint16_t>(op)] = RegularIType{func_ptr};
@@ -132,9 +132,9 @@ class CPU {
         return table;
     }
 
-    static constexpr std::array<RTypeVariant, jump_table_size>
+    static constexpr std::array<RTypeVariant, JUMP_TABLE_SIZE>
     createRTypeTable() {
-        std::array<RTypeVariant, jump_table_size> table{};
+        std::array<RTypeVariant, JUMP_TABLE_SIZE> table{};
 
         auto set_regular = [&table](Opcode op, auto func_ptr) {
             table[static_cast<uint16_t>(op)] = RegularRType{func_ptr};
@@ -165,16 +165,16 @@ class CPU {
         return table;
     }
 
-    const std::array<ITypeVariant, jump_table_size> i_type_jump_table =
+    const std::array<ITypeVariant, JUMP_TABLE_SIZE> I_TYPE_JUMP_TABLE =
         createITypeTable();
-    const std::array<RTypeVariant, jump_table_size> r_type_jump_table =
+    const std::array<RTypeVariant, JUMP_TABLE_SIZE> R_TYPE_JUMP_TABLE =
         createRTypeTable();
 
 
-    template <class... Ts> struct overloaded : Ts... {
+    template <class... Ts> struct Overloaded : Ts... {
         using Ts::operator()...;
     };
-    template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+    template <class... Ts> Overloaded(Ts...) -> Overloaded<Ts...>;
 
     void executeTypeI(uint32_t instruction);
     void executeTypeR(uint32_t instruction);
