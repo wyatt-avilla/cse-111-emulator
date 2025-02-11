@@ -22,13 +22,3 @@ jobs:
 
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-      - name: Cache Build
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{github.workspace}}/build
-            !${{github.workspace}}/build/CMakeCache.txt
-          key: ${{ runner.os }}-build-${{ hashFiles('**/*.cpp', '**/*.h', 'CMakeLists.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-
