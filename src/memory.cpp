@@ -144,7 +144,7 @@ void Memory::copyDataSectionToRam() {
 
 void Memory::loadFile(std::ifstream& file_stream) {
     file_stream.seekg(0, std::ios::end); //Seeks to the end of the file to determine its size.
-    std::streamsize file_size = file_stream.tellg(); .
+    std::streamsize file_size = file_stream.tellg(); 
     file_stream.seekg(0, std::ios::beg);//Checks if file_size is greater than SLUG_SIZE
 
     if (file_size > SLUG_SIZE) {
