@@ -1,3 +1,4 @@
+#include <array>
 #include <cstdint>
 #include <fstream>
 
@@ -51,8 +52,10 @@ class Memory {
 
   private:
     Console* console;
-    uint8_t
-        mem_array[static_cast<uint32_t>(Memory::Address::ADDRESS_SPACE_END)];
+    std::array<
+        uint8_t,
+        static_cast<uint32_t>(Memory::Address::ADDRESS_SPACE_END)>
+        mem_array{};
     [[nodiscard]] bool isReadable(uint32_t address) const;
     [[nodiscard]] bool isWritable(uint32_t address) const;
     [[nodiscard]] bool isExecutable(uint32_t address) const;

@@ -2,6 +2,7 @@
 
 #include "console.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
@@ -146,7 +147,11 @@ uint16_t Memory::getDataSize() const {
 }
 
 void Memory::clearRAM() {
-    memset(mem_array, 0, static_cast<uint32_t>(Address::IO_START));
+    std::fill(
+        mem_array.begin(),
+        mem_array.begin() + static_cast<uint32_t>(Address::IO_START),
+        0
+    );
 }
 
 void Memory::copyDataSectionToRam() {
@@ -154,17 +159,17 @@ void Memory::copyDataSectionToRam() {
     uint16_t load_data_address = getLoadDataAddress();
     uint16_t program_data_address = getProgramDataAddress();
 
-    std::memcpy(
-        mem_array + program_data_address,
-        mem_array + load_data_address,
-        data_size
+    std::copy(
+        mem_array.begin() + load_data_address,
+        mem_array.begin() + load_data_address + data_size,
+        mem_array.begin() + program_data_address
     );
 }
 
 void Memory::loadFile(std::ifstream& file_stream) {
     file_stream.seekg(0, std::ios::beg);
     file_stream.read(
-        (char*) mem_array + static_cast<uint32_t>(Address::SLUG_START),
+        (char*) mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START),
         static_cast<uint32_t>(Address::SLUG_SIZE)
     );
 }
