@@ -8,7 +8,7 @@
 #include <fstream>
 #include <iostream>
 
-Memory::Memory(Console* console) : console(console) {}
+Memory::Memory() = default;
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 

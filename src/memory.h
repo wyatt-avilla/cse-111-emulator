@@ -9,7 +9,7 @@ class Console;
 
 class Memory {
   public:
-    Memory(Console* console);
+    Memory();
 
     enum class Address {
         STDIN = 0x7100,
@@ -51,7 +51,6 @@ class Memory {
     void loadFile(std::ifstream& file_stream);
 
   private:
-    Console* console;
     std::array<
         uint8_t,
         static_cast<uint32_t>(Memory::Address::ADDRESS_SPACE_END)>
