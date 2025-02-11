@@ -1,11 +1,8 @@
 #include "console.h"
 
-#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <string>
-
-#define PC_RESET_VAL 0xfffc
 
 OS::OS(Console* console) : c(console) {}
 
@@ -42,7 +39,7 @@ void OS::reset(const std::string& filename) {
 
 void OS::loopIteration() {
     // 1. Run iteration of loop()
-    this->c->cpu.setProgramCounterTo(0xfffc);
+    this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
     while (this->c->cpu.getProgramCounter() != 0) {

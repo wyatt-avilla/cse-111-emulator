@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <string>
 
 #pragma once
@@ -7,6 +8,7 @@ class Console;
 class OS {
   private:
     Console* c;
+    const uint16_t PC_RESET_VAL = 0xfffc;
 
   public:
     OS(Console* console);
