@@ -12,7 +12,7 @@ Memory::Memory(Console* console) : console(console) {}
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
-bool Memory::isReadable(uint32_t address) const {
+bool Memory::isReadable(uint32_t address) {
     return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
             address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
@@ -26,7 +26,7 @@ bool Memory::isReadable(uint32_t address) const {
 }
 
 
-bool Memory::isWritable(uint32_t address) const {
+bool Memory::isWritable(uint32_t address) {
     return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
             address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
@@ -37,7 +37,7 @@ bool Memory::isWritable(uint32_t address) const {
            (address == static_cast<uint32_t>(Address::STOP_EXECUTION));
 }
 
-bool Memory::isExecutable(uint32_t address) const {
+bool Memory::isExecutable(uint32_t address) {
     return (
         address >= static_cast<uint32_t>(Address::SLUG_START) &&
         address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)

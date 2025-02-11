@@ -56,7 +56,7 @@ class Memory {
         uint8_t,
         static_cast<uint32_t>(Memory::Address::ADDRESS_SPACE_END)>
         mem_array{};
-    [[nodiscard]] bool isReadable(uint32_t address) const;
-    [[nodiscard]] bool isWritable(uint32_t address) const;
-    [[nodiscard]] bool isExecutable(uint32_t address) const;
+    [[nodiscard]] static bool isReadable(uint32_t address);
+    [[nodiscard]] static bool isWritable(uint32_t address);
+    [[nodiscard]] static bool isExecutable(uint32_t address);
 };
