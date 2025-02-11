@@ -1,10 +1,11 @@
+#include <string>
+
 #pragma once
 
 #include "cpu.h"
 #include "memory.h"
 #include "os.h"
 
-#include <string>
 
 class Console {
   public:

@@ -1,8 +1,7 @@
-#pragma once
+#include <cstdint>
+#include <fstream>
 
-#include <memory>
-#include <stdexcept>
-#include <string>
+#pragma once
 
 #define IO_START 0x7000
 #define STK_START 0x1000
