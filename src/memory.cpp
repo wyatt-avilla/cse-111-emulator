@@ -69,7 +69,7 @@ uint16_t Memory::l16u(uint16_t load_address) const {
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
-    out = (l8u(load_address) << 8) | l8u(load_address + 1);
+    out = (l8u(load_address) << BITS_PER_BYTE) | l8u(load_address + 1);
     return out;
 }
 
@@ -81,8 +81,9 @@ uint32_t Memory::l32u(uint16_t load_address) const {
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
-    out = (l8u(load_address) << 24) | (l8u(load_address + 1) << 16) |
-          (l8u(load_address + 2) << 8) | (l8u(load_address + 3));
+    out = (l8u(load_address) << BITS_PER_BYTE * 3) |
+          (l8u(load_address + 1) << BITS_PER_BYTE * 2) |
+          (l8u(load_address + 2) << BITS_PER_BYTE) | (l8u(load_address + 3));
     return out;
 }
 
@@ -120,8 +121,9 @@ void Memory::w16u(uint16_t address, uint16_t value) {
         std::cerr << "warning: trying to write the word on an unaligned address"
                   << std::endl;
     }
-    w8u(address, (value >> 8) & 0xFF); // High byte
-    w8u(address + 1, value & 0xFF);    // Low byte
+    const uint8_t LOW_BYTE = 0xff;
+    w8u(address, (value >> BITS_PER_BYTE) & LOW_BYTE); // High byte
+    w8u(address + 1, value & LOW_BYTE);                // Low byte
 }
 
 uint16_t Memory::getSetupAddress() const {

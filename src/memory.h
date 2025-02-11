@@ -51,6 +51,8 @@ class Memory {
     void loadFile(std::ifstream& file_stream);
 
   private:
+    const uint8_t BITS_PER_BYTE = 8;
+
     std::array<
         uint8_t,
         static_cast<uint32_t>(Memory::Address::ADDRESS_SPACE_END)>
