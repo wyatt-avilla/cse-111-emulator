@@ -9,7 +9,7 @@ class OS {
     Console* c;
 
   public:
-    OS(Console* c_);
+    OS(Console* console);
 
     void reset(const std::string& filename);
     void loopIteration();

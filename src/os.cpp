@@ -7,7 +7,7 @@
 
 #define PC_RESET_VAL 0xfffc
 
-OS::OS(Console* c_) : c(c_) {}
+OS::OS(Console* console) : c(console) {}
 
 void OS::reset(const std::string& filename) {
     // 1. Clear all of RAM with zeros
