@@ -23,7 +23,8 @@ struct RTypeInstruction {
 CPU::CPU(Console* console) : console(console) {}
 
 void CPU::execute(uint32_t instruction) {
-    uint16_t opcode = instruction >> 26;
+    const uint8_t OPCODE_SHIFT = 26;
+    uint16_t opcode = instruction >> OPCODE_SHIFT;
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         const uint16_t FIRST_SIX_BITS_MASK = 0x3f;
         uint16_t function = instruction & FIRST_SIX_BITS_MASK;
@@ -59,7 +60,7 @@ void CPU::setStackPointerTo(uint16_t pointer_value) {
 
 
 void CPU::executeTypeI(uint32_t instruction) {
-    ITypeInstruction* parsed_instruction =
+    auto* parsed_instruction =
         reinterpret_cast<ITypeInstruction*>(&instruction);
 
     const auto& func_variant = I_TYPE_JUMP_TABLE[parsed_instruction->opcode];
@@ -85,7 +86,7 @@ void CPU::executeTypeI(uint32_t instruction) {
 }
 
 void CPU::executeTypeR(uint32_t instruction) {
-    RTypeInstruction* parsed_instruction =
+    auto* parsed_instruction =
         reinterpret_cast<RTypeInstruction*>(&instruction);
 
     const auto& func_variant = R_TYPE_JUMP_TABLE[parsed_instruction->function];
@@ -218,5 +219,6 @@ void CPU::SRL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
 }
 
 void CPU::SLT(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = (registers[reg_a] < registers[reg_b]);
+    registers[reg_c] =
+        static_cast<uint16_t>(registers[reg_a] < registers[reg_b]);
 }
