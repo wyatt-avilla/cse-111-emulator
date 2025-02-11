@@ -45,6 +45,7 @@ class CPU {
 
     void setStackPointerTo(uint16_t pointer_value);
 
+    // NOLINTBEGIN(readability-identifier-naming)
     // I TYPE
     void BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
@@ -68,6 +69,7 @@ class CPU {
     void SLL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
     void SRL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
     void SRA(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    // NOLINTEND(readability-identifier-naming)
 
   private:
     Console* console;
