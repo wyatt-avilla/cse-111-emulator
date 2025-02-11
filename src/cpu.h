@@ -1,9 +1,8 @@
-#pragma once
-
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <variant>
+
+#pragma once
 
 class Console;
 
@@ -76,10 +75,15 @@ class CPU {
 
     uint16_t program_counter;
 
-    static const std::size_t NUM_REGISTERS = 32;
+    static const uint8_t PC_INCREMENT = 4;
+    static const uint8_t STK_PTR_REG = 29;
+    static const uint8_t ZERO_REG = 0;
+    static const uint8_t JAL_REG = 31;
+    static const uint8_t NUM_REGISTERS = 32;
+    static const uint8_t JUMP_TABLE_SIZE = 64;
+
     std::array<uint16_t, NUM_REGISTERS> registers{};
 
-    static const std::size_t JUMP_TABLE_SIZE = 64;
 
     // variants and constexprs by claude
     // https://claude.site/artifacts/a672ce20-f93d-44fe-b36c-49a426778c92
