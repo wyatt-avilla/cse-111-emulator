@@ -4,7 +4,7 @@
 #include <iostream>
 
 #define PC_INCREMENT 4
-#define STACK_PTR_REG 29
+#define STK_PTR_REG 29
 #define ZERO_REG 0
 #define JAL_REG 31
 
@@ -59,7 +59,7 @@ void CPU::set_program_counter_to(uint16_t counter_value) {
 uint16_t CPU::get_program_counter() { return this->program_counter; }
 
 void CPU::set_stack_pointer_to(uint16_t pointer_value) {
-    this->registers[STACK_PTR_REG] = pointer_value;
+    this->registers[STK_PTR_REG] = pointer_value;
 }
 
 
