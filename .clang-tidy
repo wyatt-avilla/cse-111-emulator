@@ -5,7 +5,8 @@ Checks: >
   cppcoreguidelines-avoid-goto, cppcoreguidelines-init-variables,
   cppcoreguidelines-prefer-member-initializer, cppcoreguidelines-slicing, misc-unused-parameters,
   misc-unused-using-decls, -modernize-use-trailing-return-type,
-  -readability-braces-around-statements, -performance-avoid-endl
+  -readability-braces-around-statements, -performance-avoid-endl,
+  -bugprone-easily-swappable-parameters
 
 # Naming convention settings
 CheckOptions:
