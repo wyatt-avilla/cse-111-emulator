@@ -1,12 +1,9 @@
 #include "console.h"
-
 #include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <string>
-
 #define PC_RESET_VAL 0xfffc
-
 OS::OS(Console* c_) : c(c_) {}
 
 void OS::reset(const std::string& filename) {
@@ -25,7 +22,7 @@ void OS::reset(const std::string& filename) {
     this->c->memory.copyDataSectionToRam();
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
-    this->c->cpu.set_stack_pointer_to(STK_END);
+    this->c->cpu.set_stack_pointer_to(STACK_END);
 
     // 4. Call setup()
     this->c->cpu.set_program_counter_to(PC_RESET_VAL);
