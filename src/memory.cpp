@@ -1,35 +1,46 @@
 #include "memory.h"
 
-#include "console.h"
-
+#include <algorithm>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <iostream>
 
-Memory::Memory(Console* console) : console(console) {}
+Memory::Memory() = default;
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
-bool Memory::isReadable(uint32_t address) const {
-    return (address < IO_START) ||
-           (address >= STACK_START && address < VRAM_START) ||
-           (address >= VRAM_START && address < VRAM_END) ||
-           (address == controller_data_address) || (address == stdin_address) ||
-           (address >= SLUG_START && address < MEM_SIZE);
+bool Memory::isReadable(uint32_t address) {
+    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+           (address >= static_cast<uint32_t>(Address::STACK_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+           (address >= static_cast<uint32_t>(Address::VRAM_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+           (address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) ||
+           (address == static_cast<uint32_t>(Address::STDIN)) ||
+           (address >= static_cast<uint32_t>(Address::SLUG_START) &&
+            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
+           ); // SLUG
 }
 
 
-bool Memory::isWritable(uint32_t address) const {
-    return (address < IO_START) ||
-           (address >= STACK_START && address < VRAM_START) ||
-           (address >= VRAM_START && address < VRAM_END) ||
-           (address == stdout_address) || (address == stderr_address) ||
-           (address == stop_execution_address);
+bool Memory::isWritable(uint32_t address) {
+    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+           (address >= static_cast<uint32_t>(Address::STACK_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+           (address >= static_cast<uint32_t>(Address::VRAM_START) &&
+            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+           (address == static_cast<uint32_t>(Address::STDOUT)) ||
+           (address == static_cast<uint32_t>(Address::STDERR)) ||
+           (address == static_cast<uint32_t>(Address::STOP_EXECUTION));
 }
 
-bool Memory::isExecutable(uint32_t address) const {
-    return (address >= SLUG_START && address < MEM_SIZE);
+bool Memory::isExecutable(uint32_t address) {
+    return (
+        address >= static_cast<uint32_t>(Address::SLUG_START) &&
+        address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
+    ); // SLUG file
 }
 
 
@@ -41,9 +52,9 @@ uint8_t Memory::l8u(uint16_t load_address) const {
     }
 
     uint8_t out = 0;
-    if (load_address == controller_data_address) {
+    if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
         // TODO: get controller data
-    } else if (load_address == stdin_address) {
+    } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
         out = mem_array[load_address];
@@ -54,25 +65,26 @@ uint8_t Memory::l8u(uint16_t load_address) const {
 uint16_t Memory::l16u(uint16_t load_address) const {
     // checking if the alignment is right
     uint16_t out = 0;
-    if (load_address & 1) {
+    if ((load_address & 1) != 0) {
         // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
-    out = (l8u(load_address) << 8) | l8u(load_address + 1);
+    out = (l8u(load_address) << BITS_PER_BYTE) | l8u(load_address + 1);
     return out;
 }
 
 uint32_t Memory::l32u(uint16_t load_address) const {
     // checking if the alignment is right
     uint32_t out = 0;
-    if (load_address & 1) {
+    if ((load_address & 1) != 0) {
         // The address is odd and therefore wrong
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
-    out = (l8u(load_address) << 24) | (l8u(load_address + 1) << 16) |
-          (l8u(load_address + 2) << 8) | (l8u(load_address + 3));
+    out = (l8u(load_address) << BITS_PER_BYTE * 3) |
+          (l8u(load_address + 1) << BITS_PER_BYTE * 2) |
+          (l8u(load_address + 2) << BITS_PER_BYTE) | (l8u(load_address + 3));
     return out;
 }
 
@@ -94,11 +106,11 @@ void Memory::w8u(uint16_t address, uint8_t value) {
         );
     }
 
-    if (address == stdout_address) {
+    if (address == static_cast<uint32_t>(Address::STDOUT)) {
         std::cout << char(value);
-    } else if (address == stderr_address)
+    } else if (address == static_cast<uint32_t>(Address::STDERR))
         std::cerr << char(value);
-    else if (address == stop_execution_address) {
+    else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
         exit(0);
     } else {
         mem_array[address] = value;
@@ -106,60 +118,69 @@ void Memory::w8u(uint16_t address, uint8_t value) {
 }
 
 void Memory::w16u(uint16_t address, uint16_t value) {
-    if (address & 1) {
+    if ((address & 1) != 0) {
         std::cerr << "warning: trying to write the word on an unaligned address"
                   << std::endl;
     }
-    w8u(address, (value >> 8) & 0xFF); // High byte
-    w8u(address + 1, value & 0xFF);    // Low byte
+    const uint8_t LOW_BYTE = 0xff;
+    w8u(address, (value >> BITS_PER_BYTE) & LOW_BYTE); // High byte
+    w8u(address + 1, value & LOW_BYTE);                // Low byte
 }
 
-uint16_t Memory::getSetupAddress() const { return l16u(SETUP_ADDRESS + 2); }
+uint16_t Memory::getSetupAddress() const {
+    return l16u(static_cast<uint32_t>(Address::SETUP) + 2);
+}
 
-uint16_t Memory::getLoopAddress() const { return l16u(LOOP_ADDRESS + 2); }
+uint16_t Memory::getLoopAddress() const {
+    return l16u(static_cast<uint32_t>(Address::LOOP) + 2);
+}
 
 uint16_t Memory::getLoadDataAddress() const {
-    return l16u(LOAD_DATA_ADDRESS + 2);
+    return l16u(static_cast<uint32_t>(Address::LOAD_DATA) + 2);
 }
 
 uint16_t Memory::getProgramDataAddress() const {
-    return l16u(PROGRAM_DATA_ADDRESS + 2);
+    return l16u(static_cast<uint32_t>(Address::PROGRAM_DATA) + 2);
 }
 
-uint16_t Memory::getDataSize() const { return l16u(DATA_SIZE_ADDRESS + 2); }
+uint16_t Memory::getDataSize() const {
+    return l16u(static_cast<uint32_t>(Address::DATA_SIZE) + 2);
+}
 
-void Memory::clearRAM() { memset(mem_array, 0, IO_START); }
+void Memory::clearRAM() {
+    std::fill(
+        mem_array.begin(),
+        mem_array.begin() + static_cast<uint32_t>(Address::IO_START),
+        0
+    );
+}
 
 void Memory::copyDataSectionToRam() {
     uint16_t data_size = getDataSize();
     uint16_t load_data_address = getLoadDataAddress();
     uint16_t program_data_address = getProgramDataAddress();
 
-    std::memcpy(
-        mem_array + program_data_address,
-        mem_array + load_data_address,
-        data_size
+    std::copy(
+        mem_array.begin() + load_data_address,
+        mem_array.begin() + load_data_address + data_size,
+        mem_array.begin() + program_data_address
     );
 }
 
 void Memory::loadFile(std::ifstream& file_stream) {
-    file_stream.seekg(
-        0,
-        std::ios::end
-    ); // Seeks to the end of the file to determine its size.
+    file_stream.seekg(0, std::ios::end);
     std::streamsize file_size = file_stream.tellg();
-    file_stream.seekg(
-        0,
-        std::ios::beg
-    ); // Checks if file_size is greater than SLUG_SIZE
+    file_stream.seekg(0, std::ios::beg);
 
-    if (file_size > SLUG_SIZE) {
+    if (file_size > static_cast<uint32_t>(Address::SLUG_SIZE)) {
         throw std::runtime_error("ROM file is too large to fit in memory.");
     }
     // Reads only the actual file size to avoid reading past the end of a
     // smaller file.
     file_stream.read(
-        reinterpret_cast<char*>(mem_array + SLUG_START),
+        reinterpret_cast<char*>(
+            mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START)
+        ),
         file_size
     );
 }

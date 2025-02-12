@@ -1,17 +1,18 @@
-#pragma once
-
-
+#include <cstdint>
 #include <string>
+
+#pragma once
 
 class Console;
 
 class OS {
   private:
     Console* c;
+    const uint16_t PC_RESET_VAL = 0xfffc;
 
   public:
-    OS(Console* c_);
+    OS(Console* console);
 
     void reset(const std::string& filename);
-    void loop_iteration();
+    void loopIteration();
 };

@@ -1,0 +1,48 @@
+# https://claude.site/artifacts/cb4f8ae5-253c-44f2-bc08-5d34cd0ef6e6
+name: Clang Tidy
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  tidiness-check:
+    name: Static Analysis Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install clang-tidy and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-tidy
+
+      - name: Verify .clang-tidy exists
+        run: |
+          if [ ! -f .clang-tidy ]; then
+            echo "Error: .clang-tidy file not found in repository root"
+            exit 1
+          fi
+
+      - name: Generate compilation database
+        run: |
+          sudo apt-get install -y cmake
+          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          mv build/compile_commands.json .
+
+      - name: Run clang-tidy
+        run: |
+          TIDY_ISSUES=0
+          for file in $(find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
+            echo "Analyzing $file..."
+            if ! clang-tidy "$file" -p . > tidy_output.txt 2>&1; then
+              TIDY_ISSUES=1
+              echo "::error::Clang-tidy issues found in $file"
+              cat tidy_output.txt
+            fi
+          done
+          if [ $TIDY_ISSUES -ne 0 ]; then
+            echo "Static analysis check failed. Please fix the issues reported by clang-tidy."
+            exit 1
+          else
+            echo "All files passed static analysis."
+          fi

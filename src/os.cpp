@@ -1,13 +1,10 @@
 #include "console.h"
 
-#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#define PC_RESET_VAL 0xfffc
-
-OS::OS(Console* c_) : c(c_) {}
+OS::OS(Console* console) : c(console) {}
 
 void OS::reset(const std::string& filename) {
     // 1. Clear all of RAM with zeros
@@ -25,26 +22,28 @@ void OS::reset(const std::string& filename) {
     this->c->memory.copyDataSectionToRam();
 
     // 3. Initialize stack pointer register to the end of the stack (0x3000)
-    this->c->cpu.set_stack_pointer_to(STACK_END);
+    this->c->cpu.setStackPointerTo(
+        static_cast<uint16_t>(Memory::Address::STACK_END)
+    );
 
     // 4. Call setup()
-    this->c->cpu.set_program_counter_to(PC_RESET_VAL);
+    this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
-    while (this->c->cpu.get_program_counter() != 0) {
-        uint16_t program_counter = this->c->cpu.get_program_counter();
+    while (this->c->cpu.getProgramCounter() != 0) {
+        uint16_t program_counter = this->c->cpu.getProgramCounter();
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }
 }
 
-void OS::loop_iteration() {
+void OS::loopIteration() {
     // 1. Run iteration of loop()
-    this->c->cpu.set_program_counter_to(0xfffc);
+    this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
-    while (this->c->cpu.get_program_counter() != 0) {
-        uint16_t program_counter = this->c->cpu.get_program_counter();
+    while (this->c->cpu.getProgramCounter() != 0) {
+        uint16_t program_counter = this->c->cpu.getProgramCounter();
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }

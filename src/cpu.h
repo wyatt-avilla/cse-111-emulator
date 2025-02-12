@@ -1,15 +1,14 @@
-#pragma once
-
 #include <array>
-#include <cstddef>
 #include <cstdint>
 #include <variant>
+
+#pragma once
 
 class Console;
 
 class CPU {
   public:
-    enum class Opcode : uint16_t {
+    enum class Opcode : uint8_t {
         BEQ = 0,
         L16 = 2,
         L8U = 16,
@@ -39,12 +38,13 @@ class CPU {
 
     void execute(uint32_t instruction);
 
-    void set_program_counter_to(uint16_t counter_value);
+    void setProgramCounterTo(uint16_t counter_value);
 
-    uint16_t get_program_counter();
+    [[nodiscard]] uint16_t getProgramCounter() const;
 
-    void set_stack_pointer_to(uint16_t pointer_value);
+    void setStackPointerTo(uint16_t pointer_value);
 
+    // NOLINTBEGIN(readability-identifier-naming)
     // I TYPE
     void BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
     void L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate);
@@ -68,16 +68,22 @@ class CPU {
     void SLL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
     void SRL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
     void SRA(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value);
+    // NOLINTEND(readability-identifier-naming)
 
   private:
     Console* console;
 
     uint16_t program_counter;
 
-    static const std::size_t num_registers = 32;
-    std::array<uint16_t, num_registers> registers{};
+    static const uint8_t PC_INCREMENT = 4;
+    static const uint8_t STACK_PTR_REG = 29;
+    static const uint8_t ZERO_REG = 0;
+    static const uint8_t JAL_REG = 31;
+    static const uint8_t NUM_REGISTERS = 32;
+    static const uint8_t JUMP_TABLE_SIZE = 64;
 
-    static const std::size_t jump_table_size = 64;
+    std::array<uint16_t, NUM_REGISTERS> registers{};
+
 
     // variants and constexprs by claude
     // https://claude.site/artifacts/a672ce20-f93d-44fe-b36c-49a426778c92
@@ -106,16 +112,16 @@ class CPU {
         std::variant<RegularRType, JumpRegisterRType, ShiftRType>;
 
 
-    static constexpr std::array<ITypeVariant, jump_table_size>
-    create_i_type_table() {
-        std::array<ITypeVariant, jump_table_size> table{};
+    static constexpr std::array<ITypeVariant, JUMP_TABLE_SIZE>
+    createITypeTable() {
+        std::array<ITypeVariant, JUMP_TABLE_SIZE> table{};
 
-        auto set_regular = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = RegularIType{func_ptr};
+        auto set_regular = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = RegularIType{func_ptr};
         };
 
-        auto set_immediate = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = OnlyImmediateIType{func_ptr};
+        auto set_immediate = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = OnlyImmediateIType{func_ptr};
         };
 
         set_regular(Opcode::BEQ, &CPU::BEQ);
@@ -132,20 +138,20 @@ class CPU {
         return table;
     }
 
-    static constexpr std::array<RTypeVariant, jump_table_size>
-    create_r_type_table() {
-        std::array<RTypeVariant, jump_table_size> table{};
+    static constexpr std::array<RTypeVariant, JUMP_TABLE_SIZE>
+    createRTypeTable() {
+        std::array<RTypeVariant, JUMP_TABLE_SIZE> table{};
 
-        auto set_regular = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = RegularRType{func_ptr};
+        auto set_regular = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = RegularRType{func_ptr};
         };
 
-        auto set_shift = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = ShiftRType{func_ptr};
+        auto set_shift = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = ShiftRType{func_ptr};
         };
 
-        auto set_jump = [&table](Opcode op, auto func_ptr) {
-            table[static_cast<uint16_t>(op)] = JumpRegisterRType{func_ptr};
+        auto set_jump = [&table](Opcode opcode, auto func_ptr) {
+            table[static_cast<uint16_t>(opcode)] = JumpRegisterRType{func_ptr};
         };
 
         set_regular(Opcode::SUB, &CPU::SUB);
@@ -165,16 +171,16 @@ class CPU {
         return table;
     }
 
-    const std::array<ITypeVariant, jump_table_size> i_type_jump_table =
-        create_i_type_table();
-    const std::array<RTypeVariant, jump_table_size> r_type_jump_table =
-        create_r_type_table();
+    const std::array<ITypeVariant, JUMP_TABLE_SIZE> I_TYPE_JUMP_TABLE =
+        createITypeTable();
+    const std::array<RTypeVariant, JUMP_TABLE_SIZE> R_TYPE_JUMP_TABLE =
+        createRTypeTable();
 
 
-    template <class... Ts> struct overloaded : Ts... {
+    template <class... Ts> struct Overloaded : Ts... {
         using Ts::operator()...;
     };
-    template <class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+    template <class... Ts> Overloaded(Ts...) -> Overloaded<Ts...>;
 
     void executeTypeI(uint32_t instruction);
     void executeTypeR(uint32_t instruction);
