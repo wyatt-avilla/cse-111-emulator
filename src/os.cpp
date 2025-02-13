@@ -31,9 +31,10 @@ void OS::reset(const std::string& filename) {
     this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
     while (this->c->cpu.getProgramCounter() != 0) {
-        uint16_t program_counter = this->c->cpu.getProgramCounter();
-        uint32_t instruction = this->c->memory.loadInstruction(program_counter);
-        this->c->cpu.execute(instruction);
+        uint16_t const PROGRAM_COUNTER = this->c->cpu.getProgramCounter();
+        uint32_t const INSTRUCTION =
+            this->c->memory.loadInstruction(PROGRAM_COUNTER);
+        this->c->cpu.execute(INSTRUCTION);
     }
 }
 
@@ -43,9 +44,10 @@ void OS::loopIteration() {
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
     while (this->c->cpu.getProgramCounter() != 0) {
-        uint16_t program_counter = this->c->cpu.getProgramCounter();
-        uint32_t instruction = this->c->memory.loadInstruction(program_counter);
-        this->c->cpu.execute(instruction);
+        uint16_t const PROGRAM_COUNTER = this->c->cpu.getProgramCounter();
+        uint32_t const INSTRUCTION =
+            this->c->memory.loadInstruction(PROGRAM_COUNTER);
+        this->c->cpu.execute(INSTRUCTION);
     }
 
     // 2. The GPU frame buffer is displayed

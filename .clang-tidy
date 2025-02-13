@@ -4,7 +4,8 @@ Checks: >
   readability-*, bugprone-*, modernize-*, performance-*, clang-analyzer-*,
   cppcoreguidelines-avoid-goto, cppcoreguidelines-init-variables,
   cppcoreguidelines-prefer-member-initializer, cppcoreguidelines-slicing, misc-unused-parameters,
-  misc-unused-using-decls, -modernize-use-trailing-return-type,
+  misc-unused-using-decls, misc-const-correctness, readability-non-const-parameter,
+  cppcoreguidelines-avoid-non-const-parameters, -modernize-use-trailing-return-type,
   -readability-braces-around-statements, -performance-avoid-endl,
   -bugprone-easily-swappable-parameters
 
@@ -85,3 +86,26 @@ CheckOptions:
   # Require at least this many lines between functions
   - key: readability-function-spacing.MinEmptyLines
     value: 1
+
+  # Const correctness settings
+  - key: misc-const-correctness.AnalyzeValues
+    value: true
+  - key: misc-const-correctness.WarnPointersAsValues
+    value: true
+  - key: misc-const-correctness.TransformValues
+    value: true
+  - key: misc-const-correctness.AnalyzeReferences
+    value: true
+  - key: misc-const-correctness.WarnPointersAsReferences
+    value: true
+  - key: misc-const-correctness.TransformReferences
+    value: true
+  - key: misc-const-correctness.AnalyzeMethods
+    value: true
+  - key: misc-const-correctness.WarnMethodParameters
+    value: true
+  # Additional const parameter checks
+  - key: performance-unnecessary-value-param.AllowedTypes
+    value: ""
+  - key: readability-non-const-parameter.MinSize
+    value: 0
