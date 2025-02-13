@@ -10,12 +10,13 @@
 class Console {
   public:
     Console();
-
-    void run(const std::string& slug_file_path);
-    void stopExecution();
     CPU cpu;
     OS os;
     Memory memory;
+
+    void run(const std::string& slug_file_path);
+    void stopExecution();
+    [[nodiscard]] bool isRunning() const;
 
   private:
     bool is_running;

@@ -10,6 +10,8 @@ class OS {
     Console* c;
     const uint16_t PC_RESET_VAL = 0xfffc;
 
+    void fetchDecodeExecuteLoop();
+
   public:
     OS(Console* console);
 

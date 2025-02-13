@@ -33,7 +33,7 @@ void OS::setup() {
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
-    while (this->c->cpu.getProgramCounter() != 0) {
+    while (this->c->cpu.getProgramCounter() != 0 && c->isRunning()) {
         uint16_t const PROGRAM_COUNTER = this->c->cpu.getProgramCounter();
         uint32_t const INSTRUCTION =
             this->c->memory.loadInstruction(PROGRAM_COUNTER);
@@ -45,7 +45,7 @@ void OS::loopIteration() {
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
-    while (this->c->cpu.getProgramCounter() != 0) {
+    while (this->c->cpu.getProgramCounter() != 0 && c->isRunning()) {
         uint16_t const PROGRAM_COUNTER = this->c->cpu.getProgramCounter();
         uint32_t const INSTRUCTION =
             this->c->memory.loadInstruction(PROGRAM_COUNTER);
