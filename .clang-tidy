@@ -67,9 +67,19 @@ CheckOptions:
   - key: readability-identifier-naming.ProtectedMemberSuffix
     value: ""
 
-  # Constants should be in UPPER_CASE
-  - key: readability-identifier-naming.ConstantCase
+    # Global/static/member constants should be in UPPER_CASE
+  - key: readability-identifier-naming.GlobalConstantCase
     value: UPPER_CASE
+  - key: readability-identifier-naming.StaticConstantCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.ConstantMemberCase
+    value: UPPER_CASE
+
+  # Regular const variables and parameters should be snake_case
+  - key: readability-identifier-naming.ConstantParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.ConstantVariableCase
+    value: lower_case
 
   # Enums should be in PascalCase
   - key: readability-identifier-naming.EnumCase
