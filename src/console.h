@@ -18,4 +18,5 @@ class Console {
     Memory memory;
 
   private:
+    bool is_running;
 };
