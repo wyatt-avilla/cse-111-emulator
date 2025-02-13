@@ -8,7 +8,7 @@
 const uint8_t EXPECTED_ARGS = 1;
 const uint8_t FILENAME_INDEX = 1;
 
-int32_t main(int32_t argc, char* argv[]) {
+int32_t main(const int32_t argc, const char* argv[]) {
     if (argc - 1 != EXPECTED_ARGS) {
         std::cerr << "Wrong number of command line arguments. (got " << argc - 1
                   << ", expected " << EXPECTED_ARGS << ")" << std::endl;
