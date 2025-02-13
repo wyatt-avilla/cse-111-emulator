@@ -8,7 +8,7 @@ class Console;
 
 class Memory {
   public:
-    Memory();
+    Memory(Console* console_instance);
 
     enum class Address {
         STDIN = 0x7100,
