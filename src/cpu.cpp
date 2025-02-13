@@ -24,20 +24,20 @@ CPU::CPU(Console* console) : console(console) {}
 
 void CPU::execute(uint32_t instruction) {
     const uint8_t OPCODE_SHIFT = 26;
-    uint16_t opcode = instruction >> OPCODE_SHIFT;
-    if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
+    uint16_t const OPCODE = instruction >> OPCODE_SHIFT;
+    if (OPCODE == static_cast<uint16_t>(Opcode::RTYPE)) {
         const uint16_t FIRST_SIX_BITS_MASK = 0x3f;
-        uint16_t function = instruction & FIRST_SIX_BITS_MASK;
+        uint16_t const FUNCTION = instruction & FIRST_SIX_BITS_MASK;
         executeTypeR(instruction);
-        if (function != static_cast<uint16_t>(Opcode::JR)) {
+        if (FUNCTION != static_cast<uint16_t>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
         }
     } else {
         executeTypeI(instruction);
-        if (opcode != static_cast<uint16_t>(Opcode::BEQ) &&
-            opcode != static_cast<uint16_t>(Opcode::J) &&
-            opcode != static_cast<uint16_t>(Opcode::BNE) &&
-            opcode != static_cast<uint16_t>(Opcode::JAL)) {
+        if (OPCODE != static_cast<uint16_t>(Opcode::BEQ) &&
+            OPCODE != static_cast<uint16_t>(Opcode::J) &&
+            OPCODE != static_cast<uint16_t>(Opcode::BNE) &&
+            OPCODE != static_cast<uint16_t>(Opcode::JAL)) {
             program_counter += PC_INCREMENT;
         }
     }
@@ -127,16 +127,16 @@ void CPU::BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
 }
 
 void CPU::L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    uint32_t effective_address = registers[reg_a] + immediate;
-    registers[reg_b] = this->console->memory.l16u(effective_address);
+    uint32_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
+    registers[reg_b] = this->console->memory.l16u(EFFECTIVE_ADDRESS);
 }
 
 
 void CPU::L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint32_t effective_address = registers[reg_a] + immediate;
+        uint32_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
         registers[reg_b] =
-            static_cast<uint16_t>(this->console->memory.l8u(effective_address));
+            static_cast<uint16_t>(this->console->memory.l8u(EFFECTIVE_ADDRESS));
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to load out of bounds." << std::endl;
     }
@@ -147,8 +147,8 @@ void CPU::J(uint16_t immediate) { program_counter = 4 * immediate; }
 
 void CPU::S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint16_t effective_address = registers[reg_a] + immediate;
-        this->console->memory.w16u(effective_address, registers[reg_b]);
+        uint16_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
+        this->console->memory.w16u(EFFECTIVE_ADDRESS, registers[reg_b]);
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to store out of bounds." << std::endl;
     }
@@ -156,8 +156,8 @@ void CPU::S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
 
 void CPU::S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
     try {
-        uint16_t effective_address = registers[reg_a] + immediate;
-        this->console->memory.w8u(effective_address, registers[reg_b]);
+        uint16_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
+        this->console->memory.w8u(EFFECTIVE_ADDRESS, registers[reg_b]);
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to store out of bounds." << std::endl;
     }

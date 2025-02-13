@@ -156,23 +156,23 @@ void Memory::clearRAM() {
 }
 
 void Memory::copyDataSectionToRam() {
-    uint16_t data_size = getDataSize();
-    uint16_t load_data_address = getLoadDataAddress();
-    uint16_t program_data_address = getProgramDataAddress();
+    uint16_t const DATA_SIZE = getDataSize();
+    uint16_t const LOAD_DATA_ADDRESS = getLoadDataAddress();
+    uint16_t const PROGRAM_DATA_ADDRESS = getProgramDataAddress();
 
     std::copy(
-        mem_array.begin() + load_data_address,
-        mem_array.begin() + load_data_address + data_size,
-        mem_array.begin() + program_data_address
+        mem_array.begin() + LOAD_DATA_ADDRESS,
+        mem_array.begin() + LOAD_DATA_ADDRESS + DATA_SIZE,
+        mem_array.begin() + PROGRAM_DATA_ADDRESS
     );
 }
 
 void Memory::loadFile(std::ifstream& file_stream) {
     file_stream.seekg(0, std::ios::end);
-    std::streamsize file_size = file_stream.tellg();
+    std::streamsize const FILE_SIZE = file_stream.tellg();
     file_stream.seekg(0, std::ios::beg);
 
-    if (file_size > static_cast<uint32_t>(Address::SLUG_SIZE)) {
+    if (FILE_SIZE > static_cast<uint32_t>(Address::SLUG_SIZE)) {
         throw std::runtime_error("ROM file is too large to fit in memory.");
     }
     // Reads only the actual file size to avoid reading past the end of a
@@ -181,6 +181,6 @@ void Memory::loadFile(std::ifstream& file_stream) {
         reinterpret_cast<char*>(
             mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START)
         ),
-        file_size
+        FILE_SIZE
     );
 }
