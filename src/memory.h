@@ -8,7 +8,7 @@ class Console;
 
 class Memory {
   public:
-    Memory();
+    Memory(Console* console_instance);
 
     enum class Address {
         STDIN = 0x7100,
@@ -50,6 +50,7 @@ class Memory {
     void loadFile(std::ifstream& file_stream);
 
   private:
+    Console* console_instance;
     const uint8_t BITS_PER_BYTE = 8;
 
     std::array<
