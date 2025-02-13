@@ -10,7 +10,6 @@ bool Console::isRunning() const { return is_running; }
 
 void Console::run(const std::string& slug_file_path) {
     os.reset(slug_file_path);
-    this->is_running = true;
     while (isRunning()) {
         os.loopIteration();
     }
