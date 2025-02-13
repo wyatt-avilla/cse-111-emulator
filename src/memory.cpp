@@ -174,6 +174,7 @@ void Memory::copyDataSectionToRam() {
 void Memory::loadFile(std::ifstream& file_stream) {
     file_stream.seekg(0, std::ios::end);
     std::streamsize const FILE_SIZE = file_stream.tellg();
+    file_stream.seekg(0, std::ios::beg);
 
     if (FILE_SIZE > static_cast<uint32_t>(Address::SLUG_SIZE)) {
         throw std::runtime_error("ROM file is too large to fit in memory.");
