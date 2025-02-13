@@ -3,14 +3,14 @@
 #include <cstdlib>
 #include <iostream>
 
-struct ITypeInstruction {
+struct ITypeInstructionBits {
     uint16_t immediate : 16;
     uint16_t reg_b : 5;
     uint16_t reg_a : 5;
     uint16_t opcode : 6;
 };
 
-struct RTypeInstruction {
+struct RTypeInstructionBits {
     uint16_t function : 6;
     uint16_t shift_value : 5;
     uint16_t reg_c : 5;
@@ -62,7 +62,7 @@ void CPU::setStackPointerTo(const uint16_t pointer_value) {
 
 void CPU::executeTypeI(const uint32_t instruction) {
     const auto* parsed_instruction =
-        reinterpret_cast<const ITypeInstruction*>(&instruction);
+        reinterpret_cast<const ITypeInstructionBits*>(&instruction);
 
     const auto& func_variant = I_TYPE_JUMP_TABLE[parsed_instruction->opcode];
     if (func_variant.valueless_by_exception()) {
@@ -88,7 +88,7 @@ void CPU::executeTypeI(const uint32_t instruction) {
 
 void CPU::executeTypeR(const uint32_t instruction) {
     const auto* parsed_instruction =
-        reinterpret_cast<const RTypeInstruction*>(&instruction);
+        reinterpret_cast<const RTypeInstructionBits*>(&instruction);
 
     const auto& func_variant = R_TYPE_JUMP_TABLE[parsed_instruction->function];
     if (func_variant.valueless_by_exception()) {
