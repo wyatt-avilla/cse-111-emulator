@@ -59,9 +59,9 @@ void CPU::setStackPointerTo(const uint16_t POINTER_VALUE) {
 }
 
 
-void CPU::executeTypeI(uint32_t instruction) {
-    auto* parsed_instruction =
-        reinterpret_cast<ITypeInstruction*>(&instruction);
+void CPU::executeTypeI(const uint32_t INSTRUCTION) {
+    const auto* parsed_instruction =
+        reinterpret_cast<const ITypeInstruction*>(&INSTRUCTION);
 
     const auto& func_variant = I_TYPE_JUMP_TABLE[parsed_instruction->opcode];
     if (func_variant.valueless_by_exception()) {
@@ -85,9 +85,9 @@ void CPU::executeTypeI(uint32_t instruction) {
     );
 }
 
-void CPU::executeTypeR(uint32_t instruction) {
-    auto* parsed_instruction =
-        reinterpret_cast<RTypeInstruction*>(&instruction);
+void CPU::executeTypeR(const uint32_t INSTRUCTION) {
+    const auto* parsed_instruction =
+        reinterpret_cast<const RTypeInstruction*>(&INSTRUCTION);
 
     const auto& func_variant = R_TYPE_JUMP_TABLE[parsed_instruction->function];
     if (func_variant.valueless_by_exception()) {
