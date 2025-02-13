@@ -111,7 +111,7 @@ void Memory::w8u(const uint16_t ADDRESS, const uint8_t VALUE) {
     } else if (ADDRESS == static_cast<uint32_t>(Address::STDERR))
         std::cerr << char(VALUE);
     else if (ADDRESS == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
-        console->stopExecution();
+        Console->stopExecution();
     } else {
         mem_array[ADDRESS] = VALUE;
     }
