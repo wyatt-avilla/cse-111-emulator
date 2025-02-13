@@ -12,7 +12,7 @@ class Console {
     Console();
 
     void run(const std::string& slug_file_path);
-
+    void stopExecution();
     CPU cpu;
     OS os;
     Memory memory;
