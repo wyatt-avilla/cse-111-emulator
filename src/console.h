@@ -19,5 +19,5 @@ class Console {
     [[nodiscard]] bool isRunning() const;
 
   private:
-    bool is_running;
+    bool is_running{true};
 };
