@@ -1,4 +1,5 @@
 #include "memory.h"
+
 #include "console.h"
 #include <algorithm>
 #include <cstdint>
