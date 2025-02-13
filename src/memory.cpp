@@ -1,5 +1,7 @@
 #include "memory.h"
 
+#include "console.h"
+
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -7,7 +9,9 @@
 #include <fstream>
 #include <iostream>
 
-Memory::Memory() = default;
+Memory::Memory(Console* console_instance)
+    : console_instance(console_instance) {} // initialize console_instance
+
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
@@ -111,7 +115,7 @@ void Memory::w8u(const uint16_t ADDRESS, const uint8_t VALUE) {
     } else if (ADDRESS == static_cast<uint32_t>(Address::STDERR))
         std::cerr << char(VALUE);
     else if (ADDRESS == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
-        exit(0);
+        console_instance->stopExecution();
     } else {
         mem_array[ADDRESS] = VALUE;
     }
