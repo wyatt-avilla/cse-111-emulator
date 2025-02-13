@@ -15,4 +15,5 @@ class OS {
 
     void reset(const std::string& filename);
     void loopIteration();
+    void setup();
 };
