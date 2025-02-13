@@ -22,18 +22,18 @@ struct RTypeInstruction {
 
 CPU::CPU(Console* console) : console(console) {}
 
-void CPU::execute(uint32_t instruction) {
+void CPU::execute(const uint32_t INSTRUCTION) {
     const uint8_t OPCODE_SHIFT = 26;
-    uint16_t const OPCODE = instruction >> OPCODE_SHIFT;
+    uint16_t const OPCODE = INSTRUCTION >> OPCODE_SHIFT;
     if (OPCODE == static_cast<uint16_t>(Opcode::RTYPE)) {
         const uint16_t FIRST_SIX_BITS_MASK = 0x3f;
-        uint16_t const FUNCTION = instruction & FIRST_SIX_BITS_MASK;
-        executeTypeR(instruction);
+        uint16_t const FUNCTION = INSTRUCTION & FIRST_SIX_BITS_MASK;
+        executeTypeR(INSTRUCTION);
         if (FUNCTION != static_cast<uint16_t>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
         }
     } else {
-        executeTypeI(instruction);
+        executeTypeI(INSTRUCTION);
         if (OPCODE != static_cast<uint16_t>(Opcode::BEQ) &&
             OPCODE != static_cast<uint16_t>(Opcode::J) &&
             OPCODE != static_cast<uint16_t>(Opcode::BNE) &&
@@ -48,14 +48,14 @@ void CPU::execute(uint32_t instruction) {
     }
 }
 
-void CPU::setProgramCounterTo(uint16_t counter_value) {
-    this->program_counter = counter_value;
+void CPU::setProgramCounterTo(const uint16_t COUNTER_VALUE) {
+    this->program_counter = COUNTER_VALUE;
 }
 
 uint16_t CPU::getProgramCounter() const { return this->program_counter; }
 
-void CPU::setStackPointerTo(uint16_t pointer_value) {
-    this->registers[STACK_PTR_REG] = pointer_value;
+void CPU::setStackPointerTo(const uint16_t POINTER_VALUE) {
+    this->registers[STACK_PTR_REG] = POINTER_VALUE;
 }
 
 
@@ -118,24 +118,36 @@ void CPU::executeTypeR(uint32_t instruction) {
     );
 }
 
-void CPU::BEQ(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    if (registers[reg_a] == registers[reg_b]) {
-        program_counter = program_counter + 4 + 4 * immediate;
+void CPU::BEQ(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
+    if (registers[REG_A] == registers[REG_B]) {
+        program_counter = program_counter + 4 + 4 * IMMEDIATE;
     } else {
         program_counter += PC_INCREMENT;
     }
 }
 
-void CPU::L16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    uint32_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
-    registers[reg_b] = this->console->memory.l16u(EFFECTIVE_ADDRESS);
+void CPU::L16(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
+    uint32_t const EFFECTIVE_ADDRESS = registers[REG_A] + IMMEDIATE;
+    registers[REG_B] = this->console->memory.l16u(EFFECTIVE_ADDRESS);
 }
 
 
-void CPU::L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+void CPU::L8U(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
     try {
-        uint32_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
-        registers[reg_b] =
+        uint32_t const EFFECTIVE_ADDRESS = registers[REG_A] + IMMEDIATE;
+        registers[REG_B] =
             static_cast<uint16_t>(this->console->memory.l8u(EFFECTIVE_ADDRESS));
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to load out of bounds." << std::endl;
@@ -143,82 +155,134 @@ void CPU::L8U(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
 }
 
 
-void CPU::J(uint16_t immediate) { program_counter = 4 * immediate; }
+void CPU::J(const uint16_t IMMEDIATE) { program_counter = 4 * IMMEDIATE; }
 
-void CPU::S16(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+void CPU::S16(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
     try {
-        uint16_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
-        this->console->memory.w16u(EFFECTIVE_ADDRESS, registers[reg_b]);
+        uint16_t const EFFECTIVE_ADDRESS = registers[REG_A] + IMMEDIATE;
+        this->console->memory.w16u(EFFECTIVE_ADDRESS, registers[REG_B]);
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to store out of bounds." << std::endl;
     }
 }
 
-void CPU::S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+void CPU::S8(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
     try {
-        uint16_t const EFFECTIVE_ADDRESS = registers[reg_a] + immediate;
-        this->console->memory.w8u(EFFECTIVE_ADDRESS, registers[reg_b]);
+        uint16_t const EFFECTIVE_ADDRESS = registers[REG_A] + IMMEDIATE;
+        this->console->memory.w8u(EFFECTIVE_ADDRESS, registers[REG_B]);
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to store out of bounds." << std::endl;
     }
 }
 
-void CPU::ADDI(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    registers[reg_b] = registers[reg_a] + immediate;
+void CPU::ADDI(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
+    registers[REG_B] = registers[REG_A] + IMMEDIATE;
 }
 
-void CPU::BNE(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    if (registers[reg_a] != registers[reg_b]) {
-        program_counter = program_counter + 4 + 4 * immediate;
+void CPU::BNE(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t IMMEDIATE
+) {
+    if (registers[REG_A] != registers[REG_B]) {
+        program_counter = program_counter + 4 + 4 * IMMEDIATE;
     } else {
         program_counter += PC_INCREMENT;
     }
 }
 
-void CPU::JAL(uint16_t immediate) {
+void CPU::JAL(const uint16_t IMMEDIATE) {
     registers[JAL_REG] = program_counter + PC_INCREMENT;
-    program_counter = 4 * immediate;
+    program_counter = 4 * IMMEDIATE;
 }
 
-void CPU::SUB(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = registers[reg_a] - registers[reg_b];
+void CPU::SUB(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t REG_C
+) {
+    registers[REG_C] = registers[REG_A] - registers[REG_B];
 }
 
-void CPU::OR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = registers[reg_a] | registers[reg_b];
+void CPU::OR(const uint16_t REG_A, const uint16_t REG_B, const uint16_t REG_C) {
+    registers[REG_C] = registers[REG_A] | registers[REG_B];
 }
 
-void CPU::NOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = ~(registers[reg_a] | registers[reg_b]);
+void CPU::NOR(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t REG_C
+) {
+    registers[REG_C] = ~(registers[REG_A] | registers[REG_B]);
 }
 
-void CPU::ADD(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = registers[reg_a] + registers[reg_b];
+void CPU::ADD(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t REG_C
+) {
+    registers[REG_C] = registers[REG_A] + registers[REG_B];
 }
 
-void CPU::SRA(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
-    registers[reg_c] = (signed) registers[reg_b] >> shift_value;
+void CPU::SRA(
+    const uint16_t REG_B,
+    const uint16_t REG_C,
+    const uint16_t SHIFT_VALUE
+) {
+    registers[REG_C] = (signed) registers[REG_B] >> SHIFT_VALUE;
 }
 
-void CPU::XOR(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = registers[reg_a] ^ registers[reg_b];
+void CPU::XOR(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t REG_C
+) {
+    registers[REG_C] = registers[REG_A] ^ registers[REG_B];
 }
 
-void CPU::AND(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] = registers[reg_a] & registers[reg_b];
+void CPU::AND(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t REG_C
+) {
+    registers[REG_C] = registers[REG_A] & registers[REG_B];
 }
 
-void CPU::JR(uint16_t reg_a) { program_counter = registers[reg_a]; }
+void CPU::JR(const uint16_t REG_A) { program_counter = registers[REG_A]; }
 
-void CPU::SLL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
-    registers[reg_c] = registers[reg_b] << shift_value;
+void CPU::SLL(
+    const uint16_t REG_B,
+    const uint16_t REG_C,
+    const uint16_t SHIFT_VALUE
+) {
+    registers[REG_C] = registers[REG_B] << SHIFT_VALUE;
 }
 
-void CPU::SRL(uint16_t reg_b, uint16_t reg_c, uint16_t shift_value) {
-    registers[reg_c] = (unsigned) registers[reg_b] >> shift_value;
+void CPU::SRL(
+    const uint16_t REG_B,
+    const uint16_t REG_C,
+    const uint16_t SHIFT_VALUE
+) {
+    registers[REG_C] = (unsigned) registers[REG_B] >> SHIFT_VALUE;
 }
 
-void CPU::SLT(uint16_t reg_a, uint16_t reg_b, uint16_t reg_c) {
-    registers[reg_c] =
-        static_cast<uint16_t>(registers[reg_a] < registers[reg_b]);
+void CPU::SLT(
+    const uint16_t REG_A,
+    const uint16_t REG_B,
+    const uint16_t REG_C
+) {
+    registers[REG_C] =
+        static_cast<uint16_t>(registers[REG_A] < registers[REG_B]);
 }
