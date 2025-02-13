@@ -32,7 +32,8 @@ void OS::reset(const std::string& filename) {
 
     while (this->c->cpu.getProgramCounter() != 0) {
         uint16_t const PROGRAM_COUNTER = this->c->cpu.getProgramCounter();
-        uint32_t const INSTRUCTION = this->c->memory.loadInstruction(PROGRAM_COUNTER);
+        uint32_t const INSTRUCTION =
+            this->c->memory.loadInstruction(PROGRAM_COUNTER);
         this->c->cpu.execute(INSTRUCTION);
     }
 }
@@ -44,7 +45,8 @@ void OS::loopIteration() {
 
     while (this->c->cpu.getProgramCounter() != 0) {
         uint16_t const PROGRAM_COUNTER = this->c->cpu.getProgramCounter();
-        uint32_t const INSTRUCTION = this->c->memory.loadInstruction(PROGRAM_COUNTER);
+        uint32_t const INSTRUCTION =
+            this->c->memory.loadInstruction(PROGRAM_COUNTER);
         this->c->cpu.execute(INSTRUCTION);
     }
 
