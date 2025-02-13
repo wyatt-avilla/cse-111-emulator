@@ -26,7 +26,7 @@ void OS::reset(const std::string& filename) {
         static_cast<uint16_t>(Memory::Address::STACK_END)
     );
 
-       // 4. Call setup()
+    // 4. Call setup()
     setup();
 }
 void OS::setup() {
