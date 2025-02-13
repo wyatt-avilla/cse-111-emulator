@@ -27,6 +27,9 @@ void OS::reset(const std::string& filename) {
     );
 
     // 4. Call setup()
+    setup();
+}
+void OS::setup() {
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getSetupAddress() / 4);
 
@@ -37,7 +40,6 @@ void OS::reset(const std::string& filename) {
         this->c->cpu.execute(INSTRUCTION);
     }
 }
-
 void OS::loopIteration() {
     // 1. Run iteration of loop()
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
