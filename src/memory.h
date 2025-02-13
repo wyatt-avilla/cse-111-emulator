@@ -50,7 +50,7 @@ class Memory {
     void loadFile(std::ifstream& file_stream);
 
   private:
-    Console* console_instance; 
+    Console* console_instance;
     const uint8_t BITS_PER_BYTE = 8;
 
     std::array<
