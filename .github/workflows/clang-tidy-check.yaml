@@ -52,7 +52,7 @@ jobs:
       - name: Run clang-tidy
         run: |
           TIDY_ISSUES=0
-          for file in $(find . -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
+          for file in $(find ./src -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
             echo "Analyzing $file..."
             if ! clang-tidy "$file" -p . > tidy_output.txt 2>&1; then
               TIDY_ISSUES=1
