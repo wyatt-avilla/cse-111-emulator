@@ -32,7 +32,7 @@ jobs:
       - name: Generate compilation database
         run: |
           sudo apt-get install -y cmake
-          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DSDL_UNIX_CONSOLE_BUILD=ON
           mv build/compile_commands.json .
 
       - name: Run clang-tidy
