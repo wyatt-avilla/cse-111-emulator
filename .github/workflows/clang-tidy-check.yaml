@@ -29,11 +29,25 @@ jobs:
             exit 1
           fi
 
-      - name: Generate compilation database
+      - name: Cache SDL Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/build
+            ${{ github.workspace }}/external/SDL
+          key: ${{ runner.os }}-sdl-${{ hashFiles('external/SDL/**') }}
+          restore-keys: |
+            ${{ runner.os }}-sdl-
+
+      - name: Configure CMake
         run: |
-          sudo apt-get install -y cmake
-          cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DSDL_UNIX_CONSOLE_BUILD=ON
-          mv build/compile_commands.json .
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDL_UNIX_CONSOLE_BUILD=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Generate compilation database
+        run: mv build/compile_commands.json .
 
       - name: Run clang-tidy
         run: |
