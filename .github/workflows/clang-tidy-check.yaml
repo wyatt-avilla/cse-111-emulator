@@ -10,7 +10,11 @@ jobs:
     name: Static Analysis Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
       - name: Install clang-tidy and dependencies
         run: |
           sudo apt-get update
