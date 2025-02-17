@@ -15,6 +15,8 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
       - name: Install clang-tidy and dependencies
         run: |
           sudo apt-get update
