@@ -43,11 +43,10 @@ jobs:
         run: |
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDL_UNIX_CONSOLE_BUILD=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-      - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
       - name: Generate compilation database
-        run: mv build/compile_commands.json .
+        run: |
+          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+          mv build/compile_commands.json .
 
       - name: Run clang-tidy
         run: |
