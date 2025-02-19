@@ -1,3 +1,4 @@
+#pragma once
 #ifndef GPU_H
 #define GPU_H
 
