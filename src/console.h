@@ -5,6 +5,7 @@
 #include "cpu.h"
 #include "memory.h"
 #include "os.h"
+#include "gpu.h"
 
 
 class Console {
@@ -13,6 +14,7 @@ class Console {
     CPU cpu;
     OS os;
     Memory memory;
+    GPU gpu;
 
     void run(const std::string& slug_file_path);
     void stopExecution();
