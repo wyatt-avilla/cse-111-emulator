@@ -32,6 +32,6 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>:-O3 -Werror>
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3-shared)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
