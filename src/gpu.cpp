@@ -51,6 +51,15 @@ void GPU::setPixel(int x, int y, uint8_t grayLevel) {
 }
 
 void GPU::renderFrame() {
+    // Poll for SDL events
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            // Exit the program when the window is closed
+            exit(0);
+        }
+    }
+    
     // Create a temporary pixel buffer for the texture
     uint32_t pixels[VRAM_SIZE];
     for (int i = 0; i < VRAM_SIZE; ++i) {
