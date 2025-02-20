@@ -21,7 +21,7 @@ public:
     // Sets the pixel at (x, y) to the given gray level (0x00 = Black, 0xff = White)
     void setPixel(int x, int y, uint8_t grayLevel);
 
-    // Uses SDL to render the current VRAM as a 128×128 image (scaled up)
+    // Uses SDL to render the current VRAM as a 128×128 image (scaled up) and handles quit events
     void renderFrame();
 
 private:
