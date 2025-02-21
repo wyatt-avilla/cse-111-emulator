@@ -1,4 +1,4 @@
-#include <wx/wx.h>
+#include "gui.h"
 
 class MyApp : public wxApp {
 public:

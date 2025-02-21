@@ -11,7 +11,8 @@ set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(external/SDL EXCLUDE_FROM_ALL)
+find_package(SDL2 REQUIRED)
+find_package(wxWidgets REQUIRED)
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
@@ -19,6 +20,7 @@ add_executable(${PROJECT_NAME}
     src/cpu.cpp
     src/memory.cpp
     src/os.cpp
+    src/gui.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
@@ -32,6 +34,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>:-O3 -Werror>
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2)
+# Make sure this line is after add_executable
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2 wxWidgets::wxWidgets)
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
