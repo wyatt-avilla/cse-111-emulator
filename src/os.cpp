@@ -1,11 +1,12 @@
 #include "os.h"
-#include "console.h"
-#include "memory.h"
-#include "gpu.h"
 
+#include "console.h"
+#include "gpu.h"
+#include "memory.h"
+
+#include <chrono>
 #include <fstream>
 #include <iostream>
-#include <chrono>
 #include <thread>
 
 OS::OS(Console* console) : c(console) {}
@@ -22,11 +23,15 @@ void OS::reset(const std::string& filename) {
 
     this->c->memory.copyDataSectionToRam();
 
-    this->c->cpu.setStackPointerTo(static_cast<uint16_t>(Memory::Address::STACK_END));
+    this->c->cpu.setStackPointerTo(
+        static_cast<uint16_t>(Memory::Address::STACK_END)
+    );
 
     // NEW: Set the GPU's external VRAM pointer.
     // This assumes Memory provides a getPointerToMemArray() method (see below)
-    this->c->gpu.setExternalVRAM(this->c->memory.getPointerToMemArray() + 0x3000);
+    this->c->gpu.setExternalVRAM(
+        this->c->memory.getPointerToMemArray() + 0x3000
+    );
 
     setup();
 }
@@ -37,7 +42,8 @@ void OS::setup() {
 
     while (this->c->cpu.getProgramCounter() != 0 && c->isRunning()) {
         uint16_t const program_counter = this->c->cpu.getProgramCounter();
-        uint32_t const instruction = this->c->memory.loadInstruction(program_counter);
+        uint32_t const instruction =
+            this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }
 }
@@ -50,18 +56,24 @@ void OS::loopIteration() {
 
     while (this->c->cpu.getProgramCounter() != 0 && c->isRunning()) {
         uint16_t const program_counter = this->c->cpu.getProgramCounter();
-        uint32_t const instruction = this->c->memory.loadInstruction(program_counter);
+        uint32_t const instruction =
+            this->c->memory.loadInstruction(program_counter);
         this->c->cpu.execute(instruction);
     }
 
-    // Render the current frame using the GPU (which now copies from external VRAM)
+    // Render the current frame using the GPU (which now copies from external
+    // VRAM)
     this->c->gpu.renderFrame();
 
     auto iterationEnd = std::chrono::steady_clock::now();
-    double elapsedMs = std::chrono::duration<double, std::milli>(iterationEnd - iterationStart).count();
+    double elapsedMs =
+        std::chrono::duration<double, std::milli>(iterationEnd - iterationStart)
+            .count();
     constexpr double targetFrameTimeMs = 16.667;
     if (elapsedMs < targetFrameTimeMs) {
-        std::chrono::duration<double, std::milli> sleepDuration(targetFrameTimeMs - elapsedMs);
+        std::chrono::duration<double, std::milli> sleepDuration(
+            targetFrameTimeMs - elapsedMs
+        );
         std::this_thread::sleep_for(sleepDuration);
     }
 }
