@@ -61,7 +61,7 @@ GPU::~GPU() {
     SDL_Quit();
 }
 
-int GPU::getPixelAddress(int x, int y) const {
+int GPU::getPixelAddress(uint32_t x, uint32_t y) const {
     // Calculate pixel index: x + (y * 128)
     return static_cast<uint16_t>(Memory::Address::STACK_END) + (x + y * FRAME_WIDTH);
 }
