@@ -113,22 +113,15 @@ uint32_t Memory::loadInstruction(const uint16_t load_address) const {
 
 // got the write code from chat gpt
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
-void Memory::w8u(const uint16_t address, const uint8_t value) {
+void Memory::w8u(uint16_t address, uint8_t value) {
     if (!isWritable(address)) {
+        std::cerr << "🚨 Error: Attempted to write to " << std::hex << address
+                  << " with value " << std::hex << static_cast<int>(value) << std::endl;
         throw std::invalid_argument(
             "Cannot write to " + std::to_string(address)
         );
     }
-
-    if (address == static_cast<uint32_t>(Address::STDOUT)) {
-        std::cout << char(value);
-    } else if (address == static_cast<uint32_t>(Address::STDERR)) {
-        std::cerr << char(value);
-    } else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
-        console_instance->stopExecution();
-    } else {
-        mem_array[address] = value;
-    }
+    mem_array[address] = value;
 }
 
 void Memory::w16u(const uint16_t address, const uint16_t value) {
