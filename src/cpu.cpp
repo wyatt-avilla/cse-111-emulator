@@ -171,16 +171,15 @@ void CPU::S16(
     }
 }
 
-void CPU::S8(
-    const uint16_t reg_a,
-    const uint16_t reg_b,
-    const uint16_t immediate
-) {
+void CPU::S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
+    uint16_t effective_address = registers[reg_a] + immediate;
+    // Debug log: print the value and effective address
+    std::cerr << "CPU::S8: Writing 0x" << std::hex << registers[reg_b]
+              << " to address 0x" << std::hex << effective_address << std::endl;
     try {
-        uint16_t const effective_address = registers[reg_a] + immediate;
         this->console->memory.w8u(effective_address, registers[reg_b]);
-    } catch (const std::invalid_argument&) {
-        std::cerr << "Tried to store out of bounds." << std::endl;
+    } catch (const std::invalid_argument& e) {
+        std::cerr << "CPU::S8 error: " << e.what() << std::endl;
     }
 }
 
