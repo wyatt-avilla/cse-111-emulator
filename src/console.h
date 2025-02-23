@@ -11,6 +11,7 @@
 class Console {
   public:
     Console();
+    ~Console();
     CPU cpu;
     OS os;
     Memory memory;
