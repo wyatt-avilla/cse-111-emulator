@@ -2,7 +2,7 @@
 name: Clang Tidy
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "clang-tidy-severity-fix"]
   pull_request:
     branches: ["main"]
 
