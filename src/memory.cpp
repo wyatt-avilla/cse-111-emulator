@@ -56,17 +56,17 @@ bool Memory::isExecutable(const uint32_t address) {
     ); // SLUG file
 }
 
-
 uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
+        std::cerr << "🚨 Invalid Read Attempt at Address: " << std::hex 
+                  << load_address << std::endl;
         throw std::invalid_argument(
-            "Cannot read from " + std::to_string(load_address)
+            "Cannot read from address " + std::to_string(load_address)
         );
     }
 
     uint8_t out = 0;
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        // TODO: get controller data
         out = console_instance->getControllerState();
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
