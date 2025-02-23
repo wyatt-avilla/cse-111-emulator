@@ -60,8 +60,20 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
         std::cerr << "🚨 Invalid Read Attempt at Address: " << std::hex 
                   << load_address << std::endl;
-        throw std::invalid_argument(
-            "Cannot read from address " + std::to_string(load_address));
+
+        // 🛑 Print a backtrace to see where the call comes from
+        void* callstack[10];
+        int frames = backtrace(callstack, 10);
+        char** symbols = backtrace_symbols(callstack, frames);
+        if (symbols) {
+            std::cerr << "Backtrace:\n";
+            for (int i = 0; i < frames; ++i) {
+                std::cerr << symbols[i] << "\n";
+            }
+            free(symbols);
+        }
+
+        throw std::invalid_argument("Cannot read from address " + std::to_string(load_address));
     }
 
     uint8_t out = 0;
