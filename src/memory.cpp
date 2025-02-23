@@ -103,17 +103,24 @@ uint32_t Memory::loadInstruction(const uint16_t load_address) const {
 
 // got the write code from chat gpt
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
-void Memory::w8u(const uint16_t address, const uint8_t value) {
+void Memory::w8u(uint16_t address, uint8_t value) {
     if (!isWritable(address)) {
         throw std::invalid_argument(
             "Cannot write to " + std::to_string(address)
         );
     }
 
+    // If the write is within VRAM (0x3000 to 0x7000), log the write.
+    if (address >= static_cast<uint32_t>(Address::VRAM_START) &&
+        address < static_cast<uint32_t>(Address::VRAM_END)) {
+        std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex << int(value)
+                  << " to address 0x" << std::hex << address << std::endl;
+    }
+
     if (address == static_cast<uint32_t>(Address::STDOUT)) {
-        std::cout << char(value);
+        std::cout << static_cast<char>(value);
     } else if (address == static_cast<uint32_t>(Address::STDERR)) {
-        std::cerr << char(value);
+        std::cerr << static_cast<char>(value);
     } else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
         console_instance->stopExecution();
     } else {
