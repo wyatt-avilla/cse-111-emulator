@@ -54,4 +54,4 @@ jobs:
 
       - name: Run clang-tidy
         run: |
-          clang-tidy src/*.cpp src/*.h src/*.hpp -p compile_commands.json
+          clang-tidy src/*.cpp src/*.h -p compile_commands.json
