@@ -3,6 +3,7 @@
 #pragma once
 
 #include "cpu.h"
+#include "gpu.h"
 #include "memory.h"
 #include "os.h"
 
@@ -13,6 +14,7 @@ class Console {
     CPU cpu;
     OS os;
     Memory memory;
+    GPU gpu;
 
     void run(const std::string& slug_file_path);
     void stopExecution();
