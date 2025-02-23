@@ -25,6 +25,6 @@ class Console {
     GPU gpu;
 
   private:
-    bool is_running = true; // Ensure program runs until explicitly stopped
+    bool is_running = true;
     uint8_t controllerState;
 };
