@@ -39,5 +39,3 @@ class GPU {
     // Pointer to the external VRAM region (main memory, starting at 0x3000)
     uint8_t* externalVRAM = nullptr;
 };
-
-#endif // GPU_H
