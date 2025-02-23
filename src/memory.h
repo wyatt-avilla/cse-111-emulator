@@ -21,7 +21,7 @@ public:
         STACK_START = 0x1000,
         STACK_END = 0x3000,
         VRAM_START = 0x3000,
-        VRAM_END = 0x4000,
+        VRAM_END = 0x7000,
         SLUG_START = 0x8000,
         SLUG_SIZE = 0x8000,
         SETUP = 0x81e0,
