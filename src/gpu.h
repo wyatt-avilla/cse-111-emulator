@@ -1,5 +1,4 @@
-#ifndef GPU_H
-#define GPU_H
+#pragma once
 
 #include <SDL2/SDL.h>
 #include <cstdint>
