@@ -30,6 +30,11 @@ void OS::reset(const std::string& filename) {
     this->c->cpu.setStackPointerTo(
         static_cast<uint16_t>(Memory::Address::STACK_END)
     );
+     this->c->gpu.setExternalVRAM(
+        this->c->memory.getPointerToMemArray() +
+        static_cast<uint16_t>(Memory::Address::STACK_END)
+    );
+
 
     // 4. Call setup()
     setup();
