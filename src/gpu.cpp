@@ -1,7 +1,8 @@
 #include "gpu.h"
-#include <iostream>
+
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 
 // Scale factor to enlarge the 128x128 display
 const int WINDOW_SCALE = 4;
@@ -16,22 +17,34 @@ GPU::GPU() : window(nullptr), renderer(nullptr), texture(nullptr) {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
         exit(1);
     }
-    
-    window = SDL_CreateWindow("Banana Emulator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+
+    window = SDL_CreateWindow(
+        "Banana Emulator",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
+        SDL_WINDOW_SHOWN
+    );
     if (!window) {
         std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         exit(1);
     }
-    
+
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError()
+                  << std::endl;
         exit(1);
     }
-    
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
-                                FRAME_WIDTH, FRAME_HEIGHT);
+
+    texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_ARGB8888,
+        SDL_TEXTUREACCESS_STREAMING,
+        FRAME_WIDTH,
+        FRAME_HEIGHT
+    );
     if (!texture) {
         std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
         exit(1);
@@ -39,9 +52,12 @@ GPU::GPU() : window(nullptr), renderer(nullptr), texture(nullptr) {
 }
 
 GPU::~GPU() {
-    if (texture) SDL_DestroyTexture(texture);
-    if (renderer) SDL_DestroyRenderer(renderer);
-    if (window) SDL_DestroyWindow(window);
+    if (texture)
+        SDL_DestroyTexture(texture);
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
+    if (window)
+        SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
@@ -64,27 +80,29 @@ void GPU::renderFrame() {
         if (event.type == SDL_QUIT)
             exit(0);
     }
-    
+
     // Copy external VRAM (from main memory) into the internal buffer.
     if (externalVRAM) {
         std::memcpy(vram, externalVRAM, VRAM_SIZE);
     } else {
         std::cerr << "Warning: External VRAM pointer not set." << std::endl;
     }
-    
+
     // Debug: Dump the first 16 bytes of the internal VRAM buffer.
-    std::cerr << "GPU::renderFrame: Dumping first 16 bytes of VRAM:" << std::endl;
+    std::cerr << "GPU::renderFrame: Dumping first 16 bytes of VRAM:"
+              << std::endl;
     for (int i = 0; i < 16; ++i) {
-        std::cerr << "  vram[" << i << "] = 0x" << std::hex << int(vram[i]) << std::endl;
+        std::cerr << "  vram[" << i << "] = 0x" << std::hex << int(vram[i])
+                  << std::endl;
     }
-    
+
     // Convert each 1-byte gray level into a 32-bit ARGB pixel.
     uint32_t pixels[VRAM_SIZE];
     for (int i = 0; i < VRAM_SIZE; ++i) {
         uint8_t gray = vram[i];
         pixels[i] = (0xFF << 24) | (gray << 16) | (gray << 8) | gray;
     }
-    
+
     // Update the SDL texture with the pixel data and render it.
     SDL_UpdateTexture(texture, nullptr, pixels, FRAME_WIDTH * sizeof(uint32_t));
     SDL_RenderClear(renderer);
@@ -92,6 +110,4 @@ void GPU::renderFrame() {
     SDL_RenderPresent(renderer);
 }
 
-void GPU::setExternalVRAM(uint8_t* ptr) {
-    externalVRAM = ptr;
-}
+void GPU::setExternalVRAM(uint8_t* ptr) { externalVRAM = ptr; }
