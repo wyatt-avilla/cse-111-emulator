@@ -35,6 +35,7 @@ class CPU {
     };
 
     CPU(Console* console);
+    ~CPU();
 
     void execute(uint32_t instruction);
 
