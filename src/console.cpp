@@ -28,16 +28,14 @@ Console::~Console() {
 void Console::pollInput() {
     SDL_Event event;
     
-    // Check for SDL quit event to exit the emulator
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             std::cerr << "🛑 SDL Quit Event Detected! Stopping execution..." << std::endl;
-            stopExecution(); // Stops the main loop
+            stopExecution();
             return;
         }
     }
 
-    // Get keyboard state
     const Uint8* keyboard = SDL_GetKeyboardState(NULL);
     controllerState = 0;
 
@@ -50,15 +48,19 @@ void Console::pollInput() {
     if (keyboard[SDL_SCANCODE_LEFT]) controllerState |= CONTROLLER_LEFT_MASK;
     if (keyboard[SDL_SCANCODE_RIGHT]) controllerState |= CONTROLLER_RIGHT_MASK;
 
-    std::cerr << "🔍 Controller Byte: " << std::bitset<8>(controllerState) << std::endl;
+    // ✅ Write controller state to memory address 0x7000
+    memory.w8u(0x7000, controllerState);
+
+    std::cerr << "🔍 Controller State: " << std::bitset<8>(controllerState) << std::endl;
 }
+
 uint8_t Console::getControllerState() const {
     return controllerState;
 }
 
 void Console::stopExecution() {
     std::cerr << "🛑 Emulator Stopping!" << std::endl;
-    is_running = false; 
+    is_running = false;
 }
 
 bool Console::isRunning() const {
@@ -68,6 +70,7 @@ bool Console::isRunning() const {
 void Console::run(const std::string& slug_file_path) {
     os.reset(slug_file_path);
     while (isRunning()) {
+        pollInput();
         os.loopIteration();
     }
 }
