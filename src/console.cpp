@@ -26,31 +26,27 @@ void Console::pollInput() {
     const Uint8* keyboard = SDL_GetKeyboardState(NULL);
     controllerState = 0;
 
-    if (keyboard[SDL_SCANCODE_A])
-        controllerState |= CONTROLLER_A_MASK;
-    if (keyboard[SDL_SCANCODE_S])
-        controllerState |= CONTROLLER_B_MASK;
-    if (keyboard[SDL_SCANCODE_TAB])
-        controllerState |= CONTROLLER_SELECT_MASK;
-    if (keyboard[SDL_SCANCODE_RETURN])
-        controllerState |= CONTROLLER_START_MASK;
-    if (keyboard[SDL_SCANCODE_UP])
-        controllerState |= CONTROLLER_UP_MASK;
-    if (keyboard[SDL_SCANCODE_DOWN])
-        controllerState |= CONTROLLER_DOWN_MASK;
-    if (keyboard[SDL_SCANCODE_LEFT])
-        controllerState |= CONTROLLER_LEFT_MASK;
-    if (keyboard[SDL_SCANCODE_RIGHT])
-        controllerState |= CONTROLLER_RIGHT_MASK;
-    // Write the controller byte to memory at address 0x7000
-    this->memory.w8u(
-        static_cast<uint16_t>(Memory::Address::CONTROLLER_DATA),
-        controllerState
-    );
+    if (keyboard[SDL_SCANCODE_A]) controllerState |= CONTROLLER_A_MASK;
+    if (keyboard[SDL_SCANCODE_S]) controllerState |= CONTROLLER_B_MASK;
+    if (keyboard[SDL_SCANCODE_TAB]) controllerState |= CONTROLLER_SELECT_MASK;
+    if (keyboard[SDL_SCANCODE_RETURN]) controllerState |= CONTROLLER_START_MASK;
+    if (keyboard[SDL_SCANCODE_UP]) controllerState |= CONTROLLER_UP_MASK;
+    if (keyboard[SDL_SCANCODE_DOWN]) controllerState |= CONTROLLER_DOWN_MASK;
+    if (keyboard[SDL_SCANCODE_LEFT]) controllerState |= CONTROLLER_LEFT_MASK;
+    if (keyboard[SDL_SCANCODE_RIGHT]) controllerState |= CONTROLLER_RIGHT_MASK;
 
-    // Optional: For debugging, print the controller byte to the console
-    std::cout << "Controller Byte: " << std::bitset<8>(controllerState)
-              << std::endl;
+    std::cerr << "🔍 Controller Byte: " << std::bitset<8>(controllerState) << std::endl;
+
+    // 🛑 Only write to memory if controllerState is NOT zero
+    if (controllerState != 0) {
+        std::cerr << "✅ Writing to CONTROLLER_DATA (0x7000): " << std::bitset<8>(controllerState) << std::endl;
+        this->memory.w8u(
+            static_cast<uint16_t>(Memory::Address::CONTROLLER_DATA),
+            controllerState
+        );
+    } else {
+        std::cerr << "⚠️ Skipping write to 0x7000 because controllerState is 0." << std::endl;
+    }
 }
 
 uint8_t Console::getControllerState() const { return controllerState; }
