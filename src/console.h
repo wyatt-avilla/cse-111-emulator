@@ -1,5 +1,3 @@
-#include <string>
-
 #pragma once
 
 #include "cpu.h"
@@ -7,23 +5,26 @@
 #include "memory.h"
 #include "os.h"
 
+#include <SDL2/SDL.h>
+#include <string>
 
 class Console {
   public:
     Console();
     ~Console();
+
+    void pollInput();
+    uint8_t getControllerState() const;
+    void stopExecution();
+    bool isRunning() const;
+    void run(const std::string& slug_file_path);
+
+    Memory memory;
     CPU cpu;
     OS os;
-    Memory memory;
     GPU gpu;
-    void pollInput(); // Update controller state
-    uint8_t getControllerState() const;
-
-    void run(const std::string& slug_file_path);
-    void stopExecution();
-    [[nodiscard]] bool isRunning() const;
 
   private:
-    bool is_running{true};
+    bool is_running = true; // Ensure program runs until explicitly stopped
     uint8_t controllerState;
 };
