@@ -11,7 +11,7 @@
 class Console {
   public:
     Console();
-    virtual ~Console(); // 🔹 Added virtual destructor for proper cleanup
+    virtual ~Console(); // Added virtual destructor for proper cleanup
     CPU cpu;
     OS os;
     Memory memory;
