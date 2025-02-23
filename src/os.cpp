@@ -1,8 +1,10 @@
+#include "os.h"
 #include "console.h"
+#include "memory.h"
+#include "gpu.h"
 
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <chrono>
 #include <thread>
 
@@ -22,6 +24,10 @@ void OS::reset(const std::string& filename) {
 
     this->c->cpu.setStackPointerTo(static_cast<uint16_t>(Memory::Address::STACK_END));
 
+    // NEW: Set the GPU's external VRAM pointer.
+    // This assumes Memory provides a getPointerToMemArray() method (see below)
+    this->c->gpu.setExternalVRAM(this->c->memory.getPointerToMemArray() + 0x3000);
+
     setup();
 }
 
@@ -37,10 +43,8 @@ void OS::setup() {
 }
 
 void OS::loopIteration() {
-    // Start timing the iteration
     auto iterationStart = std::chrono::steady_clock::now();
 
-    // 1. Run iteration of loop()
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
@@ -50,17 +54,12 @@ void OS::loopIteration() {
         this->c->cpu.execute(instruction);
     }
 
-    // 2. Display the GPU frame buffer (render the current VRAM contents)
+    // Render the current frame using the GPU (which now copies from external VRAM)
     this->c->gpu.renderFrame();
 
-    // Calculate the elapsed time for this iteration
     auto iterationEnd = std::chrono::steady_clock::now();
     double elapsedMs = std::chrono::duration<double, std::milli>(iterationEnd - iterationStart).count();
-
-    // Target frame time for 60 FPS is ~16.667 ms per frame
     constexpr double targetFrameTimeMs = 16.667;
-
-    // If the iteration finished too quickly, delay the next iteration accordingly
     if (elapsedMs < targetFrameTimeMs) {
         std::chrono::duration<double, std::milli> sleepDuration(targetFrameTimeMs - elapsedMs);
         std::this_thread::sleep_for(sleepDuration);
