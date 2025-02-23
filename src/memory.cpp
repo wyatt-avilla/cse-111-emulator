@@ -61,8 +61,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
         std::cerr << "🚨 Invalid Read Attempt at Address: " << std::hex 
                   << load_address << std::endl;
         throw std::invalid_argument(
-            "Cannot read from address " + std::to_string(load_address)
-        );
+            "Cannot read from address " + std::to_string(load_address));
     }
 
     uint8_t out = 0;
