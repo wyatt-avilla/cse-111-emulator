@@ -1,29 +1,29 @@
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#include <string>
+
+#pragma once
 
 #include "cpu.h"
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
 
-#include <cstdint>
 
 class Console {
-public:
+  public:
     Console();
-    virtual ~Console(); // Virtual destructor to ensure cleanup
-
-    void pollInput();
-    void stopExecution();
-    bool isRunning() const;
-
-private:
+    virtual ~Console(); // 🔹 Added virtual destructor for proper cleanup
     CPU cpu;
     OS os;
     Memory memory;
     GPU gpu;
-    uint8_t controllerState;
-    bool is_running;
-};
+    void pollInput(); // Update controller state
+    uint8_t getControllerState() const;  void run(const std::string& slug_file_path);
+    void stopExecution();
+    [[nodiscard]] bool isRunning() const;
 
-#endif // CONSOLE_H
+  private:
+    bool is_running{true};
+    uint8_t controllerState;
+
+
+};
