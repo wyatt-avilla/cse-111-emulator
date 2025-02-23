@@ -15,10 +15,10 @@ class GPU {
 
     // Given pixel coordinates (x, y), returns the full memory address in VRAM.
     // Calculation: 0x3000 + (x + y * 128)
-    uint32_t getPixelAddress(uint32_t x, uint32_t y) const;
+    static uint32_t getPixelAddress(uint32_t x, uint32_t y) ;
 
     // Optionally set a pixel in the internal frame buffer.
-    void setPixel(uint32_t x, uint32_t y, uint8_t grayLevel);
+    void setPixel(uint32_t x, uint32_t y, uint8_t gray_level);
 
     // Render the current frame: copy external VRAM into the internal buffer,
     // convert grayscale bytes to 32-bit ARGB pixels, and render via SDL.

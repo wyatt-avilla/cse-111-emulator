@@ -28,13 +28,13 @@ GPU::GPU() : window(nullptr), renderer(nullptr), texture(nullptr) {
         WINDOW_HEIGHT,
         SDL_WINDOW_SHOWN
     );
-    if (!window) {
+    if (window == nullptr) {
         std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         exit(1);
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
+    if (renderer == nullptr) {
         std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError()
                   << std::endl;
         exit(1);
@@ -47,67 +47,68 @@ GPU::GPU() : window(nullptr), renderer(nullptr), texture(nullptr) {
         FRAME_WIDTH,
         FRAME_HEIGHT
     );
-    if (!texture) {
+    if (texture == nullptr) {
         std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
         exit(1);
     }
 }
 
 GPU::~GPU() {
-    if (texture)
+    if (texture != nullptr)
         SDL_DestroyTexture(texture);
-    if (renderer)
+    if (renderer != nullptr)
         SDL_DestroyRenderer(renderer);
-    if (window)
+    if (window != nullptr)
         SDL_DestroyWindow(window);
     SDL_Quit();
 }
 
-uint32_t GPU::getPixelAddress(uint32_t x, uint32_t y) const {
+uint32_t GPU::getPixelAddress(uint32_t x_coord, uint32_t y_coord) {
     // Calculate pixel index: x + (y * 128)
     return static_cast<uint16_t>(Memory::Address::STACK_END) +
-           (x + y * FRAME_WIDTH);
+           (x_coord + y_coord * FRAME_WIDTH);
 }
 
-void GPU::setPixel(uint32_t x, uint32_t y, uint8_t grayLevel) {
-    if (x < 0 || x >= FRAME_WIDTH || y < 0 || y >= FRAME_HEIGHT)
+void GPU::setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level) {
+    if (x_coord >= FRAME_WIDTH || y_coord >= FRAME_HEIGHT)
         return;
-    int index = x + (y * FRAME_WIDTH);
-    vram[index] = grayLevel;
+    uint32_t const index = x_coord + (y_coord * FRAME_WIDTH);
+    vram[index] = gray_level;
 }
 
 void GPU::renderFrame() {
     // Process SDL events (for example, window close events)
     SDL_Event event;
-    while (SDL_PollEvent(&event)) {
+    while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT)
             exit(0);
     }
 
     // Copy external VRAM (from main memory) into the internal buffer.
-    if (externalVRAM) {
+    if (externalVRAM != nullptr) {
         std::memcpy(vram, externalVRAM, VRAM_SIZE);
     } else {
         std::cerr << "Warning: External VRAM pointer not set." << std::endl;
     }
 
-    // Debug: Dump the first 16 bytes of the internal VRAM buffer.
-    std::cerr << "GPU::renderFrame: Dumping first 16 bytes of VRAM:"
-              << std::endl;
-    for (int i = 0; i < 16; ++i) {
-        std::cerr << "  vram[" << i << "] = 0x" << std::hex << int(vram[i])
-                  << std::endl;
-    }
-
     // Convert each 1-byte gray level into a 32-bit ARGB pixel.
-    uint32_t pixels[VRAM_SIZE];
-    for (int i = 0; i < VRAM_SIZE; ++i) {
-        uint8_t gray = vram[i];
-        pixels[i] = (0xFF << 24) | (gray << 16) | (gray << 8) | gray;
+    const uint8_t bits_per_byte = 8;
+    const uint8_t low_byte = 0xff;
+    std::array<uint32_t, VRAM_SIZE> pixels{};
+    for (size_t i = 0; i < VRAM_SIZE; ++i) {
+        uint8_t const gray = vram[i];
+        pixels[i] = (low_byte << bits_per_byte * 3) |
+                    (gray << bits_per_byte * 2) | (gray << bits_per_byte) |
+                    gray;
     }
 
     // Update the SDL texture with the pixel data and render it.
-    SDL_UpdateTexture(texture, nullptr, pixels, FRAME_WIDTH * sizeof(uint32_t));
+    SDL_UpdateTexture(
+        texture,
+        nullptr,
+        pixels.data(),
+        FRAME_WIDTH * sizeof(uint32_t)
+    );
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);

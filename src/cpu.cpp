@@ -172,10 +172,7 @@ void CPU::S16(
 }
 
 void CPU::S8(uint16_t reg_a, uint16_t reg_b, uint16_t immediate) {
-    uint16_t effective_address = registers[reg_a] + immediate;
-    // Debug log: print the value and effective address
-    std::cerr << "CPU::S8: Writing 0x" << std::hex << registers[reg_b]
-              << " to address 0x" << std::hex << effective_address << std::endl;
+    uint16_t const effective_address = registers[reg_a] + immediate;
     try {
         this->console->memory.w8u(effective_address, registers[reg_b]);
     } catch (const std::invalid_argument& e) {

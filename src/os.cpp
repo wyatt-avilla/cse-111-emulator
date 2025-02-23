@@ -49,7 +49,7 @@ void OS::setup() {
 }
 
 void OS::loopIteration() {
-    auto iterationStart = std::chrono::steady_clock::now();
+    auto iteration_start = std::chrono::steady_clock::now();
 
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
@@ -65,15 +65,15 @@ void OS::loopIteration() {
     // VRAM)
     this->c->gpu.renderFrame();
 
-    auto iterationEnd = std::chrono::steady_clock::now();
-    double elapsedMs =
-        std::chrono::duration<double, std::milli>(iterationEnd - iterationStart)
+    auto iteration_end = std::chrono::steady_clock::now();
+    double const elapsed_ms =
+        std::chrono::duration<double, std::milli>(iteration_end - iteration_start)
             .count();
-    constexpr double targetFrameTimeMs = 16.667;
-    if (elapsedMs < targetFrameTimeMs) {
-        std::chrono::duration<double, std::milli> sleepDuration(
-            targetFrameTimeMs - elapsedMs
+    constexpr double target_frame_time_ms = 16.667;
+    if (elapsed_ms < target_frame_time_ms) {
+        std::chrono::duration<double, std::milli> const sleep_duration(
+            target_frame_time_ms - elapsed_ms
         );
-        std::this_thread::sleep_for(sleepDuration);
+        std::this_thread::sleep_for(sleep_duration);
     }
 }
