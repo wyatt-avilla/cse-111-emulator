@@ -1,15 +1,16 @@
 #include "gpu.h"
 #include <iostream>
+#include <cstdlib>
 #include <cstring>
-#include <cstdlib> // for exit()
 
-const int WINDOW_SCALE = 4; // Scale factor to enlarge the image
+// Define window scaling parameters (unchanged)
+const int WINDOW_SCALE = 4;
 const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU() : window(nullptr), renderer(nullptr), texture(nullptr) {
-    std::memset(vram, 0, sizeof(vram));
-    
+    // vramPtr will be set later via setVRAMPointer()
+
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
         exit(1);
@@ -48,7 +49,9 @@ int GPU::getPixelAddress(int x, int y) {
 void GPU::setPixel(int x, int y, uint8_t grayLevel) {
     if (x < 0 || x >= FRAME_WIDTH || y < 0 || y >= FRAME_HEIGHT) return;
     int index = getPixelAddress(x, y);
-    vram[index] = grayLevel;
+    if (vramPtr) {
+        vramPtr[index] = grayLevel;
+    }
 }
 
 void GPU::renderFrame() {
@@ -60,11 +63,17 @@ void GPU::renderFrame() {
         }
     }
     
-    // Convert VRAM grayscale values to 32-bit ARGB pixels
+    // Ensure vramPtr is set before rendering
+    if (!vramPtr) {
+        std::cerr << "Error: VRAM pointer not set!" << std::endl;
+        return;
+    }
+
+    // Convert the 128x128 grayscale bytes in vramPtr to 32-bit ARGB pixels
     uint32_t pixels[VRAM_SIZE];
     for (int i = 0; i < VRAM_SIZE; ++i) {
-        uint8_t gray = vram[i];
-        pixels[i] = (255 << 24) | (gray << 16) | (gray << 8) | gray;
+        uint8_t gray = vramPtr[i];
+        pixels[i] = (0xFF << 24) | (gray << 16) | (gray << 8) | gray;
     }
     
     // Update the texture with our pixel buffer
@@ -74,4 +83,8 @@ void GPU::renderFrame() {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
+}
+
+void GPU::setVRAMPointer(uint8_t* ptr) {
+    vramPtr = ptr;
 }
