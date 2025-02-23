@@ -10,7 +10,7 @@
 class Console;
 
 class Memory {
-public:
+  public:
     enum class Address {
         STDIN = 0x7100,
         STDOUT = 0x7110,
@@ -52,14 +52,13 @@ public:
     void loadFile(std::ifstream& file_stream);
 
     // Expose a pointer to the underlying memory array.
-    uint8_t* getPointerToMemArray() {
-        return mem_array.data();
-    }
+    uint8_t* getPointerToMemArray() { return mem_array.data(); }
 
-private:
+  private:
     Console* console_instance;
     const uint8_t BITS_PER_BYTE = 8;
-    std::array<uint8_t, static_cast<uint32_t>(Address::ADDRESS_SPACE_END)> mem_array{};
+    std::array<uint8_t, static_cast<uint32_t>(Address::ADDRESS_SPACE_END)>
+        mem_array{};
 
     // Declaration of helper functions:
     static bool isReadable(uint32_t address);
