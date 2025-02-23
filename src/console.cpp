@@ -28,11 +28,11 @@ Console::~Console() {
 void Console::pollInput() {
     SDL_Event event;
     
-    // Process SDL events (ensuring quit events are handled)
+    // Check for SDL quit event to exit the emulator
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            std::cerr << "🛑 SDL Quit Event Detected! Exiting..." << std::endl;
-            stopExecution();  // Stop execution properly
+            std::cerr << "🛑 SDL Quit Event Detected! Stopping execution..." << std::endl;
+            stopExecution(); // Stops the main loop
             return;
         }
     }
@@ -51,19 +51,7 @@ void Console::pollInput() {
     if (keyboard[SDL_SCANCODE_RIGHT]) controllerState |= CONTROLLER_RIGHT_MASK;
 
     std::cerr << "🔍 Controller Byte: " << std::bitset<8>(controllerState) << std::endl;
-
-    // 🛑 Only write to memory if controllerState is NOT zero
-    if (controllerState != 0) {
-        std::cerr << "✅ Writing to CONTROLLER_DATA (0x7000): " << std::bitset<8>(controllerState) << std::endl;
-        this->memory.w8u(
-            static_cast<uint16_t>(Memory::Address::CONTROLLER_DATA),
-            controllerState
-        );
-    } else {
-        std::cerr << "⚠️ Skipping write to 0x7000 because controllerState is 0." << std::endl;
-    }
 }
-
 uint8_t Console::getControllerState() const {
     return controllerState;
 }
