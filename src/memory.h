@@ -1,6 +1,4 @@
-#ifndef MEMORY_H
-#define MEMORY_H
-
+#pragma once
 #include <array>
 #include <cstdint>
 #include <fstream>
