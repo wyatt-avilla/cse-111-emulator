@@ -6,6 +6,11 @@
 #include <cstring>
 #include <iostream>
 
+// Here are the ChatGPT links to code recommendations
+// https://chatgpt.com/share/67bac209-01f0-800e-a6d4-24d4d72a4a07
+// https://chatgpt.com/share/67babfe6-d820-800e-a22c-84481ab7fab9
+
+
 // Scale factor to enlarge the 128x128 display
 const int WINDOW_SCALE = 4;
 const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
