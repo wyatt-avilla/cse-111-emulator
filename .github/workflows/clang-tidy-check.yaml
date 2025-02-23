@@ -25,6 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang-tidy
+          clang-tidy --version
 
       - name: Verify .clang-tidy exists
         run: |
