@@ -23,29 +23,22 @@ struct RTypeInstructionBits {
 CPU::CPU(Console* console) : console(console) {}
 
 void CPU::execute(const uint32_t instruction) {
+    std::cerr << "🚀 Executing Instruction: " << std::hex << instruction 
+              << " at PC: " << getProgramCounter() << std::endl;
+
     const uint8_t opcode_shift = 26;
     const uint16_t opcode = instruction >> opcode_shift;
     const uint16_t first_six_bits_mask = 0x3f;
 
-    if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
-        uint16_t const function = instruction & first_six_bits_mask;
-        executeTypeR(instruction);
-        if (function != static_cast<uint16_t>(Opcode::JR)) {
-            program_counter += PC_INCREMENT;
-        }
-    } else {
-        executeTypeI(instruction);
-        if (opcode != static_cast<uint16_t>(Opcode::BEQ) &&
-            opcode != static_cast<uint16_t>(Opcode::J) &&
-            opcode != static_cast<uint16_t>(Opcode::BNE) &&
-            opcode != static_cast<uint16_t>(Opcode::JAL)) {
-            program_counter += PC_INCREMENT;
-        }
-    }
+    std::cerr << "   ├── Opcode: " << std::hex << opcode << std::endl;
 
-    if (registers[ZERO_REG] != 0) {
-        std::cerr << "zero register wasn't zero" << std::endl;
-        registers[ZERO_REG] = 0;
+    if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
+        uint16_t function = instruction & first_six_bits_mask;
+        std::cerr << "   ├── R-Type Function: " << std::hex << function << std::endl;
+        executeTypeR(instruction);
+    } else {
+        std::cerr << "   ├── I-Type Immediate: " << std::hex << (instruction & 0xFFFF) << std::endl;
+        executeTypeI(instruction);
     }
 }
 
