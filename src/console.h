@@ -3,9 +3,9 @@
 #pragma once
 
 #include "cpu.h"
+#include "gpu.h"
 #include "memory.h"
 #include "os.h"
-#include "gpu.h"
 
 
 class Console {

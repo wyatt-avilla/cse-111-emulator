@@ -1,11 +1,11 @@
 #ifndef GPU_H
 #define GPU_H
 
-#include <cstdint>
 #include <SDL2/SDL.h>
+#include <cstdint>
 
 class GPU {
-public:
+  public:
     // Display resolution: 128 x 128 pixels (16,384 bytes)
     static const int FRAME_WIDTH = 128;
     static const int FRAME_HEIGHT = 128;
@@ -25,10 +25,11 @@ public:
     // convert grayscale bytes to 32-bit ARGB pixels, and render via SDL.
     void renderFrame();
 
-    // Set the external VRAM pointer (should point to main memory at offset 0x3000).
+    // Set the external VRAM pointer (should point to main memory at offset
+    // 0x3000).
     void setExternalVRAM(uint8_t* ptr);
 
-private:
+  private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
