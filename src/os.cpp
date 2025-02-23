@@ -30,7 +30,7 @@ void OS::reset(const std::string& filename) {
     // NEW: Set the GPU's external VRAM pointer.
     // This assumes Memory provides a getPointerToMemArray() method (see below)
     this->c->gpu.setExternalVRAM(
-        this->c->memory.getPointerToMemArray() + 0x3000
+        this->c->memory.getPointerToMemArray() + static_cast<uint16_t>(Memory::Address::STACK_END)
     );
 
     setup();
