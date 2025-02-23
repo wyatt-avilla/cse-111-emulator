@@ -1,7 +1,4 @@
 #include "console.h"
-
-#include "iostream"
-
 #include <SDL2/SDL.h>
 #include <bitset>
 #include <iostream>
@@ -15,12 +12,14 @@
 #define CONTROLLER_LEFT_MASK ((uint8_t) 0x02)
 #define CONTROLLER_RIGHT_MASK ((uint8_t) 0x01)
 
-Console ::Console()
-    : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), controllerState(0) {
+Console::Console()
+    : cpu(this), os(this), memory(this), gpu(), controllerState(0), is_running(true) {
     SDL_Init(SDL_INIT_VIDEO);
 }
 
-Console::~Console() { SDL_Quit(); }
+Console::~Console() {
+    SDL_Quit(); // Ensure SDL is properly cleaned up
+}
 
 void Console::pollInput() {
     const Uint8* keyboard = SDL_GetKeyboardState(NULL);
@@ -42,28 +41,19 @@ void Console::pollInput() {
         controllerState |= CONTROLLER_LEFT_MASK;
     if (keyboard[SDL_SCANCODE_RIGHT])
         controllerState |= CONTROLLER_RIGHT_MASK;
-    // Write the controller byte to memory at address 0x7000
-    this->memory.w8u(
-        static_cast<uint16_t>(Memory::Address::CONTROLLER_DATA),
-        controllerState
-    );
 
-    // Optional: For debugging, print the controller byte to the console
-    std::cout << "Controller Byte: " << std::bitset<8>(controllerState)
-              << std::endl;
+    // Write the controller byte to memory at address 0x7000
+    this->memory.w8u(static_cast<uint16_t>(Memory::Address::CONTROLLER_DATA), controllerState);
 }
 
-uint8_t Console::getControllerState() const { return controllerState; }
+uint8_t Console::getControllerState() const {
+    return controllerState;
+}
 
 void Console::stopExecution() {
-    is_running = false; // Set the flag to false to stop the execution loop
+    is_running = false; // Stops the emulator loop
 }
 
-bool Console::isRunning() const { return is_running; }
-
-void Console::run(const std::string& slug_file_path) {
-    os.reset(slug_file_path);
-    while (isRunning()) {
-        os.loopIteration();
-    }
+bool Console::isRunning() const {
+    return is_running;
 }
