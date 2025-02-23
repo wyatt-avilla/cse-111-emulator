@@ -31,7 +31,7 @@ class Memory {
     };
 
     Memory(Console* console_instance);
-
+    uint8_t loadByte(uint16_t address) const;
     uint8_t l8u(uint16_t load_address) const;
     uint16_t l16u(uint16_t load_address) const;
     uint32_t l32u(uint16_t load_address) const;

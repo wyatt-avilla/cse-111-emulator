@@ -1,5 +1,5 @@
 #include "console.h"
-
+#include "os.h"
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -18,7 +18,21 @@ int32_t main(const int32_t argc, const char* argv[]) {
     Console banana;
 
     try {
-        banana.run(argv[FILENAME_INDEX]);
+        // Initialize the OS
+        OS os(&banana);
+
+        // Reset the OS with the file from command line arguments
+        os.reset(argv[FILENAME_INDEX]);
+
+        // Main loop
+        bool running = true;
+        while (running) {
+            // Poll for input (keyboard/controller)
+            banana.pollInput(); 
+
+            // Perform one iteration of the OS loop
+            os.loopIteration(); 
+        }
     } catch (const std::exception& e) {
         std::cerr << "Couldn't run " << "\"" << argv[FILENAME_INDEX]
                   << "\":" << std::endl
