@@ -1,5 +1,6 @@
 #include "console.h"
 #include "os.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
@@ -28,10 +29,10 @@ int32_t main(const int32_t argc, const char* argv[]) {
         bool running = true;
         while (running) {
             // Poll for input (keyboard/controller)
-            banana.pollInput(); 
+            banana.pollInput();
 
             // Perform one iteration of the OS loop
-            os.loopIteration(); 
+            os.loopIteration();
         }
     } catch (const std::exception& e) {
         std::cerr << "Couldn't run " << "\"" << argv[FILENAME_INDEX]

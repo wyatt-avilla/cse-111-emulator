@@ -52,7 +52,8 @@ void OS::loopIteration() {
     this->c->pollInput();
 
     // Write a byte to stdout for testing/debugging purposes
-    // Here, we write 'A' to STDOUT, assuming the output is being captured or displayed somewhere
+    // Here, we write 'A' to STDOUT, assuming the output is being captured or
+    // displayed somewhere
     this->c->memory.w8u(static_cast<uint16_t>(Memory::Address::STDOUT), 'A');
 
     // 1. Run iteration of loop()
@@ -71,7 +72,10 @@ void OS::loopIteration() {
     this->c->gpu.renderFrame();
 
     auto iteration_end = std::chrono::steady_clock::now();
-    double const elapsed_ms = std::chrono::duration<double, std::milli>(iteration_end - iteration_start).count();
+    double const elapsed_ms = std::chrono::duration<double, std::milli>(
+                                  iteration_end - iteration_start
+    )
+                                  .count();
     constexpr double target_frame_time_ms = 16.667;
     if (elapsed_ms < target_frame_time_ms) {
         std::chrono::duration<double, std::milli> const sleep_duration(
@@ -81,9 +85,12 @@ void OS::loopIteration() {
     }
 
     // If the stop execution address (0x7200) is written to memory, stop the OS
-    // In the loop, you might want to check if the value written to 0x7200 is non-zero
-    if (this->c->memory.loadByte(static_cast<uint16_t>(Memory::Address::STOP_EXECUTION)) != 0) {
-        this->c->stopExecution();  // Stop the OS if the execution stop flag is set
+    // In the loop, you might want to check if the value written to 0x7200 is
+    // non-zero
+    if (this->c->memory.loadByte(
+            static_cast<uint16_t>(Memory::Address::STOP_EXECUTION)
+        ) != 0) {
+        this->c->stopExecution(
+        ); // Stop the OS if the execution stop flag is set
     }
-
 }

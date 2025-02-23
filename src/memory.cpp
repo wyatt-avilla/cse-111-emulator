@@ -17,9 +17,11 @@ Memory::Memory(Console* console_instance)
 
 uint8_t Memory::loadByte(uint16_t address) const {
     if (!isReadable(address)) {
-        throw std::invalid_argument("Cannot read from address " + std::to_string(address));
+        throw std::invalid_argument(
+            "Cannot read from address " + std::to_string(address)
+        );
     }
-    return mem_array[address];  // Or whatever your memory representation is
+    return mem_array[address]; // Or whatever your memory representation is
 }
 
 bool Memory::isReadable(const uint32_t address) {
