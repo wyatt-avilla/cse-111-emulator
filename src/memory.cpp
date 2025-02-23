@@ -1,5 +1,5 @@
 #include "memory.h"
-
+#include <execinfo.h>
 #include "console.h"
 
 #include <algorithm>
@@ -115,11 +115,22 @@ uint32_t Memory::loadInstruction(const uint16_t load_address) const {
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
 void Memory::w8u(uint16_t address, uint8_t value) {
     if (!isWritable(address)) {
-        std::cerr << "🚨 Error: Attempted to write to " << std::hex << address
-                  << " with value " << std::hex << static_cast<int>(value) << std::endl;
-        throw std::invalid_argument(
-            "Cannot write to " + std::to_string(address)
-        );
+        std::cerr << "🚨 Invalid write to " << std::hex << address
+                  << " with value " << static_cast<int>(value) << std::endl;
+
+        // Print out a stack trace to identify the cause
+        void* callstack[10];
+        int frames = backtrace(callstack, 10);
+        char** symbols = backtrace_symbols(callstack, frames);
+        if (symbols) {
+            std::cerr << "Backtrace:\n";
+            for (int i = 0; i < frames; ++i) {
+                std::cerr << symbols[i] << "\n";
+            }
+            free(symbols);
+        }
+
+        throw std::invalid_argument("Cannot write to " + std::to_string(address));
     }
     mem_array[address] = value;
 }
