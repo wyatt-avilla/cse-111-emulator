@@ -26,19 +26,22 @@ void CPU::execute(const uint32_t instruction) {
     std::cerr << "🚀 Executing Instruction: " << std::hex << instruction 
               << " at PC: " << getProgramCounter() << std::endl;
 
+    uint16_t old_pc = getProgramCounter();  // Store the current PC
+
     const uint8_t opcode_shift = 26;
     const uint16_t opcode = instruction >> opcode_shift;
     const uint16_t first_six_bits_mask = 0x3f;
 
-    std::cerr << "   ├── Opcode: " << std::hex << opcode << std::endl;
-
     if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
         uint16_t function = instruction & first_six_bits_mask;
-        std::cerr << "   ├── R-Type Function: " << std::hex << function << std::endl;
         executeTypeR(instruction);
     } else {
-        std::cerr << "   ├── I-Type Immediate: " << std::hex << (instruction & 0xFFFF) << std::endl;
         executeTypeI(instruction);
+    }
+
+    // 🚨 Check if PC changed
+    if (old_pc == getProgramCounter()) {
+        std::cerr << "⚠️ [WARNING] PC is stuck at: " << std::hex << old_pc << std::endl;
     }
 }
 
