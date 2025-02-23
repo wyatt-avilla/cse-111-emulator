@@ -1,7 +1,5 @@
 #include "console.h"
 
-#include "iostream"
-
 #include <SDL2/SDL.h>
 #include <bitset>
 #include <iostream>
@@ -15,14 +13,31 @@
 #define CONTROLLER_LEFT_MASK ((uint8_t) 0x02)
 #define CONTROLLER_RIGHT_MASK ((uint8_t) 0x01)
 
-Console ::Console()
-    : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), controllerState(0) {
-    SDL_Init(SDL_INIT_VIDEO);
+Console::Console()
+    : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), gpu(GPU()) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << "🚨 SDL Initialization Failed: " << SDL_GetError() << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 
-Console::~Console() { SDL_Quit(); }
+Console::~Console() {
+    SDL_Quit();
+}
 
 void Console::pollInput() {
+    SDL_Event event;
+    
+    // Process SDL events (ensuring quit events are handled)
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_QUIT) {
+            std::cerr << "🛑 SDL Quit Event Detected! Exiting..." << std::endl;
+            stopExecution();  // Stop execution properly
+            return;
+        }
+    }
+
+    // Get keyboard state
     const Uint8* keyboard = SDL_GetKeyboardState(NULL);
     controllerState = 0;
 
@@ -49,13 +64,18 @@ void Console::pollInput() {
     }
 }
 
-uint8_t Console::getControllerState() const { return controllerState; }
-
-void Console::stopExecution() {
-    is_running = false; // Set the flag to false to stop the execution loop
+uint8_t Console::getControllerState() const {
+    return controllerState;
 }
 
-bool Console::isRunning() const { return is_running; }
+void Console::stopExecution() {
+    std::cerr << "🛑 Emulator Stopping!" << std::endl;
+    is_running = false; 
+}
+
+bool Console::isRunning() const {
+    return is_running;
+}
 
 void Console::run(const std::string& slug_file_path) {
     os.reset(slug_file_path);
