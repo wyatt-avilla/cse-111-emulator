@@ -10,8 +10,7 @@ public:
     static const int FRAME_HEIGHT = 128;
     static const int VRAM_SIZE = FRAME_WIDTH * FRAME_HEIGHT;
 
-    uint8_t vram[VRAM_SIZE];
-
+    // Constructor no longer initializes an internal VRAM array.
     GPU();
     ~GPU();
 
@@ -24,10 +23,16 @@ public:
     // Uses SDL to render the current VRAM as a 128×128 image (scaled up) and handles quit events
     void renderFrame();
 
+    // New setter: set the pointer to the emulator’s VRAM (main memory offset 0x3000)
+    void setVRAMPointer(uint8_t* ptr);
+
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
+
+    // Instead of an internal array, we store a pointer to main memory’s VRAM.
+    uint8_t* vramPtr = nullptr;
 };
 
-#endif // GPU_H
+#endif 
