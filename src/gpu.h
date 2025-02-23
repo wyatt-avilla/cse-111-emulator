@@ -6,23 +6,26 @@
 
 class GPU {
 public:
+    // Display resolution: 128 x 128 pixels (16,384 bytes)
     static const int FRAME_WIDTH = 128;
     static const int FRAME_HEIGHT = 128;
-    static const int VRAM_SIZE = FRAME_WIDTH * FRAME_HEIGHT;
+    static const int VRAM_SIZE = FRAME_WIDTH * FRAME_HEIGHT; // 16384 bytes
 
     GPU();
     ~GPU();
 
-    // Returns the index in VRAM for pixel (x, y)
-    int getPixelAddress(int x, int y);
+    // Given pixel coordinates (x, y), returns the full memory address in VRAM.
+    // Calculation: 0x3000 + (x + y * 128)
+    int getPixelAddress(int x, int y) const;
 
-    // Sets the pixel at (x, y) in the internal buffer (0x00 = Black, 0xff = White)
+    // Optionally set a pixel in the internal frame buffer.
     void setPixel(int x, int y, uint8_t grayLevel);
 
-    // Renders the internal VRAM buffer to the screen via SDL
+    // Render the current frame: copy external VRAM into the internal buffer,
+    // convert grayscale bytes to 32-bit ARGB pixels, and render via SDL.
     void renderFrame();
 
-    // Setter to pass the external VRAM pointer (points to main memory offset 0x3000)
+    // Set the external VRAM pointer (should point to main memory at offset 0x3000).
     void setExternalVRAM(uint8_t* ptr);
 
 private:
@@ -30,10 +33,10 @@ private:
     SDL_Renderer* renderer;
     SDL_Texture* texture;
 
-    // GPU's own internal VRAM buffer
+    // Internal VRAM buffer used for rendering (each pixel is 1 byte: grayscale)
     uint8_t vram[VRAM_SIZE];
 
-    // Pointer to the external memory's VRAM region
+    // Pointer to the external VRAM region (main memory, starting at 0x3000)
     uint8_t* externalVRAM = nullptr;
 };
 
