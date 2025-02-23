@@ -1,5 +1,7 @@
 #include "gpu.h"
 
+#include "memory.h"
+
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -61,9 +63,10 @@ GPU::~GPU() {
     SDL_Quit();
 }
 
-int GPU::getPixelAddress(uint32_t x, uint32_t y) const {
+uint32_t GPU::getPixelAddress(uint32_t x, uint32_t y) const {
     // Calculate pixel index: x + (y * 128)
-    return static_cast<uint16_t>(Memory::Address::STACK_END) + (x + y * FRAME_WIDTH);
+    return static_cast<uint16_t>(Memory::Address::STACK_END) +
+           (x + y * FRAME_WIDTH);
 }
 
 void GPU::setPixel(uint32_t x, uint32_t y, uint8_t grayLevel) {
