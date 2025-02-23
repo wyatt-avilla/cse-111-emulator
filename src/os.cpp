@@ -49,11 +49,15 @@ void OS::loopIteration() {
     auto iteration_start = std::chrono::steady_clock::now();
     std::cerr << " OS Loop Iteration Started" << std::endl;
 
+    //  Debug Before Polling Input
+    std::cerr << "🔍 Checking Memory Address 0x7000 BEFORE pollInput(): " 
+              << static_cast<int>(this->c->memory.loadByte(0x7000)) << std::endl;
+
     // Poll input from the keyboard/controller
     this->c->pollInput();
 
-    // Debug: Check if something is writing to 0x7000
-    std::cerr << " Checking Memory Address 0x7000: " 
+    //  Debug After Polling Input
+    std::cerr << " Checking Memory Address 0x7000 AFTER pollInput(): " 
               << static_cast<int>(this->c->memory.loadByte(0x7000)) << std::endl;
 
     // 1. Run iteration of loop()
@@ -63,21 +67,19 @@ void OS::loopIteration() {
     while (this->c->cpu.getProgramCounter() != 0 && c->isRunning()) {
         uint16_t program_counter = this->c->cpu.getProgramCounter();
         uint32_t instruction = this->c->memory.loadInstruction(program_counter);
-
         std::cerr << " Executing Instruction: " << std::hex << instruction 
                   << " at PC: " << program_counter << std::endl;
-
         this->c->cpu.execute(instruction);
     }
+
+    //  Debug After Execution
+    std::cerr << "🔍 Checking Memory Address 0x7000 AFTER Execution: " 
+              << static_cast<int>(this->c->memory.loadByte(0x7000)) << std::endl;
 
     // Render the frame
     this->c->gpu.renderFrame();
 
-    // Debugging: Ensure 0x7000 is not being written
-    std::cerr << " Checking Memory Address 0x7000 After Execution: " 
-              << static_cast<int>(this->c->memory.loadByte(0x7000)) << std::endl;
-
-    // If stop execution flag is set, stop the emulator
+    // Stop execution if needed
     if (this->c->memory.loadByte(static_cast<uint16_t>(Memory::Address::STOP_EXECUTION)) != 0) {
         std::cerr << " Stop execution flag detected!" << std::endl;
         this->c->stopExecution();
