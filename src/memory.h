@@ -65,5 +65,3 @@ class Memory {
     static bool isWritable(uint32_t address);
     static bool isExecutable(uint32_t address);
 };
-
-#endif // MEMORY_H
