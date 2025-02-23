@@ -63,7 +63,7 @@ GPU::~GPU() {
 
 int GPU::getPixelAddress(int x, int y) const {
     // Calculate pixel index: x + (y * 128)
-    return 0x3000 + (x + y * FRAME_WIDTH);
+    return static_cast<uint16_t>(Memory::Address::STACK_END) + (x + y * FRAME_WIDTH);
 }
 
 void GPU::setPixel(int x, int y, uint8_t grayLevel) {
