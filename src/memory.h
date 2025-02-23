@@ -51,7 +51,7 @@ public:
     void copyDataSectionToRam();
     void loadFile(std::ifstream& file_stream);
 
-    // NEW: Expose a pointer to the underlying memory array
+    // Expose a pointer to the underlying memory array.
     uint8_t* getPointerToMemArray() {
         return mem_array.data();
     }
@@ -59,10 +59,12 @@ public:
 private:
     Console* console_instance;
     const uint8_t BITS_PER_BYTE = 8;
-
     std::array<uint8_t, static_cast<uint32_t>(Address::ADDRESS_SPACE_END)> mem_array{};
-    
-    // Helper functions (isReadable, isWritable, isExecutable) would be here...
+
+    // Declaration of helper functions:
+    static bool isReadable(uint32_t address);
+    static bool isWritable(uint32_t address);
+    static bool isExecutable(uint32_t address);
 };
 
 #endif // MEMORY_H
