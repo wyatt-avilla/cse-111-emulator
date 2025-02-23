@@ -47,50 +47,39 @@ void OS::setup() {
 }
 void OS::loopIteration() {
     auto iteration_start = std::chrono::steady_clock::now();
+    std::cerr << " OS Loop Iteration Started" << std::endl;
 
-    // Poll input from the keyboard or controller
+    // Poll input from the keyboard/controller
     this->c->pollInput();
 
-    // Write a byte to stdout for testing/debugging purposes
-    // Here, we write 'A' to STDOUT, assuming the output is being captured or
-    // displayed somewhere
-    this->c->memory.w8u(static_cast<uint16_t>(Memory::Address::STDOUT), 'A');
+    // Debug: Check if something is writing to 0x7000
+    std::cerr << " Checking Memory Address 0x7000: " 
+              << static_cast<int>(this->c->memory.loadByte(0x7000)) << std::endl;
 
     // 1. Run iteration of loop()
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
 
     while (this->c->cpu.getProgramCounter() != 0 && c->isRunning()) {
-        uint16_t const program_counter = this->c->cpu.getProgramCounter();
-        uint32_t const instruction =
-            this->c->memory.loadInstruction(program_counter);
+        uint16_t program_counter = this->c->cpu.getProgramCounter();
+        uint32_t instruction = this->c->memory.loadInstruction(program_counter);
+
+        std::cerr << " Executing Instruction: " << std::hex << instruction 
+                  << " at PC: " << program_counter << std::endl;
+
         this->c->cpu.execute(instruction);
     }
 
-    // Render the current frame using the GPU (which now copies from external
-    // VRAM)
+    // Render the frame
     this->c->gpu.renderFrame();
 
-    auto iteration_end = std::chrono::steady_clock::now();
-    double const elapsed_ms = std::chrono::duration<double, std::milli>(
-                                  iteration_end - iteration_start
-    )
-                                  .count();
-    constexpr double target_frame_time_ms = 16.667;
-    if (elapsed_ms < target_frame_time_ms) {
-        std::chrono::duration<double, std::milli> const sleep_duration(
-            target_frame_time_ms - elapsed_ms
-        );
-        std::this_thread::sleep_for(sleep_duration);
-    }
+    // Debugging: Ensure 0x7000 is not being written
+    std::cerr << " Checking Memory Address 0x7000 After Execution: " 
+              << static_cast<int>(this->c->memory.loadByte(0x7000)) << std::endl;
 
-    // If the stop execution address (0x7200) is written to memory, stop the OS
-    // In the loop, you might want to check if the value written to 0x7200 is
-    // non-zero
-    if (this->c->memory.loadByte(
-            static_cast<uint16_t>(Memory::Address::STOP_EXECUTION)
-        ) != 0) {
-        this->c->stopExecution(
-        ); // Stop the OS if the execution stop flag is set
+    // If stop execution flag is set, stop the emulator
+    if (this->c->memory.loadByte(static_cast<uint16_t>(Memory::Address::STOP_EXECUTION)) != 0) {
+        std::cerr << " Stop execution flag detected!" << std::endl;
+        this->c->stopExecution();
     }
 }
