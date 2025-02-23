@@ -23,9 +23,11 @@ jobs:
 
       - name: Install clang-tidy and dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y clang-tidy
-          clang-tidy --version
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 19
+          sudo apt-get install -y clang-tidy-19
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-19 100
 
       - name: Verify .clang-tidy exists
         run: |
