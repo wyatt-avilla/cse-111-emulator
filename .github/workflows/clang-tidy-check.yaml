@@ -2,7 +2,7 @@
 name: Clang Tidy
 on:
   push:
-    branches: ["main", "clang-tidy-severity-fix"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 
@@ -55,18 +55,3 @@ jobs:
       - name: Run clang-tidy
         run: |
           clang-tidy src/*.cpp src/*.h src/*.hpp -p compile_commands.json
-          #TIDY_ISSUES=0
-          #for file in $(find ./src -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \)); do
-          #  echo "Analyzing $file..."
-          #  if ! clang-tidy "$file" -p . > tidy_output.txt 2>&1; then
-          #    TIDY_ISSUES=1
-          #    echo "::error::Clang-tidy issues found in $file"
-          #    cat tidy_output.txt
-          #  fi
-          #done
-          if [ $? -ne 0 ]; then
-            echo "Static analysis check failed. Please fix the issues reported by clang-tidy."
-            exit 1
-          else
-            echo "All files passed static analysis."
-          fi
