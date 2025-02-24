@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/emulator.dir/main.cpp.o CMakeFiles/emulator.dir/console.cpp.o CMakeFiles/emulator.dir/cpu.cpp.o CMakeFiles/emulator.dir/memory.cpp.o CMakeFiles/emulator.dir/os.cpp.o CMakeFiles/emulator.dir/gpu.cpp.o -o emulator  -Wl,-rpath,/home/monisha_111/cse-111-emulator-7/src/external/SDL external/SDL/libSDL2-2.0.so.0.3000.12 

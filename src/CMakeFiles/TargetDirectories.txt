@@ -1,0 +1,9 @@
+/home/monisha_111/cse-111-emulator-7/src/CMakeFiles/emulator.dir
+/home/monisha_111/cse-111-emulator-7/src/CMakeFiles/edit_cache.dir
+/home/monisha_111/cse-111-emulator-7/src/CMakeFiles/rebuild_cache.dir
+/home/monisha_111/cse-111-emulator-7/src/external/SDL/CMakeFiles/sdl_headers_copy.dir
+/home/monisha_111/cse-111-emulator-7/src/external/SDL/CMakeFiles/SDL2main.dir
+/home/monisha_111/cse-111-emulator-7/src/external/SDL/CMakeFiles/SDL2.dir
+/home/monisha_111/cse-111-emulator-7/src/external/SDL/CMakeFiles/uninstall.dir
+/home/monisha_111/cse-111-emulator-7/src/external/SDL/CMakeFiles/edit_cache.dir
+/home/monisha_111/cse-111-emulator-7/src/external/SDL/CMakeFiles/rebuild_cache.dir
