@@ -51,6 +51,8 @@ void OS::setup() {
 
 void OS::loopIteration() {
     auto iteration_start = std::chrono::steady_clock::now();
+    c->controller.update();
+
 
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);
     this->c->cpu.JAL(this->c->memory.getLoopAddress() / 4);
