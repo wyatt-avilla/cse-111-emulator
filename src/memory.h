@@ -6,7 +6,6 @@
 #include <string>
 
 class Console;
-class Controller;
 
 class Memory {
   public:
@@ -31,7 +30,7 @@ class Memory {
         ADDRESS_SPACE_END = 0x10000,
     };
 
-    Memory(Console* console_instance, Controller* controller_instance);
+    Memory(Console* console_instance);
 
     uint8_t l8u(uint16_t load_address) const;
     uint16_t l16u(uint16_t load_address) const;
@@ -55,7 +54,6 @@ class Memory {
 
   private:
     Console* console_instance;
-    Controller* controller;
     const uint8_t BITS_PER_BYTE = 8;
     std::array<uint8_t, static_cast<uint32_t>(Address::ADDRESS_SPACE_END)>
         mem_array{};
