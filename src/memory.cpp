@@ -46,8 +46,6 @@ bool Memory::isExecutable(const uint32_t address) {
         address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
     ); // SLUG file
 }
-
-/*
 uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
         throw std::invalid_argument(
@@ -65,27 +63,6 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
     }
     return out;
 }
-*/
-
-uint8_t Memory::l8u(const uint16_t load_address) const {
-    if (!isReadable(load_address)) {
-        throw std::invalid_argument("Cannot read from " + std::to_string(load_address));
-    }
-
-    if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        return console_instance->controller->getState(); // Return controller state
-    } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
-        return getchar();
-    } else {
-        return mem_array[load_address];
-    }
-}
-
-
-
-
-
-
 
 
 uint16_t Memory::l16u(const uint16_t load_address) const {
@@ -122,7 +99,6 @@ uint32_t Memory::loadInstruction(const uint16_t load_address) const {
     }
     return l32u(load_address);
 }
-
 // got the write code from chat gpt
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
 
@@ -150,11 +126,6 @@ void Memory::w8u(uint16_t address, uint8_t value) {
         mem_array[address] = value;
     }
 }
-
-
-
-
-
 
 void Memory::w16u(const uint16_t address, const uint16_t value) {
     if ((address & 1) != 0) {
@@ -223,3 +194,7 @@ void Memory::loadFile(std::ifstream& file_stream) {
         file_size
     );
 }
+
+
+
+
