@@ -51,7 +51,9 @@ void OS::setup() {
 
 void OS::loopIteration() {
     auto iteration_start = std::chrono::steady_clock::now();
-    c->controller.update();
+    if (c->controller) {
+        c->controller->update();
+    }
 
 
     this->c->cpu.setProgramCounterTo(PC_RESET_VAL);

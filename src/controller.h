@@ -20,6 +20,8 @@
 #define IO_DEBUG_STDERR      0x7120
 #define IO_STOP_EXECUTION    0x7200
 
+class Console;
+
 class Controller {
   public:
     explicit Controller(Console* console);
