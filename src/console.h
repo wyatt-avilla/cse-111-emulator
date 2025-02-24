@@ -1,3 +1,6 @@
+
+
+/*
 #include <string>
 
 #pragma once
@@ -21,6 +24,35 @@ class Memory;
 class Console {
   public:
     Console();
+    CPU cpu;
+    OS os;
+    Memory* memory;
+    GPU gpu;
+    Controller* controller;
+
+    void run(const std::string& slug_file_path);
+    void stopExecution();
+    [[nodiscard]] bool isRunning() const;
+
+  private:
+    bool is_running{true};
+};
+*/ 
+#pragma once
+
+#include <string>
+#include "cpu.h"
+#include "gpu.h"
+#include "os.h"
+#include "controller.h"  // ✅ Include the controller header
+
+class Memory;
+
+class Console {
+  public:
+    Console();
+    ~Console();  // ✅ Add destructor to clean up dynamically allocated objects
+
     CPU cpu;
     OS os;
     Memory* memory;
