@@ -1,5 +1,5 @@
+#include "controller.h"
 #include "memory.h"
-
 #include "console.h"
 
 #include <algorithm>
@@ -8,6 +8,8 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+
+Controller controller;
 
 Memory::Memory(Console* console_instance)
     : console_instance(console_instance) {} // initialize console_instance
@@ -58,6 +60,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
     uint8_t out = 0;
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
         // TODO: get controller data
+        out= controller.getState();
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
