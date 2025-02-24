@@ -61,7 +61,7 @@ void Controller::updateController() {
         // Check if keys were pressed or released
         if (keystate[SDL_SCANCODE_Z])      new_state |= CONTROLLER_A_MASK;
         if (keystate[SDL_SCANCODE_X])      new_state |= CONTROLLER_B_MASK;
-        if (keystate[SDL_SCANCODE_LSHIFT]) new_state |= CONTROLLER_SELECT_MASK;
+        if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT]) new_state |= CONTROLLER_SELECT_MASK;
         if (keystate[SDL_SCANCODE_RETURN]) new_state |= CONTROLLER_START_MASK;
         if (keystate[SDL_SCANCODE_UP])     new_state |= CONTROLLER_UP_MASK;
         if (keystate[SDL_SCANCODE_DOWN])   new_state |= CONTROLLER_DOWN_MASK;
@@ -78,7 +78,12 @@ void Controller::updateController() {
         controller_state = new_state;
         std::cout << "Controller state: " << std::bitset<8>(controller_state) << std::endl;
     }
+
+if (keystate[SDL_SCANCODE_LSHIFT]) {
+    std::cout << "Shift key detected!" << std::endl;
+    new_state |= CONTROLLER_SELECT_MASK;
 }
+    }
 
 // ✅ Print the binary representation of controller state
 void Controller::displayControllerState() const {
