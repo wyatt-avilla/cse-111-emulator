@@ -1,6 +1,7 @@
 #include "console.h"
+#include "controller.h"
 
-Console ::Console() : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), controller(Controller(this)) {}
+Console ::Console() : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), controller(new Controller(this)) {}
 
 void Console::stopExecution() {
     is_running = false; 
