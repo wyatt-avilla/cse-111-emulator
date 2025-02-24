@@ -119,4 +119,4 @@ void GPU::renderFrame() {
     SDL_RenderPresent(renderer);
 }
 
-void GPU::setExternalVRAM(u
+void GPU::setExternalVRAM(uint8_t* ptr) { externalVRAM = ptr; }
