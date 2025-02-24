@@ -55,7 +55,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 
     uint8_t out = 0;
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        // TODO: get controller data
+        out = console_instance->controller.getState();
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
@@ -117,7 +117,7 @@ void Memory::w8u(uint16_t address, uint8_t value) {
     }
 
     if (address == static_cast<uint32_t>(Address::STDOUT)) {
-        std::cout << "Controller Input: 0x" << std::hex << (int)value << std::endl;
+        std::cout << static_cast<char>(value);  // Just output the character
     } else if (address == static_cast<uint32_t>(Address::STDERR)) {
         std::cerr << static_cast<char>(value);
     } else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
