@@ -57,7 +57,8 @@ void Controller::updateController() {
         const Uint8* keystate = SDL_GetKeyboardState(NULL);
     
     // Start with fresh state
-    uint8_t new_state = controller_state;
+    uint8_t new_state = 0;
+    
         // Check if keys were pressed or released
         if (keystate[SDL_SCANCODE_Z])      new_state |= CONTROLLER_A_MASK;
         if (keystate[SDL_SCANCODE_X])      new_state |= CONTROLLER_B_MASK;
