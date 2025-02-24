@@ -55,7 +55,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 
     uint8_t out = 0;
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        out = console_instance->controller.getState();
+        out = console_instance->getControllerState();
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
@@ -63,7 +63,6 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
     }
     return out;
 }
-
 
 uint16_t Memory::l16u(const uint16_t load_address) const {
     // checking if the alignment is right
