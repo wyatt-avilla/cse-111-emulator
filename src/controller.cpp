@@ -13,27 +13,23 @@ void Controller::update() {
     }
 }
 
-void Controller::displayState() const {
-    std::cout << "Controller State: ";
 
-    // Print binary representation of button presses
+
+void Controller::displayState() const {
+    // ✅ Print the 8-bit binary representation of the controller state
     for (int i = 7; i >= 0; --i) {
         std::cout << ((controller_state >> i) & 1);
     }
-    std::cout << " | Buttons Pressed: ";
-
-    // Print button names based on bit masks
-    if (controller_state & CONTROLLER_A_MASK)      std::cout << "A ";
-    if (controller_state & CONTROLLER_B_MASK)      std::cout << "B ";
-    if (controller_state & CONTROLLER_SELECT_MASK) std::cout << "SELECT ";
-    if (controller_state & CONTROLLER_START_MASK)  std::cout << "START ";
-    if (controller_state & CONTROLLER_UP_MASK)     std::cout << "UP ";
-    if (controller_state & CONTROLLER_DOWN_MASK)   std::cout << "DOWN ";
-    if (controller_state & CONTROLLER_LEFT_MASK)   std::cout << "LEFT ";
-    if (controller_state & CONTROLLER_RIGHT_MASK)  std::cout << "RIGHT ";
-
-    std::cout << std::endl;
+    std::cout << std::endl;  // New line for readability
 }
+
+
+
+
+
+
+
+
 
 // Read from stdin (memory-mapped at 0x7100)
 uint8_t Controller::readStdin() {
