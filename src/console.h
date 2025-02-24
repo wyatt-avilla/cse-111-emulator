@@ -7,6 +7,7 @@
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
+#include "controller.h"
 
 
 class Console {
@@ -16,6 +17,7 @@ class Console {
     OS os;
     Memory memory;
     GPU gpu;
+    Controller controller;
 
     void run(const std::string& slug_file_path);
     void stopExecution();
