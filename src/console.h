@@ -17,6 +17,8 @@
 #define CONTROLLER_LEFT_MASK   ((uint8_t)0x02)
 #define CONTROLLER_RIGHT_MASK  ((uint8_t)0x01)
 
+class Controller;
+
 class Console {
   public:
     Console();
