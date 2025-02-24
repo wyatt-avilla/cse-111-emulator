@@ -2,9 +2,12 @@
 
 #include <SDL2/SDL.h>
 #include <cstdint>
+class Console;
 
 class GPU {
   public:
+
+    GPU(Console* console = nullptr);
     // Display resolution: 128 x 128 pixels (16,384 bytes)
     static const uint32_t FRAME_WIDTH = 128;
     static const uint32_t FRAME_HEIGHT = 128;
@@ -29,6 +32,8 @@ class GPU {
     void setExternalVRAM(uint8_t* ptr);
 
   private:
+    Console* console; // Add this
+
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;

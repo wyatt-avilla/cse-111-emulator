@@ -1,5 +1,5 @@
 #include "gpu.h"
-
+#include "console.h"
 #include "memory.h"
 
 #include <cstdlib>
@@ -16,7 +16,7 @@ const int WINDOW_SCALE = 4;
 const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
-GPU::GPU() : window(nullptr), renderer(nullptr), texture(nullptr) {
+GPU::GPU(Console* console) : window(nullptr), renderer(nullptr), texture(nullptr), console(console) {
     // Initialize internal VRAM buffer to zeros.
     std::memset(vram, 0, sizeof(vram));
 
@@ -85,8 +85,12 @@ void GPU::renderFrame() {
     // Process SDL events (for example, window close events)
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
-        if (event.type == SDL_QUIT)
-            exit(0);
+        if (event.type == SDL_QUIT){
+            if (console) {
+                console->stopExecution();
+            }
+        }
+            
     }
 
     // Copy external VRAM (from main memory) into the internal buffer.
