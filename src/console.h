@@ -6,7 +6,6 @@
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
-#include "controller.h"
 
 #define CONTROLLER_A_MASK      ((uint8_t)0x80)
 #define CONTROLLER_B_MASK      ((uint8_t)0x40)
@@ -26,7 +25,7 @@ class Console {
     OS os;
     Memory memory;
     GPU gpu;
-    Controller controller;
+    Controller* controller;
 
     void run(const std::string& slug_file_path);
     void stopExecution();
