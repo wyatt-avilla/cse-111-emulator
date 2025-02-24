@@ -3,6 +3,7 @@
 #include "console.h"
 #include "gpu.h"
 #include "memory.h"
+#include "controller.h"
 
 #include <chrono>
 #include <fstream>
