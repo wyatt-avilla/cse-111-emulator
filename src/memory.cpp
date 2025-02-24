@@ -73,7 +73,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
     }
 
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        return console_instance->controller.getState(); // Return controller state
+        return console_instance->controller->getState(); // Return controller state
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         return getchar();
     } else {

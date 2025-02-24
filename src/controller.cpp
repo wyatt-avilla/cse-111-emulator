@@ -120,6 +120,3 @@ void Controller::displayControllerState() const {
     std::cout << "Controller State: " << std::bitset<8>(controller_state) << std::endl;
 }
 
-Controller::~Controller() {
-    SDL_Quit();
-}
