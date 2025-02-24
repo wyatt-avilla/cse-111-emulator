@@ -1,55 +1,51 @@
 #include "controller.h"
+#include <iostream>
+#include <bitset>
 
-Controller::Controller(Console* console) : console(console) {}
+#define CONTROLLER_A_MASK      ((uint8_t)0x80)
+#define CONTROLLER_B_MASK      ((uint8_t)0x40)
+#define CONTROLLER_SELECT_MASK ((uint8_t)0x20)
+#define CONTROLLER_START_MASK  ((uint8_t)0x10)
+#define CONTROLLER_UP_MASK     ((uint8_t)0x08)
+#define CONTROLLER_DOWN_MASK   ((uint8_t)0x04)
+#define CONTROLLER_LEFT_MASK   ((uint8_t)0x02)
+#define CONTROLLER_RIGHT_MASK  ((uint8_t)0x01)
 
-void Controller::update() {
-    // Read controller state from memory-mapped IO (0x7000)
-    uint8_t new_state = console->memory.l8u(IO_CONTROLLER_DATA);
+Controller::Controller(Console* console) : console(console), controller_state(0) {}
 
-    // If the state has changed, update and print
+// ✅ Return the current state of the controller as a bitmask
+uint8_t Controller::getState() const {
+    return controller_state;
+}
+
+// ✅ Update controller state based on user input
+void Controller::updateController() {
+    uint8_t new_state = 0;
+
+    // Example: Read from standard input (modify this for real input handling)
+    char key;
+    if (std::cin >> key) {
+        switch (key) {
+            case 'a': new_state |= CONTROLLER_A_MASK; break;
+            case 'b': new_state |= CONTROLLER_B_MASK; break;
+            case 's': new_state |= CONTROLLER_SELECT_MASK; break;
+            case 't': new_state |= CONTROLLER_START_MASK; break;
+            case 'u': new_state |= CONTROLLER_UP_MASK; break;
+            case 'd': new_state |= CONTROLLER_DOWN_MASK; break;
+            case 'l': new_state |= CONTROLLER_LEFT_MASK; break;
+            case 'r': new_state |= CONTROLLER_RIGHT_MASK; break;
+            default: break;
+        }
+    }
+
+    // ✅ Update state only if it changed
     if (new_state != controller_state) {
         controller_state = new_state;
-        displayState();
+        displayControllerState();
     }
 }
 
-
-
-void Controller::displayState() const {
-    // ✅ Print the 8-bit binary representation of the controller state
-    for (int i = 7; i >= 0; --i) {
-        std::cout << ((controller_state >> i) & 1);
-    }
-    std::cout << std::endl;  // New line for readability
-}
-
-
-
-
-
-
-
-
-
-// Read from stdin (memory-mapped at 0x7100)
-uint8_t Controller::readStdin() {
-    return console->memory.l8u(IO_DEBUG_STDIN);
-}
-
-// Write to stdout (memory-mapped at 0x7110)
-void Controller::writeStdout(uint8_t value) {
-    console->memory.w8u(IO_DEBUG_STDOUT, value);
-    std::cout << static_cast<char>(value);
-}
-
-// Write to stderr (memory-mapped at 0x7120)
-void Controller::writeStderr(uint8_t value) {
-    console->memory.w8u(IO_DEBUG_STDERR, value);
-    std::cerr << static_cast<char>(value);
-}
-
-// Stop execution (memory-mapped at 0x7200)
-void Controller::stopExecution() {
-    console->memory.w8u(IO_STOP_EXECUTION, 0);
-    console->stopExecution();
+// ✅ Print the binary representation of controller state
+void Controller::displayControllerState() const {
+    std::cout << std::bitset<8>(controller_state) << std::endl;
 }

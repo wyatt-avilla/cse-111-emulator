@@ -4,6 +4,8 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include "console.h"     
+#include "controller.h"
 
 class Console;
 
