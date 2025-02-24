@@ -17,13 +17,13 @@
 #define CONTROLLER_RIGHT_MASK  ((uint8_t)0x01)
 
 class Controller;
-
+class Memory;
 class Console {
   public:
     Console();
     CPU cpu;
     OS os;
-    Memory memory;
+    Memory* memory;
     GPU gpu;
     Controller* controller;
 
