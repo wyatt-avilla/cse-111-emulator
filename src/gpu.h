@@ -13,7 +13,6 @@ class GPU {
     static const uint32_t FRAME_HEIGHT = 128;
     static const uint32_t VRAM_SIZE = FRAME_WIDTH * FRAME_HEIGHT; // 16384 bytes
 
-    GPU();
     ~GPU();
 
     // Given pixel coordinates (x, y), returns the full memory address in VRAM.
