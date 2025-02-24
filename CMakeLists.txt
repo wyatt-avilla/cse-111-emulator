@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME}
     src/memory.cpp
     src/os.cpp
     src/gpu.cpp
+    src/controller.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
