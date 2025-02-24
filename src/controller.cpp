@@ -2,6 +2,7 @@
 #include "controller.h"
 #include <iostream>
 #include <bitset>
+#include <SDL2/SDL.h> 
 
 #define CONTROLLER_A_MASK      ((uint8_t)0x80)
 #define CONTROLLER_B_MASK      ((uint8_t)0x40)
@@ -53,43 +54,31 @@ void Controller::updateController() {
 
     void Controller::updateController() {
         SDL_Event event;
-        uint8_t new_state = controller_state; // Start with current state
-        
-        // Check if keys were pressed or released
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_KEYDOWN) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_z: new_state |= CONTROLLER_A_MASK; break;
-                    case SDLK_x: new_state |= CONTROLLER_B_MASK; break;
-                    case SDLK_LSHIFT: new_state |= CONTROLLER_SELECT_MASK; break;
-                    case SDLK_RETURN: new_state |= CONTROLLER_START_MASK; break;
-                    case SDLK_UP: new_state |= CONTROLLER_UP_MASK; break;
-                    case SDLK_DOWN: new_state |= CONTROLLER_DOWN_MASK; break;
-                    case SDLK_LEFT: new_state |= CONTROLLER_LEFT_MASK; break;
-                    case SDLK_RIGHT: new_state |= CONTROLLER_RIGHT_MASK; break;
-                    default: break;
-                }
-            } else if (event.type == SDL_KEYUP) {
-                switch (event.key.keysym.sym) {
-                    case SDLK_z: new_state &= ~CONTROLLER_A_MASK; break;
-                    case SDLK_x: new_state &= ~CONTROLLER_B_MASK; break;
-                    case SDLK_LSHIFT: new_state &= ~CONTROLLER_SELECT_MASK; break;
-                    case SDLK_RETURN: new_state &= ~CONTROLLER_START_MASK; break;
-                    case SDLK_UP: new_state &= ~CONTROLLER_UP_MASK; break;
-                    case SDLK_DOWN: new_state &= ~CONTROLLER_DOWN_MASK; break;
-                    case SDLK_LEFT: new_state &= ~CONTROLLER_LEFT_MASK; break;
-                    case SDLK_RIGHT: new_state &= ~CONTROLLER_RIGHT_MASK; break;
-                    default: break;
-                }
-            }
-        }
+        const Uint8* keystate = SDL_GetKeyboardState(NULL);
     
+    // Start with fresh state
+    uint8_t new_state = controller_state;
+        // Check if keys were pressed or released
+        if (keystate[SDL_SCANCODE_Z])      new_state |= CONTROLLER_A_MASK;
+        if (keystate[SDL_SCANCODE_X])      new_state |= CONTROLLER_B_MASK;
+        if (keystate[SDL_SCANCODE_LSHIFT]) new_state |= CONTROLLER_SELECT_MASK;
+        if (keystate[SDL_SCANCODE_RETURN]) new_state |= CONTROLLER_START_MASK;
+        if (keystate[SDL_SCANCODE_UP])     new_state |= CONTROLLER_UP_MASK;
+        if (keystate[SDL_SCANCODE_DOWN])   new_state |= CONTROLLER_DOWN_MASK;
+        if (keystate[SDL_SCANCODE_LEFT])   new_state |= CONTROLLER_LEFT_MASK;
+        if (keystate[SDL_SCANCODE_RIGHT])  new_state |= CONTROLLER_RIGHT_MASK;
+        
         // Update state only if it changed
         if (new_state != controller_state) {
             controller_state = new_state;
             displayControllerState();
         }
+      // Update state
+      if (new_state != controller_state) {
+        controller_state = new_state;
+        std::cout << "Controller state: " << std::bitset<8>(controller_state) << std::endl;
     }
+}
 
 // ✅ Print the binary representation of controller state
 void Controller::displayControllerState() const {

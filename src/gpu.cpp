@@ -82,15 +82,20 @@ void GPU::setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level) {
 }
 
 void GPU::renderFrame() {
-    // Process SDL events (for example, window close events)
+    // Process SDL events
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
-        if (event.type == SDL_QUIT){
+        if (event.type == SDL_QUIT) {
+            // Log to confirm this is being called
+            std::cerr << "Quit event received, stopping execution" << std::endl;
             if (console) {
                 console->stopExecution();
+            } else {
+                // If console pointer is not set, exit directly
+                std::cerr << "Console pointer not set, exiting directly" << std::endl;
+                exit(0);
             }
         }
-            
     }
 
     // Copy external VRAM (from main memory) into the internal buffer.
