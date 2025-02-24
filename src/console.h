@@ -9,15 +9,17 @@
 #include "os.h"
 #include "controller.h"
 
+class Controller;
 
 class Console {
   public:
     Console();
+    ~Console();
     CPU cpu;
     OS os;
     Memory memory;
     GPU gpu;
-    Controller controller;
+    Controller* controller;
 
     void run(const std::string& slug_file_path);
     void stopExecution();

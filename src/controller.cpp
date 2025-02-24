@@ -72,6 +72,10 @@ Controller::Controller(Console* console) : console(console), controller_state(0)
     }
 }
 
+Controller::~Controller() {
+    SDL_Quit();
+}
+
 // ✅ Return the current state of the controller as a bitmask
 uint8_t Controller::getState() const {
     return controller_state;
