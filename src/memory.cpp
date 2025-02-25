@@ -108,12 +108,6 @@ void Memory::w8u(uint16_t address, uint8_t value) {
             "Cannot write to " + std::to_string(address)
         );
     }
-    if (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-        address < static_cast<uint32_t>(Address::VRAM_END)) {
-        // std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex <<
-        // int(value)
-        //     << " to address 0x" << std::hex << address << std::endl;
-    }
 
     if (address == static_cast<uint32_t>(Address::STDOUT)) {
         std::cout << static_cast<char>(value);
