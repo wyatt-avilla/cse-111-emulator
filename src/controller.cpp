@@ -1,9 +1,9 @@
-
 #include "controller.h"
 
 #include "console.h"
 
 #include <SDL2/SDL.h>
+
 
 Controller::Controller(Console* console) : console(console) {}
 
