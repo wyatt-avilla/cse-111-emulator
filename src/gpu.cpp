@@ -21,7 +21,6 @@ GPU::GPU(Console* console)
     : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {
     // Initialize VRAM with zeros
 
-    std::memset(vram, 0, sizeof(vram));
     // Initialize SDL for video rendering
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
@@ -95,20 +94,13 @@ void GPU::renderFrame() {
         if (event.type == SDL_QUIT) {
 
             std::cerr << "Quit event received, stopping execution" << std::endl;
-            if (console) {
-                console->stopExecution();
-            } else {
-
-                std::cerr << "Console pointer not set, exiting directly"
-                          << std::endl;
-                exit(0);
-            }
+            console->stopExecution();
         }
     }
 
     // Check if external VRAM is set, otherwise print a warning
-    if (externalVRAM != nullptr) {
-        std::memcpy(vram, externalVRAM, VRAM_SIZE);
+    if (external_vram != nullptr) {
+        std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
     } else {
         std::cerr << "Warning: External VRAM pointer not set." << std::endl;
     }
@@ -138,4 +130,4 @@ void GPU::renderFrame() {
     SDL_RenderPresent(renderer);
 }
 // Function to link GPU with external VRAM
-void GPU::setExternalVRAM(uint8_t* ptr) { externalVRAM = ptr; }
+void GPU::setExternalVRAM(uint8_t* ptr) { external_vram = ptr; }

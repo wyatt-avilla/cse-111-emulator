@@ -1,7 +1,9 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <array>
 #include <cstdint>
+
 class Console;
 
 class GPU {
@@ -14,9 +16,9 @@ class GPU {
 
     ~GPU();
 
-    static uint32_t getPixelAddress(uint32_t x, uint32_t y);
+    static uint32_t getPixelAddress(uint32_t x_coord, uint32_t y_coord);
 
-    void setPixel(uint32_t x, uint32_t y, uint8_t gray_level);
+    void setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level);
 
     void renderFrame();
 
@@ -29,7 +31,7 @@ class GPU {
     SDL_Renderer* renderer;
     SDL_Texture* texture;
 
-    uint8_t vram[VRAM_SIZE];
+    std::array<uint8_t, VRAM_SIZE> vram{};
 
-    uint8_t* externalVRAM = nullptr;
+    uint8_t* external_vram = nullptr;
 };
