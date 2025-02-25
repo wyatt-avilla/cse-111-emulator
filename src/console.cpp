@@ -1,10 +1,10 @@
 #include "console.h"
 
-Console ::Console() : cpu(CPU(this)), os(OS(this)), memory(Memory(this)) {}
+Console::Console()
+    : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), gpu(this),
+      controller(Controller(this)) {}
 
-void Console::stopExecution() {
-    is_running = false; // Set the flag to false to stop the execution loop
-}
+void Console::stopExecution() { is_running = false; }
 
 bool Console::isRunning() const { return is_running; }
 
