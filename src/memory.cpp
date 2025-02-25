@@ -12,7 +12,7 @@
 #include <iostream>
 
 Memory::Memory(Console* console_instance)
-    : console_instance(console_instance) {} // initialize console_instance
+    : console_instance(console_instance) {} 
 
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
@@ -46,7 +46,7 @@ bool Memory::isExecutable(const uint32_t address) {
     return (
         address >= static_cast<uint32_t>(Address::SLUG_START) &&
         address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
-    ); // SLUG file
+    ); 
 }
 uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
@@ -67,10 +67,10 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 }
 
 uint16_t Memory::l16u(const uint16_t load_address) const {
-    // checking if the alignment is right
+    
     uint16_t out = 0;
     if ((load_address & 1) != 0) {
-        // The address is odd and therefore wrong
+    
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -79,10 +79,10 @@ uint16_t Memory::l16u(const uint16_t load_address) const {
 }
 
 uint32_t Memory::l32u(const uint16_t load_address) const {
-    // checking if the alignment is right
+    
     uint32_t out = 0;
     if ((load_address & 1) != 0) {
-        // The address is odd and therefore wrong
+    
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -109,8 +109,6 @@ void Memory::w8u(uint16_t address, uint8_t value) {
             "Cannot write to " + std::to_string(address)
         );
     }
-
-    // If the write is within VRAM (0x3000 to 0x7000), log the write.
     if (address >= static_cast<uint32_t>(Address::VRAM_START) &&
         address < static_cast<uint32_t>(Address::VRAM_END)) {
         std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex << int(value)
@@ -118,7 +116,7 @@ void Memory::w8u(uint16_t address, uint8_t value) {
     }
 
     if (address == static_cast<uint32_t>(Address::STDOUT)) {
-        std::cout << static_cast<char>(value);  // Just output the character
+        std::cout << static_cast<char>(value);  
     } else if (address == static_cast<uint32_t>(Address::STDERR)) {
         std::cerr << static_cast<char>(value);
     } else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
@@ -134,8 +132,8 @@ void Memory::w16u(const uint16_t address, const uint16_t value) {
                   << std::endl;
     }
     const uint8_t low_byte = 0xff;
-    w8u(address, (value >> BITS_PER_BYTE) & low_byte); // High byte
-    w8u(address + 1, value & low_byte);                // Low byte
+    w8u(address, (value >> BITS_PER_BYTE) & low_byte); 
+    w8u(address + 1, value & low_byte);                
 }
 
 uint16_t Memory::getSetupAddress() const {
@@ -186,8 +184,7 @@ void Memory::loadFile(std::ifstream& file_stream) {
     if (file_size > static_cast<uint32_t>(Address::SLUG_SIZE)) {
         throw std::runtime_error("ROM file is too large to fit in memory.");
     }
-    // Reads only the actual file size to avoid reading past the end of a
-    // smaller file.
+
     file_stream.read(
         reinterpret_cast<char*>(
             mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START)

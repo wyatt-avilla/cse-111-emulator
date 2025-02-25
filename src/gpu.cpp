@@ -11,13 +11,13 @@
 // https://chatgpt.com/share/67babfe6-d820-800e-a22c-84481ab7fab9
 
 
-// Scale factor to enlarge the 128x128 display
+
 const int WINDOW_SCALE = 4;
 const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU(Console* console) : window(nullptr), renderer(nullptr), texture(nullptr), console(console) {
-    // Initialize internal VRAM buffer to zeros.
+
     std::memset(vram, 0, sizeof(vram));
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -69,7 +69,7 @@ GPU::~GPU() {
 }
 
 uint32_t GPU::getPixelAddress(uint32_t x_coord, uint32_t y_coord) {
-    // Calculate pixel index: x + (y * 128)
+    
     return static_cast<uint16_t>(Memory::Address::STACK_END) +
            (x_coord + y_coord * FRAME_WIDTH);
 }
@@ -82,30 +82,30 @@ void GPU::setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level) {
 }
 
 void GPU::renderFrame() {
-    // Process SDL events
+
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
-            // Log to confirm this is being called
+            
             std::cerr << "Quit event received, stopping execution" << std::endl;
             if (console) {
                 console->stopExecution();
             } else {
-                // If console pointer is not set, exit directly
+                
                 std::cerr << "Console pointer not set, exiting directly" << std::endl;
                 exit(0);
             }
         }
     }
 
-    // Copy external VRAM (from main memory) into the internal buffer.
+
     if (externalVRAM != nullptr) {
         std::memcpy(vram, externalVRAM, VRAM_SIZE);
     } else {
         std::cerr << "Warning: External VRAM pointer not set." << std::endl;
     }
 
-    // Convert each 1-byte gray level into a 32-bit ARGB pixel.
+    
     const uint8_t bits_per_byte = 8;
     const uint8_t low_byte = 0xff;
     std::array<uint32_t, VRAM_SIZE> pixels{};
@@ -116,7 +116,7 @@ void GPU::renderFrame() {
                     gray;
     }
 
-    // Update the SDL texture with the pixel data and render it.
+    
     SDL_UpdateTexture(
         texture,
         nullptr,
