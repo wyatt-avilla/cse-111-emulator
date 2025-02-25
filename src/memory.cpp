@@ -18,7 +18,7 @@ Memory::Memory(Console* console_instance)
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(const uint32_t address) {
-    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+    return (address <= static_cast<uint32_t>(Address::IO_START)) || // RAM
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
             address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
            (address >= static_cast<uint32_t>(Address::VRAM_START) &&
@@ -32,7 +32,7 @@ bool Memory::isReadable(const uint32_t address) {
 
 
 bool Memory::isWritable(const uint32_t address) {
-    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+    return (address <= static_cast<uint32_t>(Address::IO_START)) || // RAM
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
             address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
            (address >= static_cast<uint32_t>(Address::VRAM_START) &&
@@ -111,8 +111,8 @@ void Memory::w8u(uint16_t address, uint8_t value) {
     }
     if (address >= static_cast<uint32_t>(Address::VRAM_START) &&
         address < static_cast<uint32_t>(Address::VRAM_END)) {
-        std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex << int(value)
-                  << " to address 0x" << std::hex << address << std::endl;
+        //std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex << int(value)
+              //    << " to address 0x" << std::hex << address << std::endl;
     }
 
     if (address == static_cast<uint32_t>(Address::STDOUT)) {

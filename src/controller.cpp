@@ -1,5 +1,6 @@
 
 #include "controller.h"
+#include "console.h"
 #include <iostream>
 #include <bitset>
 #include <SDL2/SDL.h> 
@@ -37,13 +38,11 @@ void Controller::updateController() {
     
     if (new_state != controller_state) {
         controller_state = new_state;
+        console->memory.w8u(0x7000, new_state);
+        std::cerr <<"Wrote in mem add" << (uint16_t)new_state << std::endl;
         displayControllerState();
     }
 
-    if (new_state != controller_state) {
-        controller_state = new_state;
-        std::cout << "Controller state: " << std::bitset<8>(controller_state) << std::endl;
-    }
 }
 
 void Controller::displayControllerState() const {
