@@ -13,7 +13,7 @@
 #define CONTROLLER_RIGHT_MASK  ((uint8_t)0x01)
 
 
-class Console; // ✅ Forward declaration to avoid circular dependencies
+class Console; 
 
 class Controller {
   public:
