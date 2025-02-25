@@ -50,11 +50,14 @@ uint8_t Controller::getState() const {
         controller_state = new_state;
         std::cout << "Controller state: " << std::bitset<8>(controller_state) << std::endl;
     }
-
+    
+/*
 if (keystate[SDL_SCANCODE_LSHIFT]) {
     std::cout << "Shift key detected!" << std::endl;
     new_state |= CONTROLLER_SELECT_MASK;
 }
+
+*/
     }
 
 // Print the binary representation of controller state
