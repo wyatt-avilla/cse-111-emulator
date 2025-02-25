@@ -8,7 +8,7 @@
 Controller::Controller(Console* console) : console(console) {}
 
 uint8_t Controller::getState() {
-    const Uint8* keystate = SDL_GetKeyboardState(nullptr);
+    const auto* const keystate = SDL_GetKeyboardState(nullptr);
 
     uint8_t new_state = 0;
 
