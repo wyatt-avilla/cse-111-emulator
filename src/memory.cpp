@@ -1,8 +1,7 @@
-
-
 #include "memory.h"
 
 #include "console.h"
+#include "controller.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -57,7 +56,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 
     uint8_t out = 0;
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        out = mem_array[static_cast<uint32_t>(Address::CONTROLLER_DATA)];
+        out = console_instance->controller.getState();
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
