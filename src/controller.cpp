@@ -22,7 +22,6 @@ Controller::Controller(Console* console)
 uint8_t Controller::getState() const { return controller_state; }
 
 void Controller::updateController() {
-    SDL_Event event;
     const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
     uint8_t new_state = 0;
