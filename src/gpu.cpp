@@ -16,7 +16,7 @@ const int WINDOW_SCALE = 4;
 const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
-GPU::GPU(Console* console) : window(nullptr), renderer(nullptr), texture(nullptr), console(console) {
+GPU::GPU(Console* console) : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {
     // Initialize VRAM with zeros
 
     std::memset(vram, 0, sizeof(vram));

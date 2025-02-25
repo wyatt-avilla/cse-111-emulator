@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include "console.h"
 
 #define CONTROLLER_A_MASK      ((uint8_t)0x80)
 #define CONTROLLER_B_MASK      ((uint8_t)0x40)
@@ -17,8 +16,7 @@ class Console;
 
 class Controller {
   public:
-    explicit Controller(Console* console); 
-    ~Controller();
+    Controller(Console* console);
     uint8_t getState() const;              
     void updateController();               
     void displayControllerState() const;   
