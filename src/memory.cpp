@@ -12,7 +12,7 @@
 #include <iostream>
 
 Memory::Memory(Console* console_instance)
-    : console_instance(console_instance) {} 
+    : console_instance(console_instance) {}
 
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
@@ -46,7 +46,7 @@ bool Memory::isExecutable(const uint32_t address) {
     return (
         address >= static_cast<uint32_t>(Address::SLUG_START) &&
         address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
-    ); 
+    );
 }
 uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
@@ -67,10 +67,10 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 }
 
 uint16_t Memory::l16u(const uint16_t load_address) const {
-    
+
     uint16_t out = 0;
     if ((load_address & 1) != 0) {
-    
+
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -79,10 +79,10 @@ uint16_t Memory::l16u(const uint16_t load_address) const {
 }
 
 uint32_t Memory::l32u(const uint16_t load_address) const {
-    
+
     uint32_t out = 0;
     if ((load_address & 1) != 0) {
-    
+
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -111,12 +111,13 @@ void Memory::w8u(uint16_t address, uint8_t value) {
     }
     if (address >= static_cast<uint32_t>(Address::VRAM_START) &&
         address < static_cast<uint32_t>(Address::VRAM_END)) {
-        //std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex << int(value)
-              //    << " to address 0x" << std::hex << address << std::endl;
+        // std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex <<
+        // int(value)
+        //     << " to address 0x" << std::hex << address << std::endl;
     }
 
     if (address == static_cast<uint32_t>(Address::STDOUT)) {
-        std::cout << static_cast<char>(value);  
+        std::cout << static_cast<char>(value);
     } else if (address == static_cast<uint32_t>(Address::STDERR)) {
         std::cerr << static_cast<char>(value);
     } else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
@@ -132,8 +133,8 @@ void Memory::w16u(const uint16_t address, const uint16_t value) {
                   << std::endl;
     }
     const uint8_t low_byte = 0xff;
-    w8u(address, (value >> BITS_PER_BYTE) & low_byte); 
-    w8u(address + 1, value & low_byte);                
+    w8u(address, (value >> BITS_PER_BYTE) & low_byte);
+    w8u(address + 1, value & low_byte);
 }
 
 uint16_t Memory::getSetupAddress() const {
@@ -192,6 +193,3 @@ void Memory::loadFile(std::ifstream& file_stream) {
         file_size
     );
 }
-
-
-

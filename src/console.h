@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "controller.h"
 #include "cpu.h"
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
-#include "controller.h"
 
 class Console {
   public:

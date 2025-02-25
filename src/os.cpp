@@ -71,7 +71,9 @@ void OS::loopIteration() {
                                   iteration_end - iteration_start
     )
                                   .count();
-    constexpr double target_frame_time_ms = 16.667;   // Step 6: Ensure the emulator runs at 60 FPS by adding a delay if needed
+    constexpr double target_frame_time_ms =
+        16.667; // Step 6: Ensure the emulator runs at 60 FPS by adding a delay
+                // if needed
     if (elapsed_ms < target_frame_time_ms) {
         std::chrono::duration<double, std::milli> const sleep_duration(
             target_frame_time_ms - elapsed_ms

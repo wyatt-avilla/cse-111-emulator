@@ -283,6 +283,3 @@ void CPU::SLT(
     registers[reg_c] =
         static_cast<uint16_t>(registers[reg_a] < registers[reg_b]);
 }
-
-
-

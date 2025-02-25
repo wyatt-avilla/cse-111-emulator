@@ -6,12 +6,11 @@ class Console;
 
 class GPU {
   public:
-
     GPU(Console* console = nullptr);
-    
+
     static const uint32_t FRAME_WIDTH = 128;
     static const uint32_t FRAME_HEIGHT = 128;
-    static const uint32_t VRAM_SIZE = FRAME_WIDTH * FRAME_HEIGHT; 
+    static const uint32_t VRAM_SIZE = FRAME_WIDTH * FRAME_HEIGHT;
 
     ~GPU();
 
@@ -24,7 +23,7 @@ class GPU {
     void setExternalVRAM(uint8_t* ptr);
 
   private:
-    Console* console; 
+    Console* console;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
