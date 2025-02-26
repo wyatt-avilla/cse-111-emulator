@@ -56,7 +56,7 @@ void CPU::setProgramCounterTo(const uint16_t counter_value) {
 uint16_t CPU::getProgramCounter() const { return this->program_counter; }
 
 void CPU::setStackPointerTo(const uint16_t pointer_value) {
-    this->registers[STACK_PTR_REG] = pointer_value;
+    this->registers[STACK_PTR_REG] = static_cast<int16_t>(pointer_value);
 }
 
 
@@ -137,7 +137,8 @@ void CPU::L16(
     const uint16_t immediate
 ) {
     uint32_t const effective_address = registers[reg_a] + immediate;
-    registers[reg_b] = this->console->memory.l16u(effective_address);
+    registers[reg_b] =
+        static_cast<int16_t>(this->console->memory.l16u(effective_address));
 }
 
 
@@ -149,7 +150,7 @@ void CPU::L8U(
     try {
         uint32_t const effective_address = registers[reg_a] + immediate;
         registers[reg_b] =
-            static_cast<uint16_t>(this->console->memory.l8u(effective_address));
+            static_cast<int16_t>(this->console->memory.l8u(effective_address));
     } catch (const std::invalid_argument&) {
         std::cerr << "Tried to load out of bounds." << std::endl;
     }
@@ -185,7 +186,7 @@ void CPU::ADDI(
     const uint16_t reg_b,
     const uint16_t immediate
 ) {
-    registers[reg_b] = registers[reg_a] + immediate;
+    registers[reg_b] = static_cast<int16_t>(registers[reg_a] + immediate);
 }
 
 void CPU::BNE(
@@ -201,7 +202,7 @@ void CPU::BNE(
 }
 
 void CPU::JAL(const uint16_t immediate) {
-    registers[JAL_REG] = program_counter + PC_INCREMENT;
+    registers[JAL_REG] = static_cast<int16_t>(program_counter + PC_INCREMENT);
     program_counter = 4 * immediate;
 }
 
@@ -210,11 +211,13 @@ void CPU::SUB(
     const uint16_t reg_b,
     const uint16_t reg_c
 ) {
-    registers[reg_c] = registers[reg_a] - registers[reg_b];
+    registers[reg_c] =
+        static_cast<int16_t>(registers[reg_a] - registers[reg_b]);
 }
 
 void CPU::OR(const uint16_t reg_a, const uint16_t reg_b, const uint16_t reg_c) {
-    registers[reg_c] = registers[reg_a] | registers[reg_b];
+    registers[reg_c] =
+        static_cast<int16_t>(registers[reg_a] | registers[reg_b]);
 }
 
 void CPU::NOR(
@@ -222,7 +225,8 @@ void CPU::NOR(
     const uint16_t reg_b,
     const uint16_t reg_c
 ) {
-    registers[reg_c] = ~(registers[reg_a] | registers[reg_b]);
+    registers[reg_c] =
+        static_cast<int16_t>(~(registers[reg_a] | registers[reg_b]));
 }
 
 void CPU::ADD(
@@ -230,7 +234,8 @@ void CPU::ADD(
     const uint16_t reg_b,
     const uint16_t reg_c
 ) {
-    registers[reg_c] = registers[reg_a] + registers[reg_b];
+    registers[reg_c] =
+        static_cast<int16_t>(registers[reg_a] + registers[reg_b]);
 }
 
 void CPU::SRA(
@@ -238,7 +243,8 @@ void CPU::SRA(
     const uint16_t reg_c,
     const uint16_t shift_value
 ) {
-    registers[reg_c] = (signed) registers[reg_b] >> shift_value;
+    registers[reg_c] =
+        static_cast<int16_t>((signed) registers[reg_b] >> shift_value);
 }
 
 void CPU::XOR(
@@ -246,7 +252,8 @@ void CPU::XOR(
     const uint16_t reg_b,
     const uint16_t reg_c
 ) {
-    registers[reg_c] = registers[reg_a] ^ registers[reg_b];
+    registers[reg_c] =
+        static_cast<int16_t>(registers[reg_a] ^ registers[reg_b]);
 }
 
 void CPU::AND(
@@ -254,7 +261,8 @@ void CPU::AND(
     const uint16_t reg_b,
     const uint16_t reg_c
 ) {
-    registers[reg_c] = registers[reg_a] & registers[reg_b];
+    registers[reg_c] =
+        static_cast<int16_t>(registers[reg_a] & registers[reg_b]);
 }
 
 void CPU::JR(const uint16_t reg_a) { program_counter = registers[reg_a]; }
@@ -264,7 +272,7 @@ void CPU::SLL(
     const uint16_t reg_c,
     const uint16_t shift_value
 ) {
-    registers[reg_c] = registers[reg_b] << shift_value;
+    registers[reg_c] = static_cast<int16_t>(registers[reg_b] << shift_value);
 }
 
 void CPU::SRL(
@@ -272,7 +280,8 @@ void CPU::SRL(
     const uint16_t reg_c,
     const uint16_t shift_value
 ) {
-    registers[reg_c] = (unsigned) registers[reg_b] >> shift_value;
+    registers[reg_c] =
+        static_cast<int16_t>((unsigned) registers[reg_b] >> shift_value);
 }
 
 void CPU::SLT(
@@ -281,5 +290,5 @@ void CPU::SLT(
     const uint16_t reg_c
 ) {
     registers[reg_c] =
-        static_cast<uint16_t>(registers[reg_a] < registers[reg_b]);
+        static_cast<int16_t>(registers[reg_a] < registers[reg_b]);
 }
