@@ -24,12 +24,16 @@ void OS::reset(const std::string& filename) {
     this->c->memory.copyDataSectionToRam();
 
     this->c->cpu.setStackPointerTo(
-        static_cast<std::underlying_type_t<Memory::Address>>(Memory::Address::STACK_END)
+        static_cast<std::underlying_type_t<Memory::Address>>(
+            Memory::Address::STACK_END
+        )
     );
 
     this->c->gpu.setExternalVRAM(
         this->c->memory.getPointerToMemArray() +
-        static_cast<std::underlying_type_t<Memory::Address>>(Memory::Address::STACK_END)
+        static_cast<std::underlying_type_t<Memory::Address>>(
+            Memory::Address::STACK_END
+        )
     );
 
     setup();

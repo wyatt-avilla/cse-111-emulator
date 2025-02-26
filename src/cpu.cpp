@@ -1,4 +1,5 @@
 #include "cpu.h"
+
 #include "console.h"
 
 #include <cstdlib>
@@ -32,15 +33,19 @@ void CPU::execute(const uint32_t instruction) {
     if (opcode == static_cast<std::underlying_type_t<Opcode>>(Opcode::RTYPE)) {
         uint16_t const function = instruction & first_six_bits_mask;
         executeTypeR(instruction);
-        if (function != static_cast<std::underlying_type_t<Opcode>>(Opcode::JR)) {
+        if (function !=
+            static_cast<std::underlying_type_t<Opcode>>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
         }
     } else {
         executeTypeI(instruction);
-        if (opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::BEQ) &&
+        if (opcode !=
+                static_cast<std::underlying_type_t<Opcode>>(Opcode::BEQ) &&
             opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::J) &&
-            opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::BNE) &&
-            opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::JAL)) {
+            opcode !=
+                static_cast<std::underlying_type_t<Opcode>>(Opcode::BNE) &&
+            opcode !=
+                static_cast<std::underlying_type_t<Opcode>>(Opcode::JAL)) {
             program_counter += PC_INCREMENT;
         }
     }

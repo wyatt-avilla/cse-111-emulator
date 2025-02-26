@@ -64,7 +64,9 @@ GPU::~GPU() {
 }
 
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
-    return static_cast<std::underlying_type_t<Memory::Address>>(Memory::Address::STACK_END) +
+    return static_cast<std::underlying_type_t<Memory::Address>>(
+               Memory::Address::STACK_END
+           ) +
            (x_coord + y_coord * FRAME_WIDTH);
 }
 
