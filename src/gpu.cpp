@@ -1,5 +1,6 @@
 #include "gpu.h"
 
+#include "bit_definitions.h"
 #include "console.h"
 #include "memory.h"
 
@@ -82,7 +83,6 @@ void GPU::renderFrame() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
-
             std::cerr << "Quit event received, stopping execution" << std::endl;
             console->stopExecution();
         }
@@ -90,13 +90,11 @@ void GPU::renderFrame() {
 
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
-    const uint8_t bits_per_byte = 8;
-    const uint8_t low_byte = 0xff;
     std::array<uint32_t, VRAM_SIZE> pixels{};
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
-        pixels[i] = (low_byte << bits_per_byte * 3) |
-                    (gray << bits_per_byte * 2) | (gray << bits_per_byte) |
+        pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
+                    (gray << BITS_PER_BYTE * 2) | (gray << BITS_PER_BYTE) |
                     gray;
     }
 

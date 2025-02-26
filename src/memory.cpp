@@ -1,5 +1,6 @@
 #include "memory.h"
 
+#include "bit_definitions.h"
 #include "console.h"
 #include "controller.h"
 
@@ -124,9 +125,8 @@ void Memory::w16u(const uint16_t address, const uint16_t value) {
         std::cerr << "warning: trying to write the word on an unaligned address"
                   << std::endl;
     }
-    const uint8_t low_byte = 0xff;
-    w8u(address, (value >> BITS_PER_BYTE) & low_byte);
-    w8u(address + 1, value & low_byte);
+    w8u(address, (value >> BITS_PER_BYTE) & BYTE_MASK);
+    w8u(address + 1, value & BYTE_MASK);
 }
 
 uint16_t Memory::getSetupAddress() const {
