@@ -27,8 +27,6 @@ void OS::reset(const std::string& filename) {
         static_cast<uint16_t>(Memory::Address::STACK_END)
     );
 
-    // NEW: Set the GPU's external VRAM pointer.
-    // This assumes Memory provides a getPointerToMemArray() method (see below)
     this->c->gpu.setExternalVRAM(
         this->c->memory.getPointerToMemArray() +
         static_cast<uint16_t>(Memory::Address::STACK_END)
@@ -62,8 +60,6 @@ void OS::loopIteration() {
         this->c->cpu.execute(instruction);
     }
 
-    // Render the current frame using the GPU (which now copies from external
-    // VRAM)
     this->c->gpu.renderFrame();
 
     auto iteration_end = std::chrono::steady_clock::now();
@@ -71,9 +67,7 @@ void OS::loopIteration() {
                                   iteration_end - iteration_start
     )
                                   .count();
-    constexpr double target_frame_time_ms =
-        16.667; // Step 6: Ensure the emulator runs at 60 FPS by adding a delay
-                // if needed
+    constexpr double target_frame_time_ms = 16.667;
     if (elapsed_ms < target_frame_time_ms) {
         std::chrono::duration<double, std::milli> const sleep_duration(
             target_frame_time_ms - elapsed_ms

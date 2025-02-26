@@ -17,25 +17,24 @@ Memory::Memory(Console* console_instance)
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(const uint32_t address) {
-    return (address <= static_cast<uint32_t>(Address::IO_START)) || // RAM
+    return (address <= static_cast<uint32_t>(Address::IO_START)) ||
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+            address < static_cast<uint32_t>(Address::VRAM_START)) ||
            (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+            address < static_cast<uint32_t>(Address::VRAM_END)) ||
            (address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) ||
            (address == static_cast<uint32_t>(Address::STDIN)) ||
            (address >= static_cast<uint32_t>(Address::SLUG_START) &&
-            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
-           ); // SLUG
+            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END));
 }
 
 
 bool Memory::isWritable(const uint32_t address) {
-    return (address <= static_cast<uint32_t>(Address::IO_START)) || // RAM
+    return (address <= static_cast<uint32_t>(Address::IO_START)) ||
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+            address < static_cast<uint32_t>(Address::VRAM_START)) ||
            (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+            address < static_cast<uint32_t>(Address::VRAM_END)) ||
            (address == static_cast<uint32_t>(Address::STDOUT)) ||
            (address == static_cast<uint32_t>(Address::STDERR)) ||
            (address == static_cast<uint32_t>(Address::STOP_EXECUTION));

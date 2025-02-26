@@ -53,7 +53,6 @@ class Memory {
 
   private:
     Console* console_instance;
-    const uint8_t BITS_PER_BYTE = 8;
     std::array<uint8_t, static_cast<uint32_t>(Address::ADDRESS_SPACE_END)>
         mem_array{};
 
