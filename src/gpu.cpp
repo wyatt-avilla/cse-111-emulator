@@ -67,12 +67,16 @@ GPU::~GPU() {
     SDL_Quit();
 }
 
-uint32_t GPU::getPixelAddress(uint32_t x_coord, uint32_t y_coord) {
+uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
     return static_cast<uint16_t>(Memory::Address::STACK_END) +
            (x_coord + y_coord * FRAME_WIDTH);
 }
 
-void GPU::setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level) {
+void GPU::setPixel(
+    const uint32_t x_coord,
+    const uint32_t y_coord,
+    const uint8_t gray_level
+) {
     if (x_coord >= FRAME_WIDTH || y_coord >= FRAME_HEIGHT)
         return;
     uint32_t const index = x_coord + (y_coord * FRAME_WIDTH);
