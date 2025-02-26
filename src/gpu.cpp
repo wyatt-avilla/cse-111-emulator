@@ -8,10 +8,6 @@
 #include <cstring>
 #include <iostream>
 
-// Here are the ChatGPT links to code recommendations
-// https://chatgpt.com/share/67bac209-01f0-800e-a6d4-24d4d72a4a07
-// https://chatgpt.com/share/67babfe6-d820-800e-a22c-84481ab7fab9
-
 const int WINDOW_SCALE = 4;
 const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
@@ -68,7 +64,7 @@ GPU::~GPU() {
 }
 
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
-    return static_cast<uint16_t>(Memory::Address::STACK_END) +
+    return static_cast<std::underlying_type_t<Memory::Address>>(Memory::Address::STACK_END) +
            (x_coord + y_coord * FRAME_WIDTH);
 }
 

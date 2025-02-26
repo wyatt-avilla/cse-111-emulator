@@ -14,39 +14,37 @@
 Memory::Memory(Console* console_instance)
     : console_instance(console_instance) {}
 
-// Link for code for permission checks found from ChatGPT
-// https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
-
 bool Memory::isReadable(const uint32_t address) {
-    return (address <= static_cast<uint32_t>(Address::IO_START)) ||
-           (address >= static_cast<uint32_t>(Address::STACK_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_START)) ||
-           (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_END)) ||
-           (address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) ||
-           (address == static_cast<uint32_t>(Address::STDIN)) ||
-           (address >= static_cast<uint32_t>(Address::SLUG_START) &&
-            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END));
+    return (address <= static_cast<std::underlying_type_t<Address>>(Address::IO_START)) ||
+           (address >= static_cast<std::underlying_type_t<Address>>(Address::STACK_START) &&
+            address < static_cast<std::underlying_type_t<Address>>(Address::VRAM_START)) ||
+           (address >= static_cast<std::underlying_type_t<Address>>(Address::VRAM_START) &&
+            address < static_cast<std::underlying_type_t<Address>>(Address::VRAM_END)) ||
+           (address == static_cast<std::underlying_type_t<Address>>(Address::CONTROLLER_DATA)) ||
+           (address == static_cast<std::underlying_type_t<Address>>(Address::STDIN)) ||
+           (address >= static_cast<std::underlying_type_t<Address>>(Address::SLUG_START) &&
+            address < static_cast<std::underlying_type_t<Address>>(Address::ADDRESS_SPACE_END));
 }
 
 
 bool Memory::isWritable(const uint32_t address) {
-    return (address <= static_cast<uint32_t>(Address::IO_START)) ||
-           (address >= static_cast<uint32_t>(Address::STACK_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_START)) ||
-           (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_END)) ||
-           (address == static_cast<uint32_t>(Address::STDOUT)) ||
-           (address == static_cast<uint32_t>(Address::STDERR)) ||
-           (address == static_cast<uint32_t>(Address::STOP_EXECUTION));
+    return (address <= static_cast<std::underlying_type_t<Address>>(Address::IO_START)) ||
+           (address >= static_cast<std::underlying_type_t<Address>>(Address::STACK_START) &&
+            address < static_cast<std::underlying_type_t<Address>>(Address::VRAM_START)) ||
+           (address >= static_cast<std::underlying_type_t<Address>>(Address::VRAM_START) &&
+            address < static_cast<std::underlying_type_t<Address>>(Address::VRAM_END)) ||
+           (address == static_cast<std::underlying_type_t<Address>>(Address::STDOUT)) ||
+           (address == static_cast<std::underlying_type_t<Address>>(Address::STDERR)) ||
+           (address == static_cast<std::underlying_type_t<Address>>(Address::STOP_EXECUTION));
 }
 
 bool Memory::isExecutable(const uint32_t address) {
     return (
-        address >= static_cast<uint32_t>(Address::SLUG_START) &&
-        address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
+        address >= static_cast<std::underlying_type_t<Address>>(Address::SLUG_START) &&
+        address < static_cast<std::underlying_type_t<Address>>(Address::ADDRESS_SPACE_END)
     );
 }
+
 uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
         throw std::invalid_argument(
@@ -55,9 +53,9 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
     }
 
     uint8_t out = 0;
-    if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
+    if (load_address == static_cast<std::underlying_type_t<Address>>(Address::CONTROLLER_DATA)) {
         out = Controller::getState();
-    } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
+    } else if (load_address == static_cast<std::underlying_type_t<Address>>(Address::STDIN)) {
         out = getchar();
     } else {
         out = mem_array[load_address];
@@ -66,10 +64,8 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 }
 
 uint16_t Memory::l16u(const uint16_t load_address) const {
-
     uint16_t out = 0;
     if ((load_address & 1) != 0) {
-
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -78,10 +74,8 @@ uint16_t Memory::l16u(const uint16_t load_address) const {
 }
 
 uint32_t Memory::l32u(const uint16_t load_address) const {
-
     uint32_t out = 0;
     if ((load_address & 1) != 0) {
-
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -99,8 +93,6 @@ uint32_t Memory::loadInstruction(const uint16_t load_address) const {
     }
     return l32u(load_address);
 }
-// got the write code from chat gpt
-// https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
 
 void Memory::w8u(const uint16_t address, const uint8_t value) {
     if (!isWritable(address)) {
@@ -109,11 +101,11 @@ void Memory::w8u(const uint16_t address, const uint8_t value) {
         );
     }
 
-    if (address == static_cast<uint32_t>(Address::STDOUT)) {
+    if (address == static_cast<std::underlying_type_t<Address>>(Address::STDOUT)) {
         std::cout << static_cast<char>(value);
-    } else if (address == static_cast<uint32_t>(Address::STDERR)) {
+    } else if (address == static_cast<std::underlying_type_t<Address>>(Address::STDERR)) {
         std::cerr << static_cast<char>(value);
-    } else if (address == static_cast<uint32_t>(Address::STOP_EXECUTION)) {
+    } else if (address == static_cast<std::underlying_type_t<Address>>(Address::STOP_EXECUTION)) {
         console_instance->stopExecution();
     } else {
         mem_array[address] = value;
@@ -130,29 +122,29 @@ void Memory::w16u(const uint16_t address, const uint16_t value) {
 }
 
 uint16_t Memory::getSetupAddress() const {
-    return l16u(static_cast<uint32_t>(Address::SETUP) + 2);
+    return l16u(static_cast<std::underlying_type_t<Address>>(Address::SETUP) + 2);
 }
 
 uint16_t Memory::getLoopAddress() const {
-    return l16u(static_cast<uint32_t>(Address::LOOP) + 2);
+    return l16u(static_cast<std::underlying_type_t<Address>>(Address::LOOP) + 2);
 }
 
 uint16_t Memory::getLoadDataAddress() const {
-    return l16u(static_cast<uint32_t>(Address::LOAD_DATA) + 2);
+    return l16u(static_cast<std::underlying_type_t<Address>>(Address::LOAD_DATA) + 2);
 }
 
 uint16_t Memory::getProgramDataAddress() const {
-    return l16u(static_cast<uint32_t>(Address::PROGRAM_DATA) + 2);
+    return l16u(static_cast<std::underlying_type_t<Address>>(Address::PROGRAM_DATA) + 2);
 }
 
 uint16_t Memory::getDataSize() const {
-    return l16u(static_cast<uint32_t>(Address::DATA_SIZE) + 2);
+    return l16u(static_cast<std::underlying_type_t<Address>>(Address::DATA_SIZE) + 2);
 }
 
 void Memory::clearRAM() {
     std::fill(
         mem_array.begin(),
-        mem_array.begin() + static_cast<uint32_t>(Address::IO_START),
+        mem_array.begin() + static_cast<std::underlying_type_t<Address>>(Address::IO_START),
         0
     );
 }
@@ -174,13 +166,13 @@ void Memory::loadFile(std::ifstream& file_stream) {
     std::streamsize const file_size = file_stream.tellg();
     file_stream.seekg(0, std::ios::beg);
 
-    if (file_size > static_cast<uint32_t>(Address::SLUG_SIZE)) {
+    if (file_size > static_cast<std::underlying_type_t<Address>>(Address::SLUG_SIZE)) {
         throw std::runtime_error("ROM file is too large to fit in memory.");
     }
 
     file_stream.read(
         reinterpret_cast<char*>(
-            mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START)
+            mem_array.begin() + static_cast<std::underlying_type_t<Address>>(Address::SLUG_START)
         ),
         file_size
     );

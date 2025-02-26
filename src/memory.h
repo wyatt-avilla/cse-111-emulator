@@ -1,14 +1,15 @@
+#pragma once
+
 #include <array>
 #include <cstdint>
 #include <fstream>
-
-#pragma once
+#include <type_traits>
 
 class Console;
 
 class Memory {
   public:
-    enum class Address {
+    enum class Address : uint32_t {
         STDIN = 0x7100,
         STDOUT = 0x7110,
         STDERR = 0x7120,
@@ -52,7 +53,7 @@ class Memory {
 
   private:
     Console* console_instance;
-    std::array<uint8_t, static_cast<uint32_t>(Address::ADDRESS_SPACE_END)>
+    std::array<uint8_t, static_cast<std::underlying_type_t<Address>>(Address::ADDRESS_SPACE_END)>
         mem_array{};
 
     static bool isReadable(uint32_t address);

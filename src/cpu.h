@@ -1,8 +1,9 @@
+#pragma once
+
 #include <array>
 #include <cstdint>
 #include <variant>
-
-#pragma once
+#include <type_traits>
 
 class Console;
 
@@ -85,8 +86,7 @@ class CPU {
     std::array<int16_t, NUM_REGISTERS> registers{};
 
 
-    // variants and constexprs by claude
-    // https://claude.site/artifacts/a672ce20-f93d-44fe-b36c-49a426778c92
+    // variants and constexprs
     struct RegularIType {
         void (CPU::*func)(uint16_t, uint16_t, uint16_t);
     };
@@ -117,11 +117,11 @@ class CPU {
         std::array<ITypeVariant, JUMP_TABLE_SIZE> table{};
 
         auto set_regular = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<uint16_t>(opcode)] = RegularIType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = RegularIType{func_ptr};
         };
 
         auto set_immediate = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<uint16_t>(opcode)] = OnlyImmediateIType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = OnlyImmediateIType{func_ptr};
         };
 
         set_regular(Opcode::BEQ, &CPU::BEQ);
@@ -143,15 +143,15 @@ class CPU {
         std::array<RTypeVariant, JUMP_TABLE_SIZE> table{};
 
         auto set_regular = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<uint16_t>(opcode)] = RegularRType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = RegularRType{func_ptr};
         };
 
         auto set_shift = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<uint16_t>(opcode)] = ShiftRType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = ShiftRType{func_ptr};
         };
 
         auto set_jump = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<uint16_t>(opcode)] = JumpRegisterRType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = JumpRegisterRType{func_ptr};
         };
 
         set_regular(Opcode::SUB, &CPU::SUB);

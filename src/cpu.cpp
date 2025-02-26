@@ -1,7 +1,9 @@
+#include "cpu.h"
 #include "console.h"
 
 #include <cstdlib>
 #include <iostream>
+#include <type_traits>
 
 struct ITypeInstructionBits {
     uint16_t immediate : 16;
@@ -27,18 +29,18 @@ void CPU::execute(const uint32_t instruction) {
     const uint16_t opcode = instruction >> opcode_shift;
     const uint16_t first_six_bits_mask = 0x3f;
 
-    if (opcode == static_cast<uint16_t>(Opcode::RTYPE)) {
+    if (opcode == static_cast<std::underlying_type_t<Opcode>>(Opcode::RTYPE)) {
         uint16_t const function = instruction & first_six_bits_mask;
         executeTypeR(instruction);
-        if (function != static_cast<uint16_t>(Opcode::JR)) {
+        if (function != static_cast<std::underlying_type_t<Opcode>>(Opcode::JR)) {
             program_counter += PC_INCREMENT;
         }
     } else {
         executeTypeI(instruction);
-        if (opcode != static_cast<uint16_t>(Opcode::BEQ) &&
-            opcode != static_cast<uint16_t>(Opcode::J) &&
-            opcode != static_cast<uint16_t>(Opcode::BNE) &&
-            opcode != static_cast<uint16_t>(Opcode::JAL)) {
+        if (opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::BEQ) &&
+            opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::J) &&
+            opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::BNE) &&
+            opcode != static_cast<std::underlying_type_t<Opcode>>(Opcode::JAL)) {
             program_counter += PC_INCREMENT;
         }
     }
