@@ -1,6 +1,8 @@
 #include "memory.h"
 
+#include "bit_definitions.h"
 #include "console.h"
+#include "controller.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -10,31 +12,30 @@
 #include <iostream>
 
 Memory::Memory(Console* console_instance)
-    : console_instance(console_instance) {} // initialize console_instance
+    : console_instance(console_instance) {}
 
 // Link for code for permission checks found from ChatGPT
 // https://chatgpt.com/share/67a42b0d-6d68-800e-b329-a5184489016e
 
 bool Memory::isReadable(const uint32_t address) {
-    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+    return (address <= static_cast<uint32_t>(Address::IO_START)) ||
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+            address < static_cast<uint32_t>(Address::VRAM_START)) ||
            (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+            address < static_cast<uint32_t>(Address::VRAM_END)) ||
            (address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) ||
            (address == static_cast<uint32_t>(Address::STDIN)) ||
            (address >= static_cast<uint32_t>(Address::SLUG_START) &&
-            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
-           ); // SLUG
+            address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END));
 }
 
 
 bool Memory::isWritable(const uint32_t address) {
-    return (address < static_cast<uint32_t>(Address::IO_START)) || // RAM
+    return (address <= static_cast<uint32_t>(Address::IO_START)) ||
            (address >= static_cast<uint32_t>(Address::STACK_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_START)) || // Stack
+            address < static_cast<uint32_t>(Address::VRAM_START)) ||
            (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-            address < static_cast<uint32_t>(Address::VRAM_END)) || // VRAM
+            address < static_cast<uint32_t>(Address::VRAM_END)) ||
            (address == static_cast<uint32_t>(Address::STDOUT)) ||
            (address == static_cast<uint32_t>(Address::STDERR)) ||
            (address == static_cast<uint32_t>(Address::STOP_EXECUTION));
@@ -44,10 +45,8 @@ bool Memory::isExecutable(const uint32_t address) {
     return (
         address >= static_cast<uint32_t>(Address::SLUG_START) &&
         address < static_cast<uint32_t>(Address::ADDRESS_SPACE_END)
-    ); // SLUG file
+    );
 }
-
-
 uint8_t Memory::l8u(const uint16_t load_address) const {
     if (!isReadable(load_address)) {
         throw std::invalid_argument(
@@ -57,7 +56,7 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 
     uint8_t out = 0;
     if (load_address == static_cast<uint32_t>(Address::CONTROLLER_DATA)) {
-        // TODO: get controller data
+        out = Controller::getState();
     } else if (load_address == static_cast<uint32_t>(Address::STDIN)) {
         out = getchar();
     } else {
@@ -67,10 +66,10 @@ uint8_t Memory::l8u(const uint16_t load_address) const {
 }
 
 uint16_t Memory::l16u(const uint16_t load_address) const {
-    // checking if the alignment is right
+
     uint16_t out = 0;
     if ((load_address & 1) != 0) {
-        // The address is odd and therefore wrong
+
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -79,10 +78,10 @@ uint16_t Memory::l16u(const uint16_t load_address) const {
 }
 
 uint32_t Memory::l32u(const uint16_t load_address) const {
-    // checking if the alignment is right
+
     uint32_t out = 0;
     if ((load_address & 1) != 0) {
-        // The address is odd and therefore wrong
+
         std::cerr << "warning trying to read the word on a false word address"
                   << std::endl;
     }
@@ -100,21 +99,14 @@ uint32_t Memory::loadInstruction(const uint16_t load_address) const {
     }
     return l32u(load_address);
 }
-
 // got the write code from chat gpt
 // https://chatgpt.com/share/67a02e08-1ad0-8013-a682-bbb8496babd0
-void Memory::w8u(uint16_t address, uint8_t value) {
+
+void Memory::w8u(const uint16_t address, const uint8_t value) {
     if (!isWritable(address)) {
         throw std::invalid_argument(
             "Cannot write to " + std::to_string(address)
         );
-    }
-
-    // If the write is within VRAM (0x3000 to 0x7000), log the write.
-    if (address >= static_cast<uint32_t>(Address::VRAM_START) &&
-        address < static_cast<uint32_t>(Address::VRAM_END)) {
-        std::cerr << "Memory::w8u: VRAM write of 0x" << std::hex << int(value)
-                  << " to address 0x" << std::hex << address << std::endl;
     }
 
     if (address == static_cast<uint32_t>(Address::STDOUT)) {
@@ -133,9 +125,8 @@ void Memory::w16u(const uint16_t address, const uint16_t value) {
         std::cerr << "warning: trying to write the word on an unaligned address"
                   << std::endl;
     }
-    const uint8_t low_byte = 0xff;
-    w8u(address, (value >> BITS_PER_BYTE) & low_byte); // High byte
-    w8u(address + 1, value & low_byte);                // Low byte
+    w8u(address, (value >> BITS_PER_BYTE) & BYTE_MASK);
+    w8u(address + 1, value & BYTE_MASK);
 }
 
 uint16_t Memory::getSetupAddress() const {
@@ -186,8 +177,7 @@ void Memory::loadFile(std::ifstream& file_stream) {
     if (file_size > static_cast<uint32_t>(Address::SLUG_SIZE)) {
         throw std::runtime_error("ROM file is too large to fit in memory.");
     }
-    // Reads only the actual file size to avoid reading past the end of a
-    // smaller file.
+
     file_stream.read(
         reinterpret_cast<char*>(
             mem_array.begin() + static_cast<uint32_t>(Address::SLUG_START)
