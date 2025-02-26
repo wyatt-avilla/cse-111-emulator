@@ -19,7 +19,6 @@ const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU(Console* console)
     : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {
-    // Initialize VRAM with zeros
 
     // Initialize SDL for video rendering
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {

@@ -1,7 +1,8 @@
-#pragma once
 #include <array>
 #include <cstdint>
 #include <fstream>
+
+#pragma once
 
 class Console;
 

@@ -1,8 +1,9 @@
-#pragma once
-
 #include <SDL2/SDL.h>
 #include <array>
 #include <cstdint>
+
+#pragma once
+
 
 class Console;
 

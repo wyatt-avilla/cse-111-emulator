@@ -1,7 +1,6 @@
-#pragma once
-
 #include <cstdint>
 
+#pragma once
 
 class Console;
 
