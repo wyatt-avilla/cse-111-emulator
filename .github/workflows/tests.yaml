@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches: ["main", "hello-world-ci"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Cache SDL Build
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/build
+            ${{ github.workspace }}/external/SDL
+          key: ${{ runner.os }}-sdl-${{ hashFiles('external/SDL/**') }}
+          restore-keys: |
+            ${{ runner.os }}-sdl-
+
+      - name: Configure CMake
+        run: |
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDL_UNIX_CONSOLE_BUILD=ON
+
+      - name: Build
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+      - name: Run Hello World 1
+        run:
+          ${{github.workspace}}/starter-code/tests/run_test.sh
+          ${{github.workspace}}/starter-code/tests/hello_world1 ${{github.workspace}}/build/emulator
+          ${{github.workspace}}/starter-code/hws/hello_world1.sl
