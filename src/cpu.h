@@ -82,7 +82,7 @@ class CPU {
     static const uint8_t NUM_REGISTERS = 32;
     static const uint8_t JUMP_TABLE_SIZE = 64;
 
-    std::array<uint16_t, NUM_REGISTERS> registers{};
+    std::array<int16_t, NUM_REGISTERS> registers{};
 
 
     // variants and constexprs by claude
