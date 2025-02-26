@@ -2,8 +2,8 @@
 
 #include <array>
 #include <cstdint>
-#include <variant>
 #include <type_traits>
+#include <variant>
 
 class Console;
 
@@ -117,11 +117,13 @@ class CPU {
         std::array<ITypeVariant, JUMP_TABLE_SIZE> table{};
 
         auto set_regular = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = RegularIType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] =
+                RegularIType{func_ptr};
         };
 
         auto set_immediate = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = OnlyImmediateIType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] =
+                OnlyImmediateIType{func_ptr};
         };
 
         set_regular(Opcode::BEQ, &CPU::BEQ);
@@ -143,15 +145,18 @@ class CPU {
         std::array<RTypeVariant, JUMP_TABLE_SIZE> table{};
 
         auto set_regular = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = RegularRType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] =
+                RegularRType{func_ptr};
         };
 
         auto set_shift = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = ShiftRType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] =
+                ShiftRType{func_ptr};
         };
 
         auto set_jump = [&table](Opcode opcode, auto func_ptr) {
-            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] = JumpRegisterRType{func_ptr};
+            table[static_cast<std::underlying_type_t<Opcode>>(opcode)] =
+                JumpRegisterRType{func_ptr};
         };
 
         set_regular(Opcode::SUB, &CPU::SUB);

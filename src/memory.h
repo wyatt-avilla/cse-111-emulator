@@ -53,7 +53,10 @@ class Memory {
 
   private:
     Console* console_instance;
-    std::array<uint8_t, static_cast<std::underlying_type_t<Address>>(Address::ADDRESS_SPACE_END)>
+    std::array<
+        uint8_t,
+        static_cast<std::underlying_type_t<Address>>(Address::ADDRESS_SPACE_END
+        )>
         mem_array{};
 
     static bool isReadable(uint32_t address);
