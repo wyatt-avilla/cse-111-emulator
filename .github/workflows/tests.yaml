@@ -50,3 +50,19 @@ jobs:
           ./build/emulator \
           ./starter-code/hws/hello_world1.slug
         working-directory: ${{ github.workspace }}
+
+      - name: Run Hello World 2
+        run: |
+          ./starter-code/tests/run_test.sh \
+          ./starter-code/tests/hello_world2 \
+          ./build/emulator \
+          ./starter-code/hws/hello_world2.slug
+        working-directory: ${{ github.workspace }}
+
+      - name: Run Hello World 3
+        run: |
+          ./starter-code/tests/run_test.sh \
+          ./starter-code/tests/hello_world3 \
+          ./build/emulator \
+          ./starter-code/hws/hello_world3.slug
+        working-directory: ${{ github.workspace }}
