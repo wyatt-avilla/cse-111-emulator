@@ -45,3 +45,8 @@ jobs:
           ./build/emulator \
           ./starter-code/hws/hello_world1.slug
         working-directory: ${{ github.workspace }}
+
+      - name: minimal
+        run: |
+          ./build/emulator ./starter-code/hws/hello_world1.slug
+        working-directory: ${{ github.workspace }}
