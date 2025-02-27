@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: ["main", "hello-world-ci"]
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 
