@@ -40,7 +40,8 @@ jobs:
 
       - name: Run Hello World 1
         run: |
-          ${{github.workspace}}/starter-code/tests/run_test.sh \
-          ${{github.workspace}}/starter-code/tests/hello_world1 \
-          ${{github.workspace}}/build/emulator \
-          ${{github.workspace}}/starter-code/hws/hello_world1.slug
+          ./starter-code/tests/run_test.sh \
+          ./starter-code/tests/hello_world1 \
+          ./build/emulator \
+          ./starter-code/hws/hello_world1.slug
+        working-directory: ${{ github.workspace }}
