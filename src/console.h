@@ -10,7 +10,7 @@
 
 class Console {
   public:
-    Console();
+    Console(bool graphics);
     CPU cpu;
     OS os;
     Memory memory;
@@ -20,8 +20,9 @@ class Console {
     void run(const std::string& slug_file_path);
     void stopExecution();
     [[nodiscard]] bool isRunning() const;
-    [[nodiscard]] uint8_t getControllerState() const;
+    [[nodiscard]] bool graphicalSession() const;
 
   private:
     bool is_running{true};
+    bool graphics{true};
 };

@@ -15,7 +15,7 @@ int32_t main(const int32_t argc, const char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    Console banana;
+    Console banana(true);
 
     try {
         banana.run(argv[FILENAME_INDEX]);
