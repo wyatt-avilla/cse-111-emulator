@@ -15,7 +15,13 @@ int32_t main(const int32_t argc, const char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    Console banana(true);
+    bool graphics_state = true;
+
+#ifdef HEADLESS_BUILD
+    graphics_state = false;
+#endif
+
+    Console banana(graphics_state);
 
     try {
         banana.run(argv[FILENAME_INDEX]);
