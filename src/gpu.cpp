@@ -27,8 +27,9 @@ GPU::~GPU() {
 
 void GPU::initializeRenderer() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_Init Error: ") + SDL_GetError()
+        );
     }
 
     window = SDL_CreateWindow(
@@ -41,15 +42,16 @@ void GPU::initializeRenderer() {
     );
 
     if (window == nullptr) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_CreateWindow Error: ") + SDL_GetError()
+        );
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError()
-                  << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_CreateRenderer Error: ") + SDL_GetError()
+        );
     }
 
     texture = SDL_CreateTexture(
@@ -59,9 +61,11 @@ void GPU::initializeRenderer() {
         FRAME_WIDTH,
         FRAME_HEIGHT
     );
+
     if (texture == nullptr) {
-        std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_CreateTexture Error: ") + SDL_GetError()
+        );
     }
 }
 

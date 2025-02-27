@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <array>
 #include <cstdint>
+#include <stdexcept>
 
 #pragma once
 
@@ -37,4 +38,10 @@ class GPU {
     std::array<uint8_t, VRAM_SIZE> vram{};
 
     uint8_t* external_vram = nullptr;
+};
+
+class GraphicsException : public std::runtime_error {
+  public:
+    explicit GraphicsException(const std::string& message)
+        : std::runtime_error("Graphics Error: " + message) {}
 };
