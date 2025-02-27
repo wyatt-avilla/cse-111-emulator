@@ -38,11 +38,6 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-      - name: minimal
-        run: |
-          ./build/emulator ./starter-code/hws/hello_world1.slug
-        working-directory: ${{ github.workspace }}
-
       - name: Run Hello World 1
         run: |
           ./starter-code/tests/run_test.sh \
