@@ -36,6 +36,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Debug>:-ggdb -O0>
     $<$<CONFIG:Release>:-O3 -Werror>
+    $<$<CONFIG:Headless>: -O3 -Werror -DHEADLESS_BUILD>
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2)

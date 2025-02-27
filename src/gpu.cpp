@@ -13,11 +13,23 @@ const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU(Console* console)
-    : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {
+    : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {}
 
+GPU::~GPU() {
+    if (texture != nullptr)
+        SDL_DestroyTexture(texture);
+    if (renderer != nullptr)
+        SDL_DestroyRenderer(renderer);
+    if (window != nullptr)
+        SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+void GPU::initializeRenderer() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_Init Error: ") + SDL_GetError()
+        );
     }
 
     window = SDL_CreateWindow(
@@ -28,16 +40,18 @@ GPU::GPU(Console* console)
         WINDOW_HEIGHT,
         SDL_WINDOW_SHOWN
     );
+
     if (window == nullptr) {
-        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_CreateWindow Error: ") + SDL_GetError()
+        );
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError()
-                  << std::endl;
-        exit(1);
+        throw GraphicsException(
+            std::string("SDL_CreateRenderer Error: ") + SDL_GetError()
+        );
     }
 
     texture = SDL_CreateTexture(
@@ -47,20 +61,12 @@ GPU::GPU(Console* console)
         FRAME_WIDTH,
         FRAME_HEIGHT
     );
-    if (texture == nullptr) {
-        std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
-        exit(1);
-    }
-}
 
-GPU::~GPU() {
-    if (texture != nullptr)
-        SDL_DestroyTexture(texture);
-    if (renderer != nullptr)
-        SDL_DestroyRenderer(renderer);
-    if (window != nullptr)
-        SDL_DestroyWindow(window);
-    SDL_Quit();
+    if (texture == nullptr) {
+        throw GraphicsException(
+            std::string("SDL_CreateTexture Error: ") + SDL_GetError()
+        );
+    }
 }
 
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
