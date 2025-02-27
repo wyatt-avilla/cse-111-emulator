@@ -17,6 +17,8 @@ class GPU {
 
     ~GPU();
 
+    void initializeRenderer();
+
     static uint32_t getPixelAddress(uint32_t x_coord, uint32_t y_coord);
 
     void setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level);
