@@ -15,10 +15,11 @@ int32_t main(const int32_t argc, const char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    bool graphics_state = true;
-
+    constexpr bool graphics_state =
 #ifdef HEADLESS_BUILD
-    graphics_state = false;
+        false;
+#else
+        true;
 #endif
 
     Console banana(graphics_state);
