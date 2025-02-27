@@ -10,7 +10,7 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build:
+  tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +39,7 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Run Hello World 1
-        run:
+        run: |
           ${{github.workspace}}/starter-code/tests/run_test.sh \
           ${{github.workspace}}/starter-code/tests/hello_world1 \
           ${{github.workspace}}/build/emulator \
