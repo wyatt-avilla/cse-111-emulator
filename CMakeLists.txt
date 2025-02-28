@@ -16,6 +16,12 @@ set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(external/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(external/wxWidgets EXCLUDE_FROM_ALL)
+
+# **Find wxWidgets** (Required for linking)
+set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE) # Ensure static build if necessary
+find_package(wxWidgets REQUIRED COMPONENTS core base) 
+include(${wxWidgets_USE_FILE})
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
@@ -25,6 +31,7 @@ add_executable(${PROJECT_NAME}
     src/os.cpp
     src/gpu.cpp
     src/controller.cpp
+    src/gui.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
@@ -38,7 +45,8 @@ target_compile_options(${PROJECT_NAME} PRIVATE
     $<$<CONFIG:Release>:-O3 -Werror>
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2)
+# **Link wxWidgets and SDL2**
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2 ${wxWidgets_LIBRARIES})
 
 # Add a target to launch GDB
 add_custom_target(debug
@@ -48,3 +56,5 @@ add_custom_target(debug
 )
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "wxWidgets libraries: ${wxWidgets_LIBRARIES}")
+
