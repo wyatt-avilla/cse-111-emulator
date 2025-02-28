@@ -3,14 +3,17 @@
 
 #include <wx/wx.h>
 
-class MyApp : public wxApp {
-public:
-    virtual bool OnInit();
-};
-
 class MyFrame : public wxFrame {
 public:
     MyFrame();
+
+private:
+    void OnFileSelect(wxCommandEvent& event); // Declare the function
 };
 
-#endif
+class MyApp : public wxApp {
+    public:
+        virtual bool OnInit();
+};
+
+#endif // GUI_H
