@@ -6,14 +6,16 @@
 class MyFrame : public wxFrame {
 public:
     MyFrame();
-
-private:
-    void OnFileSelect(wxCommandEvent& event); // Declare the function
-    void OnExecute(wxCommandEvent& event); // Declare the execute function
     
-    wxButton* selectButton; // Declare selectButton
-    wxButton* executeButton; // Declare executeButton
-    wxString filePath; // Declare filePath to store selected file
+private:
+    wxButton* selectButton;
+    wxButton* executeButton;
+    wxStaticBitmap* imageBitmap; // Declare imageBitmap here
+    wxString filePath;
+
+    void OnFileSelect(wxCommandEvent& event);
+    void OnExecute(wxCommandEvent& event);
+    void OnResize(wxSizeEvent& event); // Declare OnResize here
 };
 
 class MyApp : public wxApp {
@@ -22,3 +24,4 @@ public:
 };
 
 #endif // GUI_H
+
