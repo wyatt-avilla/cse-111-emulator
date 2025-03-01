@@ -7,6 +7,7 @@
 #include <wx/msgdlg.h>
 #include <wx/stattext.h>
 #include <wx/statbox.h>
+#include <thread>
 
 bool MyApp::OnInit() {
     MyFrame* frame = new MyFrame();
@@ -69,15 +70,13 @@ void MyFrame::OnFileSelect(wxCommandEvent& event) {
 
 void MyFrame::OnExecute(wxCommandEvent& event) {
     if (!filePath.IsEmpty()) {
-        Console banana;
-
-        try {
-            banana.run(std::string(filePath.ToStdString()));
-        } catch (const std::exception& e) {
-            std::cerr << "Couldn't run " << "\"" << std::string(filePath.ToStdString())
-                      << "\":" << std::endl
-                      << "    " << e.what() << std::endl;
-        }
-        exit(EXIT_SUCCESS);
+        std::thread([this]() {
+            Console banana;
+            try {
+                banana.run(std::string(filePath.ToStdString()));
+            } catch (const std::exception& e) {
+                wxMessageBox("Couldn't run file:\n" + filePath + "\nError: " + e.what(), "Execution Error", wxOK | wxICON_ERROR);
+            }
+        }).detach();
     }
 }
