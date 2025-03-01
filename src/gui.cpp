@@ -5,8 +5,8 @@
 #include "console.h"
 #include <wx/filedlg.h>
 #include <wx/msgdlg.h>
-
-
+#include <wx/stattext.h>
+#include <wx/statbox.h>
 
 bool MyApp::OnInit() {
     MyFrame* frame = new MyFrame();
@@ -15,19 +15,41 @@ bool MyApp::OnInit() {
 }
 
 MyFrame::MyFrame()
-    : wxFrame(nullptr, wxID_ANY, "wxWidgets Window", wxDefaultPosition, wxSize(400, 300)) {
+    : wxFrame(nullptr, wxID_ANY, "Banana Emulator", wxDefaultPosition, wxSize(500, 400)) {
     
     wxPanel* panel = new wxPanel(this, wxID_ANY);
-    wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
+    panel->SetBackgroundColour(wxColour(40, 40, 40)); // Dark grayish black background
     
-    selectButton = new wxButton(panel, wxID_ANY, "Select File");
-    executeButton = new wxButton(panel, wxID_ANY, "Execute");
+    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+    
+    wxStaticText* title = new wxStaticText(panel, wxID_ANY, "Welcome to Banana Emulator", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
+    title->SetForegroundColour(wxColour(255, 215, 0)); // Yellow title text
+    title->SetFont(wxFont(14, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    
+    wxBoxSizer* buttonSizer = new wxBoxSizer(wxVERTICAL);
+    
+    selectButton = new wxButton(panel, wxID_ANY, "Select File", wxDefaultPosition, wxSize(150, 40));
+    executeButton = new wxButton(panel, wxID_ANY, "Execute", wxDefaultPosition, wxSize(150, 40));
     executeButton->Disable(); // Initially disabled
     
-    sizer->Add(selectButton, 0, wxALIGN_CENTER | wxALL, 10);
-    sizer->Add(executeButton, 0, wxALIGN_CENTER | wxALL, 10);
+    // Button Styling
+    wxColour buttonColor(30, 30, 30);  // Darker black
+    wxColour outlineColor(255, 215, 0); // Yellow outline
     
-    panel->SetSizer(sizer);
+    selectButton->SetBackgroundColour(buttonColor);
+    selectButton->SetForegroundColour(outlineColor);
+    executeButton->SetBackgroundColour(buttonColor);
+    executeButton->SetForegroundColour(outlineColor);
+    
+    buttonSizer->Add(selectButton, 0, wxALIGN_CENTER | wxALL, 10);
+    buttonSizer->Add(executeButton, 0, wxALIGN_CENTER | wxALL, 10);
+    
+    mainSizer->Add(title, 0, wxALIGN_CENTER | wxTOP, 20);
+    mainSizer->AddStretchSpacer();
+    mainSizer->Add(buttonSizer, 0, wxALIGN_CENTER);
+    mainSizer->AddStretchSpacer();
+    
+    panel->SetSizer(mainSizer);
     
     selectButton->Bind(wxEVT_BUTTON, &MyFrame::OnFileSelect, this);
     executeButton->Bind(wxEVT_BUTTON, &MyFrame::OnExecute, this);
@@ -50,13 +72,12 @@ void MyFrame::OnExecute(wxCommandEvent& event) {
         Console banana;
 
         try {
-                banana.run(std::string(filePath.ToStdString()));
-            } catch (const std::exception& e) {
-                std::cerr << "Couldn't run " << "\"" << std::string(filePath.ToStdString())
-                            << "\":" << std::endl
-                            << "    " << e.what() << std::endl;
-            }
-        
-            exit(EXIT_SUCCESS);
+            banana.run(std::string(filePath.ToStdString()));
+        } catch (const std::exception& e) {
+            std::cerr << "Couldn't run " << "\"" << std::string(filePath.ToStdString())
+                      << "\":" << std::endl
+                      << "    " << e.what() << std::endl;
+        }
+        exit(EXIT_SUCCESS);
     }
 }
