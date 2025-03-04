@@ -17,8 +17,11 @@ set(SDL_TEST OFF CACHE BOOL "" FORCE)
 set(wxBUILD_SHARED ON CACHE BOOL "" FORCE)
 
 # these are sets to ensure that the build happens faster with threads and cacheing
-set(CMAKE_BUILD_PARALLEL_LEVEL 8)
-# set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+include(ProcessorCount)
+ProcessorCount(N)
+if(NOT N EQUAL 0)
+    set(CMAKE_BUILD_PARALLEL_LEVEL ${N})
+endif()
 
 
 
