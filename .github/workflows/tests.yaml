@@ -21,15 +21,17 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Cache SDL Build
+      - name: Cache External Builds
         uses: actions/cache@v3
         with:
           path: |
             ${{ github.workspace }}/build
             ${{ github.workspace }}/external/SDL
-          key: ${{ runner.os }}-sdl-${{ hashFiles('external/SDL/**') }}
+            ${{ github.workspace }}/external/wxWidgets
+          key:
+            ${{ runner.os }}-external-${{ hashFiles('external/SDL/**', 'external/wxWidgets/**') }}
           restore-keys: |
-            ${{ runner.os }}-sdl-
+            ${{ runner.os }}-external-
 
       - name: Configure CMake
         run: |
