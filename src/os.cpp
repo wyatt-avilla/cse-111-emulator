@@ -29,12 +29,14 @@ void OS::reset(const std::string& filename) {
         )
     );
 
-    this->c->gpu.setExternalVRAM(
-        this->c->memory.getPointerToMemArray() +
-        static_cast<std::underlying_type_t<Memory::Address>>(
-            Memory::Address::STACK_END
-        )
-    );
+    if (this->c->graphicalSession()) {
+        this->c->gpu.setExternalVRAM(
+            this->c->memory.getPointerToMemArray() +
+            static_cast<std::underlying_type_t<Memory::Address>>(
+                Memory::Address::STACK_END
+            )
+        );
+    }
 
     setup();
 }
@@ -64,7 +66,9 @@ void OS::loopIteration() {
         this->c->cpu.execute(instruction);
     }
 
-    this->c->gpu.renderFrame();
+    if (this->c->graphicalSession()) {
+        this->c->gpu.renderFrame();
+    }
 
     auto iteration_end = std::chrono::steady_clock::now();
     double const elapsed_ms = std::chrono::duration<double, std::milli>(

@@ -3,6 +3,8 @@
 // and then further modified with this thread of chat
 // https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
+#ifndef HEADLESS_BUILD
+
 #include "gui.h"
 #include "console.h"
 #include <wx/filedlg.h>
@@ -130,7 +132,7 @@ void MyFrame::OnFileSelect(wxCommandEvent& event) {
 void MyFrame::OnExecute(wxCommandEvent& event) {
     if (!filePath.IsEmpty()) {
         std::thread([this]() {
-            Console banana;
+            Console banana(true);
             try {
                 banana.run(std::string(filePath.ToStdString()));
             } catch (const std::exception& e) {
@@ -139,3 +141,4 @@ void MyFrame::OnExecute(wxCommandEvent& event) {
         }).detach();
     }
 }
+#endif
