@@ -18,6 +18,22 @@
 #include <iostream>
 #include <wx/stdpaths.h>
 
+const int WX_FRAME_X_POSTION = 500;
+const int WX_FRAME_Y_POSTION = 400;
+const int GREY_COLOR = 40;
+const int FOREGROUND_COLOUR_1 = 255;
+const int FOREGROUND_COLOUR_2 = 215;
+const int FOREGROUND_COLOUR_3 = 0;
+const int FONT_SIZE = 14;
+const int RESCALE_X = 300;
+const int RESCALE_Y = 150;
+const int SELECT_BUTTON_X = 150;
+const int SELECT_BUTTON_Y = 40;
+const int EXECUTE_BUTTON_X = 150;
+const int EXECUTE_BUTTON_Y = 40;
+const int BUTTON_SIZE = 10;
+const int IMAGE_SIZE = 10;
+const int TITLE_SIZE = 20;
 
 bool MyApp::OnInit() {
     auto* frame = new MyFrame();
@@ -26,17 +42,17 @@ bool MyApp::OnInit() {
 }
 
 MyFrame::MyFrame()
-    : wxFrame(nullptr, wxID_ANY, "Banana Emulator", wxDefaultPosition, wxSize(500, 400)) {
+    : wxFrame(nullptr, wxID_ANY, "Banana Emulator", wxDefaultPosition, wxSize(WX_FRAME_X_POSTION, WX_FRAME_Y_POSTION)) {
     
     auto* panel = new wxPanel(this, wxID_ANY);
-    panel->SetBackgroundColour(wxColour(40, 40, 40)); // Dark grayish black background
+    panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)); // Dark grayish black background
     
     auto* main_sizer = new wxBoxSizer(wxVERTICAL);
     
     // Title
     auto* title = new wxStaticText(panel, wxID_ANY, "Welcome to Banana Emulator", wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE);
-    title->SetForegroundColour(wxColour(255, 215, 0)); // Yellow title text
-    title->SetFont(wxFont(14, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    title->SetForegroundColour(wxColour(FOREGROUND_COLOUR_1, FOREGROUND_COLOUR_2, FOREGROUND_COLOUR_3)); // Yellow title text
+    title->SetFont(wxFont(FONT_SIZE, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
     // Get dynamic image path
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
@@ -51,13 +67,13 @@ MyFrame::MyFrame()
         wxMessageBox("Failed to load image: " + image_path, "Error", wxOK | wxICON_ERROR);
     }
 
-    image.Rescale(300, 150); // Initial size
+    image.Rescale(RESCALE_X, RESCALE_Y); // Initial size
     imageBitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
 
     // Buttons
     auto* button_sizer = new wxBoxSizer(wxVERTICAL);
-    selectButton = new wxButton(panel, wxID_ANY, "Select File", wxDefaultPosition, wxSize(150, 40));
-    executeButton = new wxButton(panel, wxID_ANY, "Execute", wxDefaultPosition, wxSize(150, 40));
+    selectButton = new wxButton(panel, wxID_ANY, "Select File", wxDefaultPosition, wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y));
+    executeButton = new wxButton(panel, wxID_ANY, "Execute", wxDefaultPosition, wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y));
     executeButton->Disable(); // Initially disabled
 
     // Button Styling
@@ -69,12 +85,12 @@ MyFrame::MyFrame()
     executeButton->SetBackgroundColour(button_color);
     executeButton->SetForegroundColour(outline_color);
 
-    button_sizer->Add(selectButton, 0, wxALIGN_CENTER | wxALL, 10);
-    button_sizer->Add(executeButton, 0, wxALIGN_CENTER | wxALL, 10);
+    button_sizer->Add(selectButton, 0, wxALIGN_CENTER | wxALL, BUTTON_SIZE);
+    button_sizer->Add(executeButton, 0, wxALIGN_CENTER | wxALL, BUTTON_SIZE);
 
     // Layout
-    main_sizer->Add(title, 0, wxALIGN_CENTER | wxTOP, 20);
-    main_sizer->Add(imageBitmap, 0, wxALIGN_CENTER | wxALL, 10);
+    main_sizer->Add(title, 0, wxALIGN_CENTER | wxTOP, TITLE_SIZE);
+    main_sizer->Add(imageBitmap, 0, wxALIGN_CENTER | wxALL, IMAGE_SIZE);
     main_sizer->AddStretchSpacer();
     main_sizer->Add(button_sizer, 0, wxALIGN_CENTER);
     main_sizer->AddStretchSpacer();
@@ -90,8 +106,8 @@ MyFrame::MyFrame()
 // Handle window resizing
 void MyFrame::OnResize(wxSizeEvent& event) {
     wxSize const new_size = GetClientSize();
-    int const new_width = new_size.GetWidth() * 0.6; // Scale to 60% of window width
-    int const new_height = new_width * 0.5; // Maintain aspect ratio
+    double const new_width = new_size.GetWidth() * 0.6; // Scale to 60% of window width
+    double const new_height = new_width * 0.5; // Maintain aspect ratio
 
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
