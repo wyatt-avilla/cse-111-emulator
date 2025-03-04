@@ -16,6 +16,11 @@ set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
 set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE) # Ensure static build if necessary
 
+# these are sets to ensure that the build happens faster with threads and cacheing
+set(CMAKE_BUILD_PARALLEL_LEVEL 8)
+set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+
+
 
 add_subdirectory(external/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(external/wxWidgets EXCLUDE_FROM_ALL)
