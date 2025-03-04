@@ -41,7 +41,7 @@ bool MyApp::OnInit() {
     return true;
 }
 
-MyFrame::MyFrame()
+MyFrame::MyFrame() // NOLINT(readability-function-size)
     : wxFrame(nullptr, wxID_ANY, "Banana Emulator", wxDefaultPosition, wxSize(WX_FRAME_X_POSTION, WX_FRAME_Y_POSTION)) {
     
     auto* panel = new wxPanel(this, wxID_ANY);
@@ -114,7 +114,7 @@ void MyFrame::onResize(wxSizeEvent& event) {
     file.Normalize(wxPATH_NORM_ABSOLUTE);
     wxString const image_path = file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png"; 
 
-    wxImage image(image_path, wxBITMAP_TYPE_PNG);
+    wxImage image(image_path, wxBITMAP_TYPE_PNG); // NOLINT(clang-analyzer-optin.cplusplus.VirtualCall)
     if (image.IsOk()) {
         image.Rescale(static_cast<int32_t>(new_width), static_cast<int32_t>(new_height));
         image_bitmap->SetBitmap(wxBitmap(image));
