@@ -14,14 +14,12 @@ set(BUILD_SHARED_LIBS ON)
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
+set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE) # Ensure static build if necessary
+
 
 add_subdirectory(external/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(external/wxWidgets EXCLUDE_FROM_ALL)
 
-# **Find wxWidgets** (Required for linking)
-set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE) # Ensure static build if necessary
-find_package(wxWidgets REQUIRED COMPONENTS core base) 
-include(${wxWidgets_USE_FILE})
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
@@ -46,7 +44,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 # **Link wxWidgets and SDL2**
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2 ${wxWidgets_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2 wx::core wx::base)
 
 # Add a target to launch GDB
 add_custom_target(debug
