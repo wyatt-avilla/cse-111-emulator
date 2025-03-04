@@ -3,10 +3,10 @@
 #include <wx/wx.h>
 
 class MyFrame : public wxFrame {
-public:
+  public:
     MyFrame();
-    
-private:
+
+  private:
     wxButton* select_button;
     wxButton* execute_button;
     wxStaticBitmap* image_bitmap; // Declare imageBitmap here
@@ -18,7 +18,6 @@ private:
 };
 
 class MyApp : public wxApp {
-public:
+  public:
     bool OnInit() override;
 };
-
