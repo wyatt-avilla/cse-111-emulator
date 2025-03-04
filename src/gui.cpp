@@ -41,7 +41,7 @@ MyFrame::MyFrame()
     // Get dynamic image path
     wxFileName exePath(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exePath);
-    file.Normalize();
+    file.Normalize(wxPATH_NORM_ABSOLUTE);
     wxString imagePath = file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
     
     // Load Image
@@ -95,7 +95,7 @@ void MyFrame::OnResize(wxSizeEvent& event) {
 
     wxFileName exePath(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exePath);
-    file.Normalize();
+    file.Normalize(wxPATH_NORM_ABSOLUTE);
     wxString imagePath = file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png"; 
 
     wxImage image(imagePath, wxBITMAP_TYPE_PNG);
@@ -109,7 +109,7 @@ void MyFrame::OnResize(wxSizeEvent& event) {
 }
 
 // Handle file selection
-void MyFrame::OnFileSelect(wxCommandEvent& event) {
+void MyFrame::OnFileSelect(wxCommandEvent&) {
     wxFileDialog openFileDialog(this, "Open .slug File", "", "", "SLUG files (*.slug)|*.slug", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     
     if (openFileDialog.ShowModal() == wxID_CANCEL) {
@@ -129,7 +129,7 @@ void MyFrame::OnFileSelect(wxCommandEvent& event) {
 }
 
 // Handle execution
-void MyFrame::OnExecute(wxCommandEvent& event) {
+void MyFrame::OnExecute(wxCommandEvent&) {
     if (!filePath.IsEmpty()) {
         std::thread([this]() {
             Console banana(true);
