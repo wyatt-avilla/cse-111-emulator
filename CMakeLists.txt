@@ -14,7 +14,7 @@ set(BUILD_SHARED_LIBS ON)
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
-set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE) # Ensure static build if necessary
+set(wxBUILD_SHARED ON CACHE BOOL "" FORCE)
 
 # these are sets to ensure that the build happens faster with threads and cacheing
 set(CMAKE_BUILD_PARALLEL_LEVEL 8)
