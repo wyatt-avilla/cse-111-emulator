@@ -25,8 +25,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ${{ github.workspace }}/build/external/SDL
-            ${{ github.workspace }}/build/external/wxWidgets
+            ${{ github.workspace }}/build
+            ${{ github.workspace }}/external/SDL
+            ${{ github.workspace }}/external/wxWidgets
           key:
             ${{ runner.os }}-external-${{ hashFiles('external/SDL/**', 'external/wxWidgets/**') }}
           restore-keys: |
