@@ -68,29 +68,29 @@ MyFrame::MyFrame()
     }
 
     image.Rescale(RESCALE_X, RESCALE_Y); // Initial size
-    imageBitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
+    image_bitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
 
     // Buttons
     auto* button_sizer = new wxBoxSizer(wxVERTICAL);
-    selectButton = new wxButton(panel, wxID_ANY, "Select File", wxDefaultPosition, wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y));
-    executeButton = new wxButton(panel, wxID_ANY, "Execute", wxDefaultPosition, wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y));
-    executeButton->Disable(); // Initially disabled
+    select_button = new wxButton(panel, wxID_ANY, "Select File", wxDefaultPosition, wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y));
+    execute_button = new wxButton(panel, wxID_ANY, "Execute", wxDefaultPosition, wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y));
+    execute_button->Disable(); // Initially disabled
 
     // Button Styling
     wxColour const button_color(30, 30, 30);  // Darker black
     wxColour const outline_color(255, 215, 0); // Yellow outline
 
-    selectButton->SetBackgroundColour(button_color);
-    selectButton->SetForegroundColour(outline_color);
-    executeButton->SetBackgroundColour(button_color);
-    executeButton->SetForegroundColour(outline_color);
+    select_button->SetBackgroundColour(button_color);
+    select_button->SetForegroundColour(outline_color);
+    execute_button->SetBackgroundColour(button_color);
+    execute_button->SetForegroundColour(outline_color);
 
-    button_sizer->Add(selectButton, 0, wxALIGN_CENTER | wxALL, BUTTON_SIZE);
-    button_sizer->Add(executeButton, 0, wxALIGN_CENTER | wxALL, BUTTON_SIZE);
+    button_sizer->Add(select_button, 0, wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL, BUTTON_SIZE);
+    button_sizer->Add(execute_button, 0, wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL, BUTTON_SIZE);
 
     // Layout
-    main_sizer->Add(title, 0, wxALIGN_CENTER | wxTOP, TITLE_SIZE);
-    main_sizer->Add(imageBitmap, 0, wxALIGN_CENTER | wxALL, IMAGE_SIZE);
+    main_sizer->Add(title, 0, wxALIGN_CENTER | wxALIGN_TOP, TITLE_SIZE);
+    main_sizer->Add(image_bitmap, 0, wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL, IMAGE_SIZE);
     main_sizer->AddStretchSpacer();
     main_sizer->Add(button_sizer, 0, wxALIGN_CENTER);
     main_sizer->AddStretchSpacer();
@@ -98,13 +98,13 @@ MyFrame::MyFrame()
     panel->SetSizer(main_sizer);
 
     // Bind Events
-    selectButton->Bind(wxEVT_BUTTON, &MyFrame::OnFileSelect, this);
-    executeButton->Bind(wxEVT_BUTTON, &MyFrame::OnExecute, this);
-    Bind(wxEVT_SIZE, &MyFrame::OnResize, this); // Resize event
+    select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
+    execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
+    Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
 }
 
 // Handle window resizing
-void MyFrame::OnResize(wxSizeEvent& event) {
+void MyFrame::onResize(wxSizeEvent& event) {
     wxSize const new_size = GetClientSize();
     double const new_width = new_size.GetWidth() * 0.6; // Scale to 60% of window width
     double const new_height = new_width * 0.5; // Maintain aspect ratio
@@ -116,8 +116,8 @@ void MyFrame::OnResize(wxSizeEvent& event) {
 
     wxImage image(image_path, wxBITMAP_TYPE_PNG);
     if (image.IsOk()) {
-        image.Rescale(new_width, new_height);
-        imageBitmap->SetBitmap(wxBitmap(image));
+        image.Rescale(static_cast<int32_t>(new_width), static_cast<int32_t>(new_height));
+        image_bitmap->SetBitmap(wxBitmap(image));
         Layout(); // Refresh layout
     }
 
@@ -125,34 +125,34 @@ void MyFrame::OnResize(wxSizeEvent& event) {
 }
 
 // Handle file selection
-void MyFrame::OnFileSelect(wxCommandEvent& /*unused*/) {
+void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     wxFileDialog open_file_dialog(this, "Open .slug File", "", "", "SLUG files (*.slug)|*.slug", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     
     if (open_file_dialog.ShowModal() == wxID_CANCEL) {
         return; // User cancelled the dialog
     }
     
-    filePath = open_file_dialog.GetPath();
+    file_path = open_file_dialog.GetPath();
     
     // Ensure the file has a ".slug" extension
-    if (!filePath.Lower().EndsWith(".slug")) {
+    if (!file_path.Lower().EndsWith(".slug")) {
         wxMessageBox("Invalid file type! Please select a .slug file.", "Error", wxOK | wxICON_ERROR);
         return;
     }
 
-    wxMessageBox("You selected: " + filePath, "File Selected", wxOK | wxICON_INFORMATION);
-    executeButton->Enable(); // Enable execute button after selecting a valid file
+    wxMessageBox("You selected: " + file_path, "File Selected", wxOK | wxICON_INFORMATION);
+    execute_button->Enable(); // Enable execute button after selecting a valid file
 }
 
 // Handle execution
-void MyFrame::OnExecute(wxCommandEvent& /*unused*/) {
-    if (!filePath.IsEmpty()) {
+void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
+    if (!file_path.IsEmpty()) {
         std::thread([this]() {
             Console banana(true);
             try {
-                banana.run(std::string(filePath.ToStdString()));
+                banana.run(std::string(file_path.ToStdString()));
             } catch (const std::exception& e) {
-                wxMessageBox("Couldn't run file:\n" + filePath + "\nError: " + e.what(), "Execution Error", wxOK | wxICON_ERROR);
+                wxMessageBox("Couldn't run file:\n" + file_path + "\nError: " + e.what(), "Execution Error", wxOK | wxICON_ERROR);
             }
         }).detach();
     }

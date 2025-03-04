@@ -1,5 +1,4 @@
-#ifndef GUI_H
-#define GUI_H
+#pragma once
 
 #include <wx/wx.h>
 
@@ -8,20 +7,18 @@ public:
     MyFrame();
     
 private:
-    wxButton* selectButton;
-    wxButton* executeButton;
-    wxStaticBitmap* imageBitmap; // Declare imageBitmap here
-    wxString filePath;
+    wxButton* select_button;
+    wxButton* execute_button;
+    wxStaticBitmap* image_bitmap; // Declare imageBitmap here
+    wxString file_path;
 
-    void OnFileSelect(wxCommandEvent& event);
-    void OnExecute(wxCommandEvent& event);
-    void OnResize(wxSizeEvent& event); // Declare OnResize here
+    void onFileSelect(wxCommandEvent& event);
+    void onExecute(wxCommandEvent& event);
+    void onResize(wxSizeEvent& event); // Declare OnResize here
 };
 
 class MyApp : public wxApp {
 public:
-    virtual bool OnInit();
+    bool OnInit() override;
 };
-
-#endif // GUI_H
 
