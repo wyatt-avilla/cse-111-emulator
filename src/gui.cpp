@@ -1,5 +1,7 @@
 // got a large put of this code from chat gpt
 // https://chatgpt.com/share/67c212e0-dae4-8013-b5b9-2400c824b5e3
+// and then further modified with this thread of chat
+// https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
 #include "gui.h"
 #include "console.h"
@@ -9,7 +11,11 @@
 #include <wx/statbmp.h>
 #include <wx/image.h>
 #include <wx/sizer.h>
-#include <thread> // Added this
+#include <wx/filename.h>
+#include <thread> 
+#include <iostream>
+#include <wx/stdpaths.h>
+
 
 bool MyApp::OnInit() {
     MyFrame* frame = new MyFrame();
@@ -30,9 +36,14 @@ MyFrame::MyFrame()
     title->SetForegroundColour(wxColour(255, 215, 0)); // Yellow title text
     title->SetFont(wxFont(14, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
+    // Get dynamic image path
+    wxFileName exePath(wxStandardPaths::Get().GetExecutablePath());
+    wxFileName file(exePath);
+    file.Normalize();
+    wxString imagePath = file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
+    
     // Load Image
-    wxString imagePath = "/home/mike/Documents/college/cse-111-emulator/src/banna.png"; 
-    wxInitAllImageHandlers(); // Ensure wxWidgets supports images
+    wxInitAllImageHandlers(); 
     wxImage image(imagePath, wxBITMAP_TYPE_PNG);
     if (!image.IsOk()) {
         wxMessageBox("Failed to load image: " + imagePath, "Error", wxOK | wxICON_ERROR);
@@ -80,7 +91,12 @@ void MyFrame::OnResize(wxSizeEvent& event) {
     int newWidth = newSize.GetWidth() * 0.6; // Scale to 60% of window width
     int newHeight = newWidth * 0.5; // Maintain aspect ratio
 
-    wxImage image("/home/mike/Documents/college/cse-111-emulator/src/banna.png", wxBITMAP_TYPE_PNG);
+    wxFileName exePath(wxStandardPaths::Get().GetExecutablePath());
+    wxFileName file(exePath);
+    file.Normalize();
+    wxString imagePath = file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png"; 
+
+    wxImage image(imagePath, wxBITMAP_TYPE_PNG);
     if (image.IsOk()) {
         image.Rescale(newWidth, newHeight);
         imageBitmap->SetBitmap(wxBitmap(image));
@@ -92,15 +108,22 @@ void MyFrame::OnResize(wxSizeEvent& event) {
 
 // Handle file selection
 void MyFrame::OnFileSelect(wxCommandEvent& event) {
-    wxFileDialog openFileDialog(this, "Open File", "", "", "All files (*.*)|*.*", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    wxFileDialog openFileDialog(this, "Open .slug File", "", "", "SLUG files (*.slug)|*.slug", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     
     if (openFileDialog.ShowModal() == wxID_CANCEL) {
         return; // User cancelled the dialog
     }
     
     filePath = openFileDialog.GetPath();
+    
+    // Ensure the file has a ".slug" extension
+    if (!filePath.Lower().EndsWith(".slug")) {
+        wxMessageBox("Invalid file type! Please select a .slug file.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
     wxMessageBox("You selected: " + filePath, "File Selected", wxOK | wxICON_INFORMATION);
-    executeButton->Enable(); // Enable execute button after selecting a file
+    executeButton->Enable(); // Enable execute button after selecting a valid file
 }
 
 // Handle execution
