@@ -28,6 +28,9 @@ jobs:
             ${{ github.workspace }}/build
             ${{ github.workspace }}/external/SDL
             ${{ github.workspace }}/external/wxWidgets
+            ${{ github.workspace }}/build/external/wxWidgets/CMakeCache.txt
+            ${{ github.workspace }}/build/external/wxWidgets/CMakeFiles
+            ${{ github.workspace }}/build/external/wxWidgets/Makefile
           key:
             ${{ runner.os }}-external-${{ hashFiles('external/SDL/src/**',
             'external/SDL/include/**', 'external/wxWidgets/src/**', 'external/wxWidgets/include/**')
