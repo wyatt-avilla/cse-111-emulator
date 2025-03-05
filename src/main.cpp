@@ -1,10 +1,14 @@
 #include "console.h"
+#include "gui.h"
 
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <string>
 
+#ifndef HEADLESS_BUILD
+wxIMPLEMENT_APP(MyApp);
+#else
 const uint8_t EXPECTED_ARGS = 1;
 const uint8_t FILENAME_INDEX = 1;
 
@@ -14,15 +18,7 @@ int32_t main(const int32_t argc, const char* argv[]) {
                   << ", expected " << EXPECTED_ARGS << ")" << std::endl;
         exit(EXIT_FAILURE);
     }
-
-    constexpr bool graphics_state =
-#ifdef HEADLESS_BUILD
-        false;
-#else
-        true;
-#endif
-
-    Console banana(graphics_state);
+    Console banana(false);
 
     try {
         banana.run(argv[FILENAME_INDEX]);
@@ -34,3 +30,4 @@ int32_t main(const int32_t argc, const char* argv[]) {
 
     exit(EXIT_SUCCESS);
 }
+#endif
