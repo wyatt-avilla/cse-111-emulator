@@ -14,7 +14,7 @@ set(BUILD_SHARED_LIBS ON)
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
 set(SDL_STATIC OFF CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
-set(wxBUILD_SHARED ON CACHE BOOL "" FORCE)
+set(wxBUILD_SHARED ON CACHE BOOL "")
 
 # these are sets to ensure that the build happens faster with threads and cacheing
 include(ProcessorCount)
