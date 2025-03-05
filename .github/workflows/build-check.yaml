@@ -21,10 +21,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Check cache existence before
-        run: |
-          ls ${{ github.workspace }}/build/external/wxWidgets/lib || echo "no lib dir"
-
       - name: Cache External Builds
         uses: actions/cache@v3
         with:
@@ -41,10 +37,6 @@ jobs:
             }}
           restore-keys: |
             ${{ runner.os }}-external-
-
-      - name: Check cache existence after
-        run: |
-          ls ${{ github.workspace }}/build/external/wxWidgets/lib || echo "no lib dir"
 
       - name: Install Dependencies
         run: |
