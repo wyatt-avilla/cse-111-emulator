@@ -171,10 +171,10 @@ void MyFrame::onResize(wxSizeEvent& event) {
     wxString const image_path =
         file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
 
-    wxImage image(
-        image_path,
-        wxBITMAP_TYPE_PNG
-    ); // NOLINT(clang-analyzer-optin.cplusplus.VirtualCall)
+    // NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall)
+    wxImage image(image_path, wxBITMAP_TYPE_PNG);
+    // NOLINTEND(clang-analyzer-optin.cplusplus.VirtualCall)
+
     if (image.IsOk()) {
         image.Rescale(
             static_cast<int32_t>(new_width),
