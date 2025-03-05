@@ -47,5 +47,9 @@ jobs:
         run: |
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DSDL_UNIX_CONSOLE_BUILD=ON
 
+      - name: Check Why wxWidgets is Rebuilding
+        run:
+          cmake --debug-output --trace-expand -B ${{ github.workspace }}/build/external/wxWidgets .
+
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
