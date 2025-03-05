@@ -23,7 +23,7 @@ jobs:
 
       - name: Check cache existence before
         run: |
-          cat ${{ github.workspace }}/build/external/wxWidgets/CMakeCache.txt || echo "CMakeCache.txt missing"
+          ls ${{ github.workspace }}/build/external/wxWidgets/lib || echo "no lib dir"
 
       - name: Cache External Builds
         uses: actions/cache@v3
@@ -44,7 +44,7 @@ jobs:
 
       - name: Check cache existence after
         run: |
-          cat ${{ github.workspace }}/build/external/wxWidgets/CMakeCache.txt || echo "CMakeCache.txt missing"
+          ls ${{ github.workspace }}/build/external/wxWidgets/lib || echo "no lib dir"
 
       - name: Install Dependencies
         run: |
