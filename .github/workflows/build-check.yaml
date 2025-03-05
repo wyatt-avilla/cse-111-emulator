@@ -22,8 +22,9 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
 
       - name: Debug Cache Before
-        run: ls -la ${{ github.workspace }}/external/SDL
-        run: ls -la ${{ github.workspace }}/external/wxWidgets
+        run: |
+          ls -la ${{ github.workspace }}/external/SDL
+          ls -la ${{ github.workspace }}/external/wxWidgets
 
       - name: Cache External Builds
         uses: actions/cache@v3
@@ -51,9 +52,9 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Debug Cache After
-        run: ls -la ${{ github.workspace }}/external/SDL
-        run: ls -la ${{ github.workspace }}/external/wxWidgets
+        run: |
+          ls -la ${{ github.workspace }}/external/SDL
+          ls -la ${{ github.workspace }}/external/wxWidgets
 
       - name: See modified files
         run: git status --untracked-file=all --ignored
-        
