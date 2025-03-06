@@ -7,8 +7,9 @@
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
-#include "vr.h" // Include the new video recorder header
+
 #include "console.h"
+#include "vr.h" // Include the new video recorder header
 
 #include <iostream>
 #include <thread>
@@ -176,7 +177,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
-    
+
     // Initialize video recorder
     video_recorder = std::make_unique<VideoRecorder>(128, 128);
     has_recording = false;
@@ -243,7 +244,8 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
         "File Selected",
         wxOK | wxICON_INFORMATION
     );
-    execute_button->Enable(); // Enable execute button after selecting a valid file
+    execute_button->Enable(
+    ); // Enable execute button after selecting a valid file
 }
 
 // Handle execution
@@ -253,24 +255,25 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             // Reset and start the video recorder
             video_recorder = std::make_unique<VideoRecorder>(128, 128);
             video_recorder->startRecording();
-            
+
             // Run in the current thread instead of creating a detached thread
             Console banana(true);
-            
+
             // Connect the video recorder to the GPU
             banana.gpu.setVideoRecorder(video_recorder.get());
-            
+
             // Run the emulator
             banana.run(std::string(file_path.ToStdString()));
-            
+
             // Stop recording and enable the playback button
             video_recorder->stopRecording();
             has_recording = (video_recorder->getFrameCount() > 0);
-            
+
             if (has_recording) {
                 playback_button->Enable();
                 wxMessageBox(
-                    "Gameplay recorded successfully. Click 'View Recording' to replay.",
+                    "Gameplay recorded successfully. Click 'View Recording' to "
+                    "replay.",
                     "Recording Complete",
                     wxOK | wxICON_INFORMATION
                 );
@@ -295,10 +298,10 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
         );
         return;
     }
-    
+
     if (video_recorder->initPlaybackWindow()) {
         video_recorder->play();
-        
+
         // Main playback loop
         bool running = true;
         while (running) {
