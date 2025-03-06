@@ -134,6 +134,6 @@ void GPU::renderFrame() {
 
 void GPU::setExternalVRAM(uint8_t* ptr) { external_vram = ptr; }
 
-void GPU::setVideoRecorder(VideoRecorder* recorder) { 
+void GPU::setVideoRecorder(VideoRecorder* recorder) {
     video_recorder = recorder;
 }

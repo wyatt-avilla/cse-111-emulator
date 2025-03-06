@@ -24,7 +24,7 @@ class Console {
     void stopExecution();
     [[nodiscard]] bool isRunning() const;
     [[nodiscard]] bool graphicalSession() const;
-    
+
     // Method to connect a VideoRecorder
     void setVideoRecorder(VideoRecorder* recorder);
     VideoRecorder* getVideoRecorder() const { return video_recorder; }

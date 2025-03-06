@@ -28,7 +28,7 @@ class GPU {
     void renderFrame();
 
     void setExternalVRAM(uint8_t* ptr);
-    
+
     // Add this line
     void setVideoRecorder(VideoRecorder* recorder);
 
@@ -42,7 +42,7 @@ class GPU {
     std::array<uint8_t, VRAM_SIZE> vram{};
 
     uint8_t* external_vram = nullptr;
-    
+
     // Add this line
     VideoRecorder* video_recorder = nullptr;
 };

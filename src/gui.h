@@ -1,7 +1,7 @@
 #pragma once
 
-#include <wx/wx.h>
 #include <memory>
+#include <wx/wx.h>
 
 // Forward declaration
 class VideoRecorder;
@@ -16,7 +16,7 @@ class MyFrame : public wxFrame {
     wxButton* playback_button; // New button for video playback
     wxStaticBitmap* image_bitmap;
     wxString file_path;
-    
+
     // Video recorder instance
     std::unique_ptr<VideoRecorder> video_recorder;
     bool has_recording = false;
