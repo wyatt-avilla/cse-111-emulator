@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
+#include <limits>
 
 VideoRecorder::VideoRecorder(int width, int height)
     : width(width), 
@@ -19,7 +20,10 @@ VideoRecorder::VideoRecorder(int width, int height)
       renderer(nullptr), 
       texture(nullptr),
       dragging_progress(false) {
-    display_buffer.resize(static_cast<size_t>(width * height));
+    // Use static_cast and ensure conversion doesn't lose precision
+    display_buffer.resize(static_cast<size_t>(
+        static_cast<long long>(width) * static_cast<long long>(height)
+    ));
 }
 
 VideoRecorder::~VideoRecorder() {
@@ -56,9 +60,15 @@ void VideoRecorder::addFrame(const uint8_t* pixels) {
     if (!recording)
         return;
 
-    // Create a new frame and copy the pixel data
-    std::vector<uint8_t> frame(static_cast<size_t>(width * height));
-    std::copy(pixels, pixels + (width * height), frame.begin());
+    // Create a new frame with precise sizing
+    std::vector<uint8_t> frame(static_cast<size_t>(
+        static_cast<long long>(width) * static_cast<long long>(height)
+    ));
+    
+    // Use static_cast for pointer arithmetic
+    std::copy(pixels, 
+              pixels + static_cast<ptrdiff_t>(width * height), 
+              frame.begin());
     frames.push_back(frame);
 }
 
@@ -242,13 +252,18 @@ bool VideoRecorder::handleEvents() {
                         dragging_progress = true;
                         
                         // Calculate and set frame position based on click position
-                        const float click_position = std::max(0.0f, std::min(1.0f, 
-                            static_cast<float>(event.button.x - progress_bar.x) / progress_bar.w));
+                        const float click_position = std::clamp(
+                            static_cast<float>(event.button.x - progress_bar.x) / 
+                            static_cast<float>(progress_bar.w), 
+                            0.0F, 1.0F
+                        );
                         
                         // Make sure frames.size() > 1 to avoid division by zero
                         size_t frame_index = 0;
                         if (frames.size() > 1) {
-                            frame_index = static_cast<size_t>(click_position * (frames.size() - 1));
+                            frame_index = static_cast<size_t>(
+                                click_position * static_cast<float>(frames.size() - 1)
+                            );
                         }
                         
                         setFrameIndex(frame_index);
@@ -271,13 +286,18 @@ bool VideoRecorder::handleEvents() {
             case SDL_MOUSEMOTION:
                 if (dragging_progress) {
                     // If dragging, update position based on mouse movement
-                    const float move_position = std::max(0.0f, std::min(1.0f, 
-                        static_cast<float>(event.motion.x - progress_bar.x) / progress_bar.w));
+                    const float move_position = std::clamp(
+                        static_cast<float>(event.motion.x - progress_bar.x) / 
+                        static_cast<float>(progress_bar.w), 
+                        0.0F, 1.0F
+                    );
                     
                     // Make sure frames.size() > 1 to avoid division by zero
                     size_t frame_index = 0;
                     if (frames.size() > 1) {
-                        frame_index = static_cast<size_t>(move_position * (frames.size() - 1));
+                        frame_index = static_cast<size_t>(
+                            move_position * static_cast<float>(frames.size() - 1)
+                        );
                     }
                     
                     setFrameIndex(frame_index);
@@ -318,7 +338,13 @@ bool VideoRecorder::handleEvents() {
                             stopRecording();
                         }
                         break;
+
+                    default:
+                        break;
                 }
+                break;
+
+            default:
                 break;
         }
     }
@@ -332,10 +358,10 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     const auto& frame = frames[frame_index];
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
-        display_buffer[i] = (COLOR_ALPHA_FULL << 24) | 
-                            (static_cast<uint32_t>(gray) << 16) | 
-                            (static_cast<uint32_t>(gray) << 8) | 
-                            gray;
+        display_buffer[i] = (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) | 
+                            (static_cast<uint32_t>(gray) << RED_SHIFT) | 
+                            (static_cast<uint32_t>(gray) << GREEN_SHIFT) | 
+                            static_cast<uint32_t>(gray);
     }
 }
 
@@ -357,23 +383,11 @@ void VideoRecorder::renderCurrentFrame() {
     }
     
     // Draw progress bar background (dark gray)
-    SDL_SetRenderDrawColor(
-        renderer, 
-        PROGRESS_BAR_BG_COLOR_R, 
-        PROGRESS_BAR_BG_COLOR_G, 
-        PROGRESS_BAR_BG_COLOR_B, 
-        COLOR_ALPHA_FULL
-    );
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
     SDL_RenderFillRect(renderer, &progress_bar);
     
     // Draw progress indicator (yellow)
-    SDL_SetRenderDrawColor(
-        renderer, 
-        PROGRESS_INDICATOR_COLOR_R, 
-        PROGRESS_INDICATOR_COLOR_G, 
-        PROGRESS_INDICATOR_COLOR_B, 
-        COLOR_ALPHA_FULL
-    );
+    SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
     SDL_RenderFillRect(renderer, &progress_indicator);
     
     SDL_RenderPresent(renderer);
@@ -414,15 +428,16 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
         return false;
     }
 
-    // Read header
-    int file_width = 0, file_height = 0;
+    // Separate declarations
+    int file_width = 0;
+    int file_height = 0;
     uint32_t frame_count = 0;
 
     file.read(reinterpret_cast<char*>(&file_width), sizeof(file_width));
     file.read(reinterpret_cast<char*>(&file_height), sizeof(file_height));
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
 
-    if (file_width != width || file_height != height) { //
+    if (file_width != width || file_height != height) {
         std::cerr << "Recording dimensions (" << file_width << "x" << file_height 
                   << ") don't match current dimensions (" 
                   << width << "x" << height << ")" << std::endl;
