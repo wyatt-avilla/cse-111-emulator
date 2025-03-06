@@ -1,3 +1,4 @@
+// src/gui.cpp
 // got a large put of this code from chat gpt
 // https://chatgpt.com/share/67c212e0-dae4-8013-b5b9-2400c824b5e3
 // and then further modified with this thread of chat
@@ -6,7 +7,7 @@
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
-
+#include "vr.h" // Include the new video recorder header
 #include "console.h"
 
 #include <iostream>
@@ -116,6 +117,16 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     execute_button->Disable(); // Initially disabled
 
+    // Add playback button
+    playback_button = new wxButton(
+        panel,
+        wxID_ANY,
+        "View Recording",
+        wxDefaultPosition,
+        wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
+    );
+    playback_button->Disable(); // Initially disabled
+
     // Button Styling
     wxColour const button_color(30, 30, 30);   // Darker black
     wxColour const outline_color(255, 215, 0); // Yellow outline
@@ -124,6 +135,8 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     select_button->SetForegroundColour(outline_color);
     execute_button->SetBackgroundColour(button_color);
     execute_button->SetForegroundColour(outline_color);
+    playback_button->SetBackgroundColour(button_color);
+    playback_button->SetForegroundColour(outline_color);
 
     button_sizer->Add(
         select_button,
@@ -133,6 +146,12 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     button_sizer->Add(
         execute_button,
+        0,
+        wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
+        BUTTON_SIZE
+    );
+    button_sizer->Add(
+        playback_button,
         0,
         wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
         BUTTON_SIZE
@@ -155,7 +174,12 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     // Bind Events
     select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
+    playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
+    
+    // Initialize video recorder
+    video_recorder = std::make_unique<VideoRecorder>(128, 128);
+    has_recording = false;
 }
 
 // Handle window resizing
@@ -219,25 +243,76 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
         "File Selected",
         wxOK | wxICON_INFORMATION
     );
-    execute_button->Enable(
-    ); // Enable execute button after selecting a valid file
+    execute_button->Enable(); // Enable execute button after selecting a valid file
 }
 
 // Handle execution
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
-        std::thread([this]() {
+        try {
+            // Reset and start the video recorder
+            video_recorder = std::make_unique<VideoRecorder>(128, 128);
+            video_recorder->startRecording();
+            
+            // Run in the current thread instead of creating a detached thread
             Console banana(true);
-            try {
-                banana.run(std::string(file_path.ToStdString()));
-            } catch (const std::exception& e) {
+            
+            // Connect the video recorder to the GPU
+            banana.gpu.setVideoRecorder(video_recorder.get());
+            
+            // Run the emulator
+            banana.run(std::string(file_path.ToStdString()));
+            
+            // Stop recording and enable the playback button
+            video_recorder->stopRecording();
+            has_recording = (video_recorder->getFrameCount() > 0);
+            
+            if (has_recording) {
+                playback_button->Enable();
                 wxMessageBox(
-                    "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
-                    "Execution Error",
-                    wxOK | wxICON_ERROR
+                    "Gameplay recorded successfully. Click 'View Recording' to replay.",
+                    "Recording Complete",
+                    wxOK | wxICON_INFORMATION
                 );
             }
-        }).detach();
+        } catch (const std::exception& e) {
+            wxMessageBox(
+                "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
+                "Execution Error",
+                wxOK | wxICON_ERROR
+            );
+        }
     }
 }
+
+// Handle playback of recorded video
+void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
+    if (!has_recording || !video_recorder) {
+        wxMessageBox(
+            "No recording available to play back.",
+            "Playback Error",
+            wxOK | wxICON_ERROR
+        );
+        return;
+    }
+    
+    if (video_recorder->initPlaybackWindow()) {
+        video_recorder->play();
+        
+        // Main playback loop
+        bool running = true;
+        while (running) {
+            running = video_recorder->handleEvents();
+            video_recorder->updateDisplay();
+            SDL_Delay(1); // Small delay to avoid consuming 100% CPU
+        }
+    } else {
+        wxMessageBox(
+            "Failed to initialize playback window.",
+            "Playback Error",
+            wxOK | wxICON_ERROR
+        );
+    }
+}
+
 #endif

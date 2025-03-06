@@ -5,8 +5,9 @@
 
 #pragma once
 
-
+// Forward declaration
 class Console;
+class VideoRecorder; // Add this line
 
 class GPU {
   public:
@@ -27,6 +28,9 @@ class GPU {
     void renderFrame();
 
     void setExternalVRAM(uint8_t* ptr);
+    
+    // Add this line
+    void setVideoRecorder(VideoRecorder* recorder);
 
   private:
     Console* console;
@@ -38,6 +42,9 @@ class GPU {
     std::array<uint8_t, VRAM_SIZE> vram{};
 
     uint8_t* external_vram = nullptr;
+    
+    // Add this line
+    VideoRecorder* video_recorder = nullptr;
 };
 
 class GraphicsException : public std::runtime_error {

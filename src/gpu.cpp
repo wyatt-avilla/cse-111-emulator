@@ -1,8 +1,10 @@
+// src/gpu.cpp
 #include "gpu.h"
 
 #include "bit_definitions.h"
 #include "console.h"
 #include "memory.h"
+#include "vr.h" // Add include for VideoRecorder
 
 #include <cstdlib>
 #include <cstring>
@@ -16,13 +18,20 @@ GPU::GPU(Console* console)
     : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {}
 
 GPU::~GPU() {
-    if (texture != nullptr)
+    if (texture != nullptr) {
         SDL_DestroyTexture(texture);
-    if (renderer != nullptr)
+        texture = nullptr;
+    }
+    if (renderer != nullptr) {
         SDL_DestroyRenderer(renderer);
-    if (window != nullptr)
+        renderer = nullptr;
+    }
+    if (window != nullptr) {
         SDL_DestroyWindow(window);
-    SDL_Quit();
+        window = nullptr;
+        // Only call SDL_Quit if we actually had a window
+        SDL_Quit();
+    }
 }
 
 void GPU::initializeRenderer() {
@@ -98,6 +107,11 @@ void GPU::renderFrame() {
 
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
+    // Add frame to video recorder if it's available
+    if (video_recorder != nullptr) {
+        video_recorder->addFrame(vram.data());
+    }
+
     std::array<uint32_t, VRAM_SIZE> pixels{};
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
@@ -119,3 +133,7 @@ void GPU::renderFrame() {
 }
 
 void GPU::setExternalVRAM(uint8_t* ptr) { external_vram = ptr; }
+
+void GPU::setVideoRecorder(VideoRecorder* recorder) { 
+    video_recorder = recorder;
+}

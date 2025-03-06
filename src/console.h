@@ -8,6 +8,9 @@
 #include "memory.h"
 #include "os.h"
 
+// Forward declaration for VideoRecorder
+class VideoRecorder;
+
 class Console {
   public:
     Console(bool graphics);
@@ -21,8 +24,13 @@ class Console {
     void stopExecution();
     [[nodiscard]] bool isRunning() const;
     [[nodiscard]] bool graphicalSession() const;
+    
+    // Method to connect a VideoRecorder
+    void setVideoRecorder(VideoRecorder* recorder);
+    VideoRecorder* getVideoRecorder() const { return video_recorder; }
 
   private:
     bool is_running{true};
     bool graphics{true};
+    VideoRecorder* video_recorder{nullptr};
 };
