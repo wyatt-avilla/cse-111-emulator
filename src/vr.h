@@ -73,6 +73,12 @@ private:
     std::vector<std::vector<uint8_t>> frames;
     std::vector<uint32_t> display_buffer;
 
+    // New method declarations to reduce complexity
+    void handleMouseButtonDown(const SDL_Event& event);
+    void handleMouseMotion(const SDL_Event& event);
+    void updateFrameFromMousePosition(float normalized_pos);
+    void handleKeyDown(const SDL_Event& event);
+
     void convertFrameToRGBA(size_t frame_index);
     void renderCurrentFrame();
 };

@@ -7,6 +7,18 @@
 #include <thread>
 #include <limits>
 
+namespace RenderColors {
+    constexpr int PROGRESS_BAR_BG_R = 50;
+    constexpr int PROGRESS_BAR_BG_G = 50;
+    constexpr int PROGRESS_BAR_BG_B = 50;
+    constexpr int PROGRESS_BAR_BG_ALPHA = 255;
+
+    constexpr int PROGRESS_INDICATOR_R = 255;
+    constexpr int PROGRESS_INDICATOR_G = 215;
+    constexpr int PROGRESS_INDICATOR_B = 0;
+    constexpr int PROGRESS_INDICATOR_ALPHA = 255;
+}
+
 VideoRecorder::VideoRecorder(int width, int height)
     : width(width), 
       height(height), 
@@ -20,7 +32,6 @@ VideoRecorder::VideoRecorder(int width, int height)
       renderer(nullptr), 
       texture(nullptr),
       dragging_progress(false) {
-    // Use static_cast and ensure conversion doesn't lose precision
     display_buffer.resize(static_cast<size_t>(
         static_cast<long long>(width) * static_cast<long long>(height)
     ));
@@ -60,16 +71,82 @@ void VideoRecorder::addFrame(const uint8_t* pixels) {
     if (!recording)
         return;
 
-    // Create a new frame with precise sizing
     std::vector<uint8_t> frame(static_cast<size_t>(
         static_cast<long long>(width) * static_cast<long long>(height)
     ));
     
-    // Use static_cast for pointer arithmetic
     std::copy(pixels, 
               pixels + static_cast<ptrdiff_t>(width * height), 
               frame.begin());
     frames.push_back(frame);
+}
+
+void VideoRecorder::handleMouseButtonDown(const SDL_Event& event) {
+    if (event.button.button == SDL_BUTTON_LEFT) {
+        if (event.button.x >= progress_bar.x && 
+            event.button.x <= progress_bar.x + progress_bar.w &&
+            event.button.y >= progress_bar.y && 
+            event.button.y <= progress_bar.y + progress_bar.h) {
+            
+            dragging_progress = true;
+            updateFrameFromMousePosition(
+                static_cast<float>(event.button.x - progress_bar.x) / 
+                static_cast<float>(progress_bar.w)
+            );
+        }
+    }
+}
+
+void VideoRecorder::handleMouseMotion(const SDL_Event& event) {
+    if (dragging_progress) {
+        updateFrameFromMousePosition(
+            static_cast<float>(event.motion.x - progress_bar.x) / 
+            static_cast<float>(progress_bar.w)
+        );
+    }
+}
+
+void VideoRecorder::updateFrameFromMousePosition(float normalized_pos) {
+    normalized_pos = std::clamp(normalized_pos, 0.0F, 1.0F);
+    
+    size_t frame_index = 0;
+    if (frames.size() > 1) {
+        frame_index = static_cast<size_t>(
+            normalized_pos * static_cast<float>(frames.size() - 1)
+        );
+    }
+    
+    setFrameIndex(frame_index);
+    
+    if (!playing && frame_index < frames.size() - 1) {
+        play();
+    }
+}
+
+void VideoRecorder::handleKeyDown(const SDL_Event& event) {
+    switch (event.key.keysym.sym) {
+        case SDLK_SPACE:
+            playing ? pause() : play();
+            break;
+
+        case SDLK_RIGHT:
+            nextFrame();
+            break;
+
+        case SDLK_LEFT:
+            previousFrame();
+            break;
+
+        case SDLK_ESCAPE:
+            return;
+
+        case SDLK_r:
+            recording ? stopRecording() : startRecording();
+            break;
+
+        default:
+            break;
+    }
 }
 
 bool VideoRecorder::initPlaybackWindow() {
@@ -118,7 +195,6 @@ bool VideoRecorder::initPlaybackWindow() {
         return false;
     }
 
-    // Initialize progress bar
     progress_bar.x = PROGRESS_BAR_MARGIN;
     progress_bar.y = height * SCALE_FACTOR - PROGRESS_BAR_BOTTOM_MARGIN;
     progress_bar.w = width * SCALE_FACTOR - (PROGRESS_BAR_MARGIN * 2);
@@ -188,7 +264,6 @@ void VideoRecorder::nextFrame() {
         convertFrameToRGBA(current_frame);
         renderCurrentFrame();
     } else {
-        // Reached the end, stop playing
         playing = false;
     }
 }
@@ -222,9 +297,7 @@ void VideoRecorder::updateDisplay() {
 
     const uint32_t current_time = SDL_GetTicks();
     if (current_time - last_frame_time >= playback_delay_ms) {
-        // Check if we're at the last frame
         if (current_frame >= frames.size() - 1) {
-            // Stop playback instead of looping
             playing = false;
             return;
         }
@@ -242,39 +315,7 @@ bool VideoRecorder::handleEvents() {
                 return false;
 
             case SDL_MOUSEBUTTONDOWN:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    // Check if click is within progress bar
-                    if (event.button.x >= progress_bar.x && 
-                        event.button.x <= progress_bar.x + progress_bar.w &&
-                        event.button.y >= progress_bar.y && 
-                        event.button.y <= progress_bar.y + progress_bar.h) {
-                        
-                        dragging_progress = true;
-                        
-                        // Calculate and set frame position based on click position
-                        const float click_position = std::clamp(
-                            static_cast<float>(event.button.x - progress_bar.x) / 
-                            static_cast<float>(progress_bar.w), 
-                            0.0F, 1.0F
-                        );
-                        
-                        // Make sure frames.size() > 1 to avoid division by zero
-                        size_t frame_index = 0;
-                        if (frames.size() > 1) {
-                            frame_index = static_cast<size_t>(
-                                click_position * static_cast<float>(frames.size() - 1)
-                            );
-                        }
-                        
-                        setFrameIndex(frame_index);
-                        
-                        // If we're at the end (playback stopped) and user moves back
-                        // to an earlier position, restart playback
-                        if (!playing && frame_index < frames.size() - 1) {
-                            play();
-                        }
-                    }
-                }
+                handleMouseButtonDown(event);
                 break;
                 
             case SDL_MOUSEBUTTONUP:
@@ -284,64 +325,11 @@ bool VideoRecorder::handleEvents() {
                 break;
                 
             case SDL_MOUSEMOTION:
-                if (dragging_progress) {
-                    // If dragging, update position based on mouse movement
-                    const float move_position = std::clamp(
-                        static_cast<float>(event.motion.x - progress_bar.x) / 
-                        static_cast<float>(progress_bar.w), 
-                        0.0F, 1.0F
-                    );
-                    
-                    // Make sure frames.size() > 1 to avoid division by zero
-                    size_t frame_index = 0;
-                    if (frames.size() > 1) {
-                        frame_index = static_cast<size_t>(
-                            move_position * static_cast<float>(frames.size() - 1)
-                        );
-                    }
-                    
-                    setFrameIndex(frame_index);
-                    
-                    // If we're at the end (playback stopped) and user drags back
-                    // to an earlier position, restart playback
-                    if (!playing && frame_index < frames.size() - 1) {
-                        play();
-                    }
-                }
+                handleMouseMotion(event);
                 break;
 
             case SDL_KEYDOWN:
-                switch (event.key.keysym.sym) {
-                    case SDLK_SPACE:
-                        if (playing) {
-                            pause();
-                        } else {
-                            play();
-                        }
-                        break;
-
-                    case SDLK_RIGHT:
-                        nextFrame();
-                        break;
-
-                    case SDLK_LEFT:
-                        previousFrame();
-                        break;
-
-                    case SDLK_ESCAPE:
-                        return false;
-
-                    case SDLK_r:
-                        if (!recording) {
-                            startRecording();
-                        } else {
-                            stopRecording();
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
+                handleKeyDown(event);
                 break;
 
             default:
@@ -375,19 +363,31 @@ void VideoRecorder::renderCurrentFrame() {
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     
-    // Update progress indicator position based on current frame
     if (!frames.empty() && frames.size() > 1) {
-        const float progress = static_cast<float>(current_frame) / (frames.size() - 1);
+        const float progress = std::clamp(
+            static_cast<float>(current_frame) / static_cast<float>(frames.size() - 1),
+            0.0F, 1.0F
+        );
         progress_indicator.x = progress_bar.x + 
-            static_cast<int>(progress * (progress_bar.w - progress_indicator.w));
+            static_cast<int>(progress * static_cast<float>(progress_bar.w - progress_indicator.w));
     }
     
-    // Draw progress bar background (dark gray)
-    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_SetRenderDrawColor(
+        renderer, 
+        RenderColors::PROGRESS_BAR_BG_R, 
+        RenderColors::PROGRESS_BAR_BG_G, 
+        RenderColors::PROGRESS_BAR_BG_B, 
+        RenderColors::PROGRESS_BAR_BG_ALPHA
+    );
     SDL_RenderFillRect(renderer, &progress_bar);
     
-    // Draw progress indicator (yellow)
-    SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+    SDL_SetRenderDrawColor(
+        renderer, 
+        RenderColors::PROGRESS_INDICATOR_R, 
+        RenderColors::PROGRESS_INDICATOR_G, 
+        RenderColors::PROGRESS_INDICATOR_B, 
+        RenderColors::PROGRESS_INDICATOR_ALPHA
+    );
     SDL_RenderFillRect(renderer, &progress_indicator);
     
     SDL_RenderPresent(renderer);
@@ -405,13 +405,11 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
         return false;
     }
 
-    // Write header: width, height, frame count
     const auto frame_count = static_cast<uint32_t>(frames.size());
     file.write(reinterpret_cast<const char*>(&width), sizeof(width));
     file.write(reinterpret_cast<const char*>(&height), sizeof(height));
     file.write(reinterpret_cast<const char*>(&frame_count), sizeof(frame_count));
 
-    // Write all frames
     for (const auto& frame : frames) {
         file.write(reinterpret_cast<const char*>(frame.data()), 
                    static_cast<std::streamsize>(frame.size()));
@@ -428,7 +426,6 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
         return false;
     }
 
-    // Separate declarations
     int file_width = 0;
     int file_height = 0;
     uint32_t frame_count = 0;
@@ -444,7 +441,6 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
         return false;
     }
 
-    // Clear existing frames and load new ones
     frames.clear();
 
     for (uint32_t i = 0; i < frame_count; i++) {

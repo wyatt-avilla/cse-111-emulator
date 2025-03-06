@@ -22,6 +22,10 @@
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
 
+// Add these constants for video recorder dimensions
+const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
+const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
+
 const int WX_FRAME_X_POSTION = 500;
 const int WX_FRAME_Y_POSTION = 400;
 const int GREY_COLOR = 40;
@@ -178,8 +182,11 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
 
-    // Initialize video recorder
-    video_recorder = std::make_unique<VideoRecorder>(128, 128);
+    // Initialize video recorder with named constants
+    video_recorder = std::make_unique<VideoRecorder>(
+        DEFAULT_VIDEO_RECORDER_WIDTH, 
+        DEFAULT_VIDEO_RECORDER_HEIGHT
+    );
     has_recording = false;
 }
 
@@ -252,8 +259,11 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
         try {
-            // Reset and start the video recorder
-            video_recorder = std::make_unique<VideoRecorder>(128, 128);
+            // Reset and start the video recorder using named constants
+            video_recorder = std::make_unique<VideoRecorder>(
+                DEFAULT_VIDEO_RECORDER_WIDTH, 
+                DEFAULT_VIDEO_RECORDER_HEIGHT
+            );
             video_recorder->startRecording();
 
             // Run in the current thread instead of creating a detached thread
