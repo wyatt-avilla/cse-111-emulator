@@ -20,16 +20,16 @@ namespace RenderColors {
 }
 
 VideoRecorder::VideoRecorder(int width, int height)
-    : width(width), 
-      height(height), 
-      recording(false), 
+    : width(width),
+      height(height),
+      recording(false),
       playing(false),
-      paused(false), 
-      current_frame(0), 
+      paused(false),
+      current_frame(0),
       playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS),
-      last_frame_time(0), 
-      window(nullptr), 
-      renderer(nullptr), 
+      last_frame_time(0),
+      window(nullptr),
+      renderer(nullptr),
       texture(nullptr),
       dragging_progress(false) {
     display_buffer.resize(static_cast<size_t>(
@@ -38,20 +38,7 @@ VideoRecorder::VideoRecorder(int width, int height)
 }
 
 VideoRecorder::~VideoRecorder() {
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
-        texture = nullptr;
-    }
-
-    if (renderer != nullptr) {
-        SDL_DestroyRenderer(renderer);
-        renderer = nullptr;
-    }
-
-    if (window != nullptr) {
-        SDL_DestroyWindow(window);
-        window = nullptr;
-    }
+    cleanupSDLResources();
 }
 
 void VideoRecorder::startRecording() {
@@ -74,23 +61,23 @@ void VideoRecorder::addFrame(const uint8_t* pixels) {
     std::vector<uint8_t> frame(static_cast<size_t>(
         static_cast<long long>(width) * static_cast<long long>(height)
     ));
-    
-    std::copy(pixels, 
-              pixels + static_cast<ptrdiff_t>(width * height), 
+
+    std::copy(pixels,
+              pixels + static_cast<ptrdiff_t>(width * height),
               frame.begin());
     frames.push_back(frame);
 }
 
 void VideoRecorder::handleMouseButtonDown(const SDL_Event& event) {
     if (event.button.button == SDL_BUTTON_LEFT) {
-        if (event.button.x >= progress_bar.x && 
+        if (event.button.x >= progress_bar.x &&
             event.button.x <= progress_bar.x + progress_bar.w &&
-            event.button.y >= progress_bar.y && 
+            event.button.y >= progress_bar.y &&
             event.button.y <= progress_bar.y + progress_bar.h) {
-            
+
             dragging_progress = true;
             updateFrameFromMousePosition(
-                static_cast<float>(event.button.x - progress_bar.x) / 
+                static_cast<float>(event.button.x - progress_bar.x) /
                 static_cast<float>(progress_bar.w)
             );
         }
@@ -100,7 +87,7 @@ void VideoRecorder::handleMouseButtonDown(const SDL_Event& event) {
 void VideoRecorder::handleMouseMotion(const SDL_Event& event) {
     if (dragging_progress) {
         updateFrameFromMousePosition(
-            static_cast<float>(event.motion.x - progress_bar.x) / 
+            static_cast<float>(event.motion.x - progress_bar.x) /
             static_cast<float>(progress_bar.w)
         );
     }
@@ -108,16 +95,16 @@ void VideoRecorder::handleMouseMotion(const SDL_Event& event) {
 
 void VideoRecorder::updateFrameFromMousePosition(float normalized_pos) {
     normalized_pos = std::clamp(normalized_pos, 0.0F, 1.0F);
-    
+
     size_t frame_index = 0;
     if (frames.size() > 1) {
         frame_index = static_cast<size_t>(
             normalized_pos * static_cast<float>(frames.size() - 1)
         );
     }
-    
+
     setFrameIndex(frame_index);
-    
+
     if (!playing && frame_index < frames.size() - 1) {
         play();
     }
@@ -150,6 +137,21 @@ void VideoRecorder::handleKeyDown(const SDL_Event& event) {
 }
 
 bool VideoRecorder::initPlaybackWindow() {
+    if (!initializeSDL())
+        return false;
+
+    if (!createSDLResources())
+        return false;
+
+    initializeProgressBar();
+
+    current_frame = 0;
+    convertFrameToRGBA(current_frame);
+
+    return true;
+}
+
+bool VideoRecorder::initializeSDL() {
     if (frames.empty()) {
         std::cerr << "No frames to play back" << std::endl;
         return false;
@@ -162,6 +164,10 @@ bool VideoRecorder::initPlaybackWindow() {
         }
     }
 
+    return true;
+}
+
+bool VideoRecorder::createSDLResources() {
     window = SDL_CreateWindow(
         "Recording Playback",
         SDL_WINDOWPOS_CENTERED,
@@ -179,6 +185,7 @@ bool VideoRecorder::initPlaybackWindow() {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
         std::cerr << "Renderer could not be created: " << SDL_GetError() << std::endl;
+        SDL_DestroyWindow(window);
         return false;
     }
 
@@ -192,43 +199,48 @@ bool VideoRecorder::initPlaybackWindow() {
 
     if (texture == nullptr) {
         std::cerr << "Texture could not be created: " << SDL_GetError() << std::endl;
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
         return false;
     }
-
-    progress_bar.x = PROGRESS_BAR_MARGIN;
-    progress_bar.y = height * SCALE_FACTOR - PROGRESS_BAR_BOTTOM_MARGIN;
-    progress_bar.w = width * SCALE_FACTOR - (PROGRESS_BAR_MARGIN * 2);
-    progress_bar.h = PROGRESS_BAR_HEIGHT;
-    
-    progress_indicator.x = progress_bar.x;
-    progress_indicator.y = progress_bar.y;
-    progress_indicator.w = PROGRESS_INDICATOR_WIDTH;
-    progress_indicator.h = progress_bar.h;
-    
-    dragging_progress = false;
-
-    current_frame = 0;
-    convertFrameToRGBA(current_frame);
 
     return true;
 }
 
-void VideoRecorder::closePlaybackWindow() {
+void VideoRecorder::initializeProgressBar() {
+    progress_bar.x = PROGRESS_BAR_MARGIN;
+    progress_bar.y = height * SCALE_FACTOR - PROGRESS_BAR_BOTTOM_MARGIN;
+    progress_bar.w = width * SCALE_FACTOR - (PROGRESS_BAR_MARGIN * 2);
+    progress_bar.h = PROGRESS_BAR_HEIGHT;
+
+    progress_indicator.x = progress_bar.x;
+    progress_indicator.y = progress_bar.y;
+    progress_indicator.w = PROGRESS_INDICATOR_WIDTH;
+    progress_indicator.h = progress_bar.h;
+
+    dragging_progress = false;
+}
+
+void VideoRecorder::cleanupSDLResources() {
     if (texture != nullptr) {
         SDL_DestroyTexture(texture);
         texture = nullptr;
     }
-    
+
     if (renderer != nullptr) {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
     }
-    
+
     if (window != nullptr) {
         SDL_DestroyWindow(window);
         window = nullptr;
     }
-    
+}
+
+void VideoRecorder::closePlaybackWindow() {
+    cleanupSDLResources();
+
     playing = false;
     paused = false;
     std::cout << "Playback window closed" << std::endl;
@@ -301,7 +313,7 @@ void VideoRecorder::updateDisplay() {
             playing = false;
             return;
         }
-        
+
         nextFrame();
         last_frame_time = current_time;
     }
@@ -317,13 +329,13 @@ bool VideoRecorder::handleEvents() {
             case SDL_MOUSEBUTTONDOWN:
                 handleMouseButtonDown(event);
                 break;
-                
+
             case SDL_MOUSEBUTTONUP:
                 if (event.button.button == SDL_BUTTON_LEFT) {
                     dragging_progress = false;
                 }
                 break;
-                
+
             case SDL_MOUSEMOTION:
                 handleMouseMotion(event);
                 break;
@@ -346,9 +358,9 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     const auto& frame = frames[frame_index];
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
-        display_buffer[i] = (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) | 
-                            (static_cast<uint32_t>(gray) << RED_SHIFT) | 
-                            (static_cast<uint32_t>(gray) << GREEN_SHIFT) | 
+        display_buffer[i] = (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
+                            (static_cast<uint32_t>(gray) << RED_SHIFT) |
+                            (static_cast<uint32_t>(gray) << GREEN_SHIFT) |
                             static_cast<uint32_t>(gray);
     }
 }
@@ -362,30 +374,30 @@ void VideoRecorder::renderCurrentFrame() {
     );
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
-    
+
     if (!frames.empty() && frames.size() > 1) {
         const float progress = std::clamp(
             static_cast<float>(current_frame) / static_cast<float>(frames.size() - 1),
             0.0F, 1.0F
         );
-        progress_indicator.x = progress_bar.x + 
+        progress_indicator.x = progress_bar.x +
             static_cast<int>(progress * static_cast<float>(progress_bar.w - progress_indicator.w));
     }
-    
+
     SDL_SetRenderDrawColor(
-        renderer, 
-        RenderColors::PROGRESS_BAR_BG_R, 
-        RenderColors::PROGRESS_BAR_BG_G, 
-        RenderColors::PROGRESS_BAR_BG_B, 
+        renderer,
+        RenderColors::PROGRESS_BAR_BG_R,
+        RenderColors::PROGRESS_BAR_BG_G,
+        RenderColors::PROGRESS_BAR_BG_B,
         RenderColors::PROGRESS_BAR_BG_ALPHA
     );
     SDL_RenderFillRect(renderer, &progress_bar);
-    
+
     SDL_SetRenderDrawColor(
-        renderer, 
-        RenderColors::PROGRESS_INDICATOR_R, 
-        RenderColors::PROGRESS_INDICATOR_G, 
-        RenderColors::PROGRESS_INDICATOR_B, 
+        renderer,
+        RenderColors::PROGRESS_INDICATOR_R,
+        RenderColors::PROGRESS_INDICATOR_G,
+        RenderColors::PROGRESS_INDICATOR_B,
         RenderColors::PROGRESS_INDICATOR_ALPHA
     );
     SDL_RenderFillRect(renderer, &progress_indicator);

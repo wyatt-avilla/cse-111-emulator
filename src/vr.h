@@ -2,7 +2,6 @@
 
 #include <SDL2/SDL.h>
 #include <cstdint>
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,7 +16,7 @@ public:
     static constexpr int PROGRESS_INDICATOR_WIDTH = 10;
     static constexpr int DEFAULT_PLAYBACK_DELAY_MS = 17; // ~60fps
     static constexpr int SCALE_FACTOR = 4;
-    
+
     // Color and bit shift constants
     static constexpr uint32_t COLOR_ALPHA_FULL = 0xFF;
     static constexpr int ALPHA_SHIFT = 24;
@@ -73,7 +72,13 @@ private:
     std::vector<std::vector<uint8_t>> frames;
     std::vector<uint32_t> display_buffer;
 
-    // New method declarations to reduce complexity
+    // New method declarations for SDL initialization and resource management
+    bool initializeSDL();
+    bool createSDLResources();
+    void initializeProgressBar();
+    void cleanupSDLResources();
+
+    // Event handling method declarations
     void handleMouseButtonDown(const SDL_Event& event);
     void handleMouseMotion(const SDL_Event& event);
     void updateFrameFromMousePosition(float normalized_pos);
