@@ -4,42 +4,33 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
-#include <thread>
 #include <limits>
+#include <thread>
 
 namespace RenderColors {
-    constexpr int PROGRESS_BAR_BG_R = 50;
-    constexpr int PROGRESS_BAR_BG_G = 50;
-    constexpr int PROGRESS_BAR_BG_B = 50;
-    constexpr int PROGRESS_BAR_BG_ALPHA = 255;
+constexpr int PROGRESS_BAR_BG_R = 50;
+constexpr int PROGRESS_BAR_BG_G = 50;
+constexpr int PROGRESS_BAR_BG_B = 50;
+constexpr int PROGRESS_BAR_BG_ALPHA = 255;
 
-    constexpr int PROGRESS_INDICATOR_R = 255;
-    constexpr int PROGRESS_INDICATOR_G = 215;
-    constexpr int PROGRESS_INDICATOR_B = 0;
-    constexpr int PROGRESS_INDICATOR_ALPHA = 255;
-}
+constexpr int PROGRESS_INDICATOR_R = 255;
+constexpr int PROGRESS_INDICATOR_G = 215;
+constexpr int PROGRESS_INDICATOR_B = 0;
+constexpr int PROGRESS_INDICATOR_ALPHA = 255;
+} // namespace RenderColors
 
 VideoRecorder::VideoRecorder(int width, int height)
-    : width(width),
-      height(height),
-      recording(false),
-      playing(false),
-      paused(false),
-      current_frame(0),
-      playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS),
-      last_frame_time(0),
-      window(nullptr),
-      renderer(nullptr),
-      texture(nullptr),
+    : width(width), height(height), recording(false), playing(false),
+      paused(false), current_frame(0),
+      playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS), last_frame_time(0),
+      window(nullptr), renderer(nullptr), texture(nullptr),
       dragging_progress(false) {
     display_buffer.resize(static_cast<size_t>(
         static_cast<long long>(width) * static_cast<long long>(height)
     ));
 }
 
-VideoRecorder::~VideoRecorder() {
-    cleanupSDLResources();
-}
+VideoRecorder::~VideoRecorder() { cleanupSDLResources(); }
 
 void VideoRecorder::startRecording() {
     frames.clear();
@@ -51,7 +42,8 @@ void VideoRecorder::startRecording() {
 
 void VideoRecorder::stopRecording() {
     recording = false;
-    std::cout << "Recording stopped. Captured " << frames.size() << " frames." << std::endl;
+    std::cout << "Recording stopped. Captured " << frames.size() << " frames."
+              << std::endl;
 }
 
 void VideoRecorder::addFrame(const uint8_t* pixels) {
@@ -62,9 +54,11 @@ void VideoRecorder::addFrame(const uint8_t* pixels) {
         static_cast<long long>(width) * static_cast<long long>(height)
     ));
 
-    std::copy(pixels,
-              pixels + static_cast<ptrdiff_t>(width * height),
-              frame.begin());
+    std::copy(
+        pixels,
+        pixels + static_cast<ptrdiff_t>(width * height),
+        frame.begin()
+    );
     frames.push_back(frame);
 }
 
@@ -112,27 +106,27 @@ void VideoRecorder::updateFrameFromMousePosition(float normalized_pos) {
 
 void VideoRecorder::handleKeyDown(const SDL_Event& event) {
     switch (event.key.keysym.sym) {
-        case SDLK_SPACE:
-            playing ? pause() : play();
-            break;
+    case SDLK_SPACE:
+        playing ? pause() : play();
+        break;
 
-        case SDLK_RIGHT:
-            nextFrame();
-            break;
+    case SDLK_RIGHT:
+        nextFrame();
+        break;
 
-        case SDLK_LEFT:
-            previousFrame();
-            break;
+    case SDLK_LEFT:
+        previousFrame();
+        break;
 
-        case SDLK_ESCAPE:
-            return;
+    case SDLK_ESCAPE:
+        return;
 
-        case SDLK_r:
-            recording ? stopRecording() : startRecording();
-            break;
+    case SDLK_r:
+        recording ? stopRecording() : startRecording();
+        break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }
 
@@ -159,7 +153,8 @@ bool VideoRecorder::initializeSDL() {
 
     if (SDL_WasInit(SDL_INIT_VIDEO) == 0) {
         if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-            std::cerr << "SDL could not initialize: " << SDL_GetError() << std::endl;
+            std::cerr << "SDL could not initialize: " << SDL_GetError()
+                      << std::endl;
             return false;
         }
     }
@@ -178,13 +173,15 @@ bool VideoRecorder::createSDLResources() {
     );
 
     if (window == nullptr) {
-        std::cerr << "Window could not be created: " << SDL_GetError() << std::endl;
+        std::cerr << "Window could not be created: " << SDL_GetError()
+                  << std::endl;
         return false;
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == nullptr) {
-        std::cerr << "Renderer could not be created: " << SDL_GetError() << std::endl;
+        std::cerr << "Renderer could not be created: " << SDL_GetError()
+                  << std::endl;
         SDL_DestroyWindow(window);
         return false;
     }
@@ -198,7 +195,8 @@ bool VideoRecorder::createSDLResources() {
     );
 
     if (texture == nullptr) {
-        std::cerr << "Texture could not be created: " << SDL_GetError() << std::endl;
+        std::cerr << "Texture could not be created: " << SDL_GetError()
+                  << std::endl;
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         return false;
@@ -323,29 +321,29 @@ bool VideoRecorder::handleEvents() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         switch (event.type) {
-            case SDL_QUIT:
-                return false;
+        case SDL_QUIT:
+            return false;
 
-            case SDL_MOUSEBUTTONDOWN:
-                handleMouseButtonDown(event);
-                break;
+        case SDL_MOUSEBUTTONDOWN:
+            handleMouseButtonDown(event);
+            break;
 
-            case SDL_MOUSEBUTTONUP:
-                if (event.button.button == SDL_BUTTON_LEFT) {
-                    dragging_progress = false;
-                }
-                break;
+        case SDL_MOUSEBUTTONUP:
+            if (event.button.button == SDL_BUTTON_LEFT) {
+                dragging_progress = false;
+            }
+            break;
 
-            case SDL_MOUSEMOTION:
-                handleMouseMotion(event);
-                break;
+        case SDL_MOUSEMOTION:
+            handleMouseMotion(event);
+            break;
 
-            case SDL_KEYDOWN:
-                handleKeyDown(event);
-                break;
+        case SDL_KEYDOWN:
+            handleKeyDown(event);
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
     }
     return true;
@@ -358,10 +356,11 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     const auto& frame = frames[frame_index];
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
-        display_buffer[i] = (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
-                            (static_cast<uint32_t>(gray) << RED_SHIFT) |
-                            (static_cast<uint32_t>(gray) << GREEN_SHIFT) |
-                            static_cast<uint32_t>(gray);
+        display_buffer[i] =
+            (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
+            (static_cast<uint32_t>(gray) << RED_SHIFT) |
+            (static_cast<uint32_t>(gray) << GREEN_SHIFT) |
+            static_cast<uint32_t>(gray);
     }
 }
 
@@ -377,11 +376,17 @@ void VideoRecorder::renderCurrentFrame() {
 
     if (!frames.empty() && frames.size() > 1) {
         const float progress = std::clamp(
-            static_cast<float>(current_frame) / static_cast<float>(frames.size() - 1),
-            0.0F, 1.0F
+            static_cast<float>(current_frame) /
+                static_cast<float>(frames.size() - 1),
+            0.0F,
+            1.0F
         );
-        progress_indicator.x = progress_bar.x +
-            static_cast<int>(progress * static_cast<float>(progress_bar.w - progress_indicator.w));
+        progress_indicator.x =
+            progress_bar.x +
+            static_cast<int>(
+                progress *
+                static_cast<float>(progress_bar.w - progress_indicator.w)
+            );
     }
 
     SDL_SetRenderDrawColor(
@@ -401,7 +406,7 @@ void VideoRecorder::renderCurrentFrame() {
         RenderColors::PROGRESS_INDICATOR_ALPHA
     );
     SDL_RenderFillRect(renderer, &progress_indicator);
-    
+
     SDL_RenderPresent(renderer);
 }
 
@@ -413,28 +418,36 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
 
     std::ofstream file(filename, std::ios::binary);
     if (!file) {
-        std::cerr << "Failed to open file for writing: " << filename << std::endl;
+        std::cerr << "Failed to open file for writing: " << filename
+                  << std::endl;
         return false;
     }
 
     const auto frame_count = static_cast<uint32_t>(frames.size());
     file.write(reinterpret_cast<const char*>(&width), sizeof(width));
     file.write(reinterpret_cast<const char*>(&height), sizeof(height));
-    file.write(reinterpret_cast<const char*>(&frame_count), sizeof(frame_count));
+    file.write(
+        reinterpret_cast<const char*>(&frame_count),
+        sizeof(frame_count)
+    );
 
     for (const auto& frame : frames) {
-        file.write(reinterpret_cast<const char*>(frame.data()), 
-                   static_cast<std::streamsize>(frame.size()));
+        file.write(
+            reinterpret_cast<const char*>(frame.data()),
+            static_cast<std::streamsize>(frame.size())
+        );
     }
 
-    std::cout << "Saved " << frame_count << " frames to " << filename << std::endl;
+    std::cout << "Saved " << frame_count << " frames to " << filename
+              << std::endl;
     return true;
 }
 
 bool VideoRecorder::loadRecording(const std::string& filename) {
     std::ifstream file(filename, std::ios::binary);
     if (!file) {
-        std::cerr << "Failed to open file for reading: " << filename << std::endl;
+        std::cerr << "Failed to open file for reading: " << filename
+                  << std::endl;
         return false;
     }
 
@@ -447,8 +460,8 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
 
     if (file_width != width || file_height != height) {
-        std::cerr << "Recording dimensions (" << file_width << "x" << file_height 
-                  << ") don't match current dimensions (" 
+        std::cerr << "Recording dimensions (" << file_width << "x"
+                  << file_height << ") don't match current dimensions ("
                   << width << "x" << height << ")" << std::endl;
         return false;
     }
@@ -457,12 +470,15 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
 
     for (uint32_t i = 0; i < frame_count; i++) {
         std::vector<uint8_t> frame(static_cast<size_t>(width * height));
-        file.read(reinterpret_cast<char*>(frame.data()), 
-                  static_cast<std::streamsize>(frame.size()));
+        file.read(
+            reinterpret_cast<char*>(frame.data()),
+            static_cast<std::streamsize>(frame.size())
+        );
         frames.push_back(frame);
     }
 
     current_frame = 0;
-    std::cout << "Loaded " << frames.size() << " frames from " << filename << std::endl;
+    std::cout << "Loaded " << frames.size() << " frames from " << filename
+              << std::endl;
     return true;
 }

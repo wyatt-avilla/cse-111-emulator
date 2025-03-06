@@ -184,7 +184,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
 
     // Initialize video recorder with named constants
     video_recorder = std::make_unique<VideoRecorder>(
-        DEFAULT_VIDEO_RECORDER_WIDTH, 
+        DEFAULT_VIDEO_RECORDER_WIDTH,
         DEFAULT_VIDEO_RECORDER_HEIGHT
     );
     has_recording = false;
@@ -261,7 +261,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
         try {
             // Reset and start the video recorder using named constants
             video_recorder = std::make_unique<VideoRecorder>(
-                DEFAULT_VIDEO_RECORDER_WIDTH, 
+                DEFAULT_VIDEO_RECORDER_WIDTH,
                 DEFAULT_VIDEO_RECORDER_HEIGHT
             );
             video_recorder->startRecording();
@@ -322,7 +322,7 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
             video_recorder->updateDisplay();
             SDL_Delay(1); // Small delay to avoid consuming 100% CPU
         }
-        
+
         // Explicitly close the playback window
         video_recorder->closePlaybackWindow();
     } else {

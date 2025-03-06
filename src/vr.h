@@ -6,7 +6,7 @@
 #include <vector>
 
 class VideoRecorder {
-public:
+  public:
     // Constants to replace magic numbers
     static constexpr int RECORDING_WIDTH = 128;
     static constexpr int RECORDING_HEIGHT = 128;
@@ -51,7 +51,7 @@ public:
     bool saveRecording(const std::string& filename);
     bool loadRecording(const std::string& filename);
 
-private:
+  private:
     int width;
     int height;
     bool recording;
