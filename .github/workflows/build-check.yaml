@@ -22,21 +22,21 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
 
       - name: Cache External Builds
+        id: cache-external
         uses: actions/cache@v3
         with:
           path: |
             ${{ github.workspace }}/build
             ${{ github.workspace }}/external/SDL
             ${{ github.workspace }}/external/wxWidgets
-            ${{ github.workspace }}/build/external/wxWidgets/CMakeCache.txt
-            ${{ github.workspace }}/build/external/wxWidgets/CMakeFiles
-            ${{ github.workspace }}/build/external/wxWidgets/Makefile
           key:
-            ${{ runner.os }}-external-${{ hashFiles('external/SDL/src/**',
-            'external/SDL/include/**', 'external/wxWidgets/src/**', 'external/wxWidgets/include/**')
-            }}
+            ${{ runner.os }}-external-${{ hashFiles('external/SDL/**', 'external/wxWidgets/**') }}
           restore-keys: |
             ${{ runner.os }}-external-
+
+      - name: Touch Cached Files
+        if: steps.cache-external.outputs.cache-hit == 'true'
+        run: find ${{ github.workspace }}/build/external -exec touch {} \;
 
       - name: Install Dependencies
         run: |
