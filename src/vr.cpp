@@ -1,6 +1,8 @@
 
-//This chat has code that I used to help create vr.cpp, vr.h, as well as updating several of the other previous files: console.h, console.cpp, gui.h, gui.cpp, gpu.h and gpu.cpp
-//https://chatgpt.com/share/67c991d1-73e4-8011-92b6-c258630717c1
+// This chat has code that I used to help create vr.cpp, vr.h, as well as
+// updating several of the other previous files: console.h, console.cpp, gui.h,
+// gui.cpp, gpu.h and gpu.cpp
+// https://chatgpt.com/share/67c991d1-73e4-8011-92b6-c258630717c1
 
 
 #include "vr.h"
