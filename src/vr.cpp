@@ -422,7 +422,7 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&file_height), sizeof(file_height));
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
 
-    if (file_width != width || file_height != height) {
+    if (file_width != width || file_height != height) { //
         std::cerr << "Recording dimensions (" << file_width << "x" << file_height 
                   << ") don't match current dimensions (" 
                   << width << "x" << height << ")" << std::endl;
