@@ -61,6 +61,11 @@ class VideoRecorder {
     uint32_t playback_delay_ms;
     uint32_t last_frame_time;
     
+    // SDL objects for playback window
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    SDL_Texture* texture;
+    
     // Progress bar variables
     SDL_Rect progress_bar;
     SDL_Rect progress_indicator;
@@ -68,11 +73,6 @@ class VideoRecorder {
     
     // Store frames as RGB8 data
     std::vector<std::vector<uint8_t>> frames;
-    
-    // SDL objects for playback window
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    SDL_Texture* texture;
     
     // Buffer for converting the current frame to RGBA for display
     std::vector<uint32_t> display_buffer;
