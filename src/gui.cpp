@@ -8,6 +8,7 @@
 #include "gui.h"
 
 #include "console.h"
+#include "vr.h"
 
 #include <iostream>
 #include <thread>
@@ -19,6 +20,9 @@
 #include <wx/statbmp.h>
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
+
+const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
+const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
 
 const int WX_FRAME_X_POSTION = 500;
 const int WX_FRAME_Y_POSTION = 400;
@@ -116,6 +120,16 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     execute_button->Disable(); // Initially disabled
 
+    // Add playback button
+    playback_button = new wxButton(
+        panel,
+        wxID_ANY,
+        "View Recording",
+        wxDefaultPosition,
+        wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
+    );
+    playback_button->Disable(); // Initially disabled
+
     // Button Styling
     wxColour const button_color(30, 30, 30);   // Darker black
     wxColour const outline_color(255, 215, 0); // Yellow outline
@@ -124,6 +138,8 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     select_button->SetForegroundColour(outline_color);
     execute_button->SetBackgroundColour(button_color);
     execute_button->SetForegroundColour(outline_color);
+    playback_button->SetBackgroundColour(button_color);
+    playback_button->SetForegroundColour(outline_color);
 
     button_sizer->Add(
         select_button,
@@ -133,6 +149,12 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     button_sizer->Add(
         execute_button,
+        0,
+        wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
+        BUTTON_SIZE
+    );
+    button_sizer->Add(
+        playback_button,
         0,
         wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
         BUTTON_SIZE
@@ -155,7 +177,14 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     // Bind Events
     select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
+    playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
+
+    video_recorder = std::make_unique<VideoRecorder>(
+        DEFAULT_VIDEO_RECORDER_WIDTH,
+        DEFAULT_VIDEO_RECORDER_HEIGHT
+    );
+    has_recording = false;
 }
 
 // Handle window resizing
@@ -223,21 +252,74 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     ); // Enable execute button after selecting a valid file
 }
 
-// Handle execution
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
-        std::thread([this]() {
+        try {
+            video_recorder = std::make_unique<VideoRecorder>(
+                DEFAULT_VIDEO_RECORDER_WIDTH,
+                DEFAULT_VIDEO_RECORDER_HEIGHT
+            );
+            video_recorder->startRecording();
+
             Console banana(true);
-            try {
-                banana.run(std::string(file_path.ToStdString()));
-            } catch (const std::exception& e) {
+
+            banana.gpu.setVideoRecorder(video_recorder.get());
+
+            banana.run(std::string(file_path.ToStdString()));
+
+            video_recorder->stopRecording();
+            has_recording = (video_recorder->getFrameCount() > 0);
+
+            if (has_recording) {
+                playback_button->Enable();
                 wxMessageBox(
-                    "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
-                    "Execution Error",
-                    wxOK | wxICON_ERROR
+                    "Gameplay recorded successfully. Click 'View Recording' to "
+                    "replay.",
+                    "Recording Complete",
+                    wxOK | wxICON_INFORMATION
                 );
             }
-        }).detach();
+        } catch (const std::exception& e) {
+            wxMessageBox(
+                "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
+                "Execution Error",
+                wxOK | wxICON_ERROR
+            );
+        }
     }
 }
+
+void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
+    if (!has_recording || !video_recorder) {
+        wxMessageBox(
+            "No recording available to play back.",
+            "Playback Error",
+            wxOK | wxICON_ERROR
+        );
+        return;
+    }
+
+    if (video_recorder->initPlaybackWindow()) {
+        video_recorder->play();
+
+        bool running = true;
+        while (running) {
+            running = video_recorder->handleEvents();
+            if (!running) {
+                break;
+            }
+            video_recorder->updateDisplay();
+            SDL_Delay(1); // Small delay to avoid consuming 100% CPU
+        }
+
+        video_recorder->closePlaybackWindow();
+    } else {
+        wxMessageBox(
+            "Failed to initialize playback window.",
+            "Playback Error",
+            wxOK | wxICON_ERROR
+        );
+    }
+}
+
 #endif
