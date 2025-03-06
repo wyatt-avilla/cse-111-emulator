@@ -1,6 +1,7 @@
 // src/vr.cpp
 #include "vr.h"
 
+#include <algorithm> // for std::min, std::max
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -9,7 +10,8 @@
 VideoRecorder::VideoRecorder(int width, int height)
     : width(width), height(height), recording(false), playing(false),
       paused(false), current_frame(0), playback_delay_ms(17), // ~60fps
-      last_frame_time(0), window(nullptr), renderer(nullptr), texture(nullptr) {
+      last_frame_time(0), window(nullptr), renderer(nullptr), texture(nullptr),
+      dragging_progress(false) {
 
     display_buffer.resize(width * height);
 }
@@ -105,6 +107,19 @@ bool VideoRecorder::initPlaybackWindow() {
         return false;
     }
 
+    // Initialize progress bar
+    progress_bar.x = 20;
+    progress_bar.y = height * 4 - 30; // 30 pixels from bottom
+    progress_bar.w = width * 4 - 40;  // Full width minus margins
+    progress_bar.h = 10;
+    
+    progress_indicator.x = progress_bar.x;
+    progress_indicator.y = progress_bar.y;
+    progress_indicator.w = 10;
+    progress_indicator.h = progress_bar.h;
+    
+    dragging_progress = false;
+
     current_frame = 0;
     convertFrameToRGBA(current_frame);
 
@@ -158,9 +173,14 @@ void VideoRecorder::nextFrame() {
     if (frames.empty())
         return;
 
-    current_frame = (current_frame + 1) % frames.size();
-    convertFrameToRGBA(current_frame);
-    renderCurrentFrame();
+    if (current_frame < frames.size() - 1) {
+        current_frame++;
+        convertFrameToRGBA(current_frame);
+        renderCurrentFrame();
+    } else {
+        // Reached the end, stop playing
+        playing = false;
+    }
 }
 
 void VideoRecorder::previousFrame() {
@@ -192,6 +212,13 @@ void VideoRecorder::updateDisplay() {
 
     uint32_t current_time = SDL_GetTicks();
     if (current_time - last_frame_time >= playback_delay_ms) {
+        // Check if we're at the last frame
+        if (current_frame >= frames.size() - 1) {
+            // Stop playback instead of looping
+            playing = false;
+            return;
+        }
+        
         nextFrame();
         last_frame_time = current_time;
     }
@@ -203,6 +230,65 @@ bool VideoRecorder::handleEvents() {
         switch (event.type) {
         case SDL_QUIT:
             return false;
+
+        case SDL_MOUSEBUTTONDOWN:
+            if (event.button.button == SDL_BUTTON_LEFT) {
+                // Check if click is within progress bar
+                if (event.button.x >= progress_bar.x && 
+                    event.button.x <= progress_bar.x + progress_bar.w &&
+                    event.button.y >= progress_bar.y && 
+                    event.button.y <= progress_bar.y + progress_bar.h) {
+                    
+                    dragging_progress = true;
+                    
+                    // Calculate and set frame position based on click position
+                    float clickPosition = static_cast<float>(event.button.x - progress_bar.x) / progress_bar.w;
+                    clickPosition = std::max(0.0f, std::min(1.0f, clickPosition));
+                    
+                    // Make sure frames.size() > 1 to avoid division by zero
+                    size_t frameIndex = 0;
+                    if (frames.size() > 1) {
+                        frameIndex = static_cast<size_t>(clickPosition * (frames.size() - 1));
+                    }
+                    
+                    setFrameIndex(frameIndex);
+                    
+                    // If we're at the end (playback stopped) and user moves back
+                    // to an earlier position, restart playback
+                    if (!playing && frameIndex < frames.size() - 1) {
+                        play();
+                    }
+                }
+            }
+            break;
+            
+        case SDL_MOUSEBUTTONUP:
+            if (event.button.button == SDL_BUTTON_LEFT) {
+                dragging_progress = false;
+            }
+            break;
+            
+        case SDL_MOUSEMOTION:
+            if (dragging_progress) {
+                // If dragging, update position based on mouse movement
+                float movePosition = static_cast<float>(event.motion.x - progress_bar.x) / progress_bar.w;
+                movePosition = std::max(0.0f, std::min(1.0f, movePosition));
+                
+                // Make sure frames.size() > 1 to avoid division by zero
+                size_t frameIndex = 0;
+                if (frames.size() > 1) {
+                    frameIndex = static_cast<size_t>(movePosition * (frames.size() - 1));
+                }
+                
+                setFrameIndex(frameIndex);
+                
+                // If we're at the end (playback stopped) and user drags back
+                // to an earlier position, restart playback
+                if (!playing && frameIndex < frames.size() - 1) {
+                    play();
+                }
+            }
+            break;
 
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
@@ -259,6 +345,21 @@ void VideoRecorder::renderCurrentFrame() {
     );
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+    
+    // Update progress indicator position based on current frame
+    if (!frames.empty() && frames.size() > 1) {
+        float progress = static_cast<float>(current_frame) / (frames.size() - 1);
+        progress_indicator.x = progress_bar.x + static_cast<int>(progress * (progress_bar.w - progress_indicator.w));
+    }
+    
+    // Draw progress bar background (dark gray)
+    SDL_SetRenderDrawColor(renderer, 50, 50, 50, 255);
+    SDL_RenderFillRect(renderer, &progress_bar);
+    
+    // Draw progress indicator (yellow)
+    SDL_SetRenderDrawColor(renderer, 255, 215, 0, 255);
+    SDL_RenderFillRect(renderer, &progress_indicator);
+    
     SDL_RenderPresent(renderer);
 }
 

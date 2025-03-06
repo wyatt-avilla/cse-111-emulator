@@ -11,7 +11,7 @@ class VideoRecorder {
   public:
     VideoRecorder(int width, int height);
     ~VideoRecorder();
-
+    
     // Start recording frames
     void startRecording();
     
@@ -60,6 +60,11 @@ class VideoRecorder {
     size_t current_frame;
     uint32_t playback_delay_ms;
     uint32_t last_frame_time;
+    
+    // Progress bar variables
+    SDL_Rect progress_bar;
+    SDL_Rect progress_indicator;
+    bool dragging_progress;
     
     // Store frames as RGB8 data
     std::vector<std::vector<uint8_t>> frames;
