@@ -7,24 +7,23 @@
 
 class VideoRecorder {
   public:
-    // Constants to replace magic numbers
-    static constexpr int RECORDING_WIDTH = 128;
-    static constexpr int RECORDING_HEIGHT = 128;
-    static constexpr int PROGRESS_BAR_MARGIN = 20;
-    static constexpr int PROGRESS_BAR_HEIGHT = 10;
-    static constexpr int PROGRESS_BAR_BOTTOM_MARGIN = 30;
-    static constexpr int PROGRESS_INDICATOR_WIDTH = 10;
-    static constexpr int DEFAULT_PLAYBACK_DELAY_MS = 17; // ~60fps
-    static constexpr int SCALE_FACTOR = 4;
+    static constexpr int32_t RECORDING_WIDTH = 128;
+    static constexpr int32_t RECORDING_HEIGHT = 128;
+    static constexpr int32_t PROGRESS_BAR_MARGIN = 20;
+    static constexpr int32_t PROGRESS_BAR_HEIGHT = 10;
+    static constexpr int32_t PROGRESS_BAR_BOTTOM_MARGIN = 30;
+    static constexpr int32_t PROGRESS_INDICATOR_WIDTH = 10;
+    static constexpr int32_t DEFAULT_PLAYBACK_DELAY_MS = 17; // ~60fps
+    static constexpr int32_t SCALE_FACTOR = 4;
 
     // Color and bit shift constants
     static constexpr uint32_t COLOR_ALPHA_FULL = 0xFF;
-    static constexpr int ALPHA_SHIFT = 24;
-    static constexpr int RED_SHIFT = 16;
-    static constexpr int GREEN_SHIFT = 8;
-    static constexpr int BLUE_SHIFT = 0;
+    static constexpr int32_t ALPHA_SHIFT = 24;
+    static constexpr int32_t RED_SHIFT = 16;
+    static constexpr int32_t GREEN_SHIFT = 8;
+    static constexpr int32_t BLUE_SHIFT = 0;
 
-    VideoRecorder(int width, int height);
+    VideoRecorder(int32_t width, int32_t height);
     ~VideoRecorder();
 
     void startRecording();
@@ -52,8 +51,8 @@ class VideoRecorder {
     bool loadRecording(const std::string& filename);
 
   private:
-    int width;
-    int height;
+    int32_t width;
+    int32_t height;
     bool recording;
     bool playing;
     bool paused;
@@ -72,13 +71,11 @@ class VideoRecorder {
     std::vector<std::vector<uint8_t>> frames;
     std::vector<uint32_t> display_buffer;
 
-    // New method declarations for SDL initialization and resource management
     bool initializeSDL();
     bool createSDLResources();
     void initializeProgressBar();
     void cleanupSDLResources();
 
-    // Event handling method declarations
     void handleMouseButtonDown(const SDL_Event& event);
     void handleMouseMotion(const SDL_Event& event);
     void updateFrameFromMousePosition(float normalized_pos);

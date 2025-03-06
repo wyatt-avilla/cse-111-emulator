@@ -7,9 +7,7 @@
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
-
-// Forward declaration for VideoRecorder
-class VideoRecorder;
+#include "vr.h"
 
 class Console {
   public:
@@ -25,10 +23,8 @@ class Console {
     [[nodiscard]] bool isRunning() const;
     [[nodiscard]] bool graphicalSession() const;
 
-    // Method to connect a VideoRecorder
     void setVideoRecorder(VideoRecorder* recorder);
 
-    // Add [[nodiscard]] to getVideoRecorder
     [[nodiscard]] VideoRecorder* getVideoRecorder() const {
         return video_recorder;
     }

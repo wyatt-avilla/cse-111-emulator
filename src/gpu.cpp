@@ -1,10 +1,9 @@
-// src/gpu.cpp
 #include "gpu.h"
 
 #include "bit_definitions.h"
 #include "console.h"
 #include "memory.h"
-#include "vr.h" // Add include for VideoRecorder
+#include "vr.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -29,7 +28,6 @@ GPU::~GPU() {
     if (window != nullptr) {
         SDL_DestroyWindow(window);
         window = nullptr;
-        // Only call SDL_Quit if we actually had a window
         SDL_Quit();
     }
 }
@@ -107,7 +105,6 @@ void GPU::renderFrame() {
 
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
-    // Add frame to video recorder if it's available
     if (video_recorder != nullptr) {
         video_recorder->addFrame(vram.data());
     }

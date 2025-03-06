@@ -1,4 +1,3 @@
-// src/gui.cpp
 // got a large put of this code from chat gpt
 // https://chatgpt.com/share/67c212e0-dae4-8013-b5b9-2400c824b5e3
 // and then further modified with this thread of chat
@@ -9,7 +8,7 @@
 #include "gui.h"
 
 #include "console.h"
-#include "vr.h" // Include the new video recorder header
+#include "vr.h"
 
 #include <iostream>
 #include <thread>
@@ -22,7 +21,6 @@
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
 
-// Add these constants for video recorder dimensions
 const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
 const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
 
@@ -182,7 +180,6 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
 
-    // Initialize video recorder with named constants
     video_recorder = std::make_unique<VideoRecorder>(
         DEFAULT_VIDEO_RECORDER_WIDTH,
         DEFAULT_VIDEO_RECORDER_HEIGHT
@@ -255,27 +252,21 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     ); // Enable execute button after selecting a valid file
 }
 
-// Handle execution
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
         try {
-            // Reset and start the video recorder using named constants
             video_recorder = std::make_unique<VideoRecorder>(
                 DEFAULT_VIDEO_RECORDER_WIDTH,
                 DEFAULT_VIDEO_RECORDER_HEIGHT
             );
             video_recorder->startRecording();
 
-            // Run in the current thread instead of creating a detached thread
             Console banana(true);
 
-            // Connect the video recorder to the GPU
             banana.gpu.setVideoRecorder(video_recorder.get());
 
-            // Run the emulator
             banana.run(std::string(file_path.ToStdString()));
 
-            // Stop recording and enable the playback button
             video_recorder->stopRecording();
             has_recording = (video_recorder->getFrameCount() > 0);
 
@@ -298,7 +289,6 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     }
 }
 
-// Handle playback of recorded video
 void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
     if (!has_recording || !video_recorder) {
         wxMessageBox(
@@ -312,18 +302,16 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
     if (video_recorder->initPlaybackWindow()) {
         video_recorder->play();
 
-        // Main playback loop
         bool running = true;
         while (running) {
             running = video_recorder->handleEvents();
             if (!running) {
-                break; // Exit immediately when X is clicked
+                break;
             }
             video_recorder->updateDisplay();
             SDL_Delay(1); // Small delay to avoid consuming 100% CPU
         }
 
-        // Explicitly close the playback window
         video_recorder->closePlaybackWindow();
     } else {
         wxMessageBox(

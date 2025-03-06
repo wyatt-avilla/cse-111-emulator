@@ -1,4 +1,3 @@
-
 // This chat has code that I used to help create vr.cpp, vr.h, as well as
 // updating several of the other previous files: console.h, console.cpp, gui.h,
 // gui.cpp, gpu.h and gpu.cpp
@@ -15,18 +14,18 @@
 #include <thread>
 
 namespace RenderColors {
-constexpr int PROGRESS_BAR_BG_R = 50;
-constexpr int PROGRESS_BAR_BG_G = 50;
-constexpr int PROGRESS_BAR_BG_B = 50;
-constexpr int PROGRESS_BAR_BG_ALPHA = 255;
+constexpr int32_t PROGRESS_BAR_BG_R = 50;
+constexpr int32_t PROGRESS_BAR_BG_G = 50;
+constexpr int32_t PROGRESS_BAR_BG_B = 50;
+constexpr int32_t PROGRESS_BAR_BG_ALPHA = 255;
 
-constexpr int PROGRESS_INDICATOR_R = 255;
-constexpr int PROGRESS_INDICATOR_G = 215;
-constexpr int PROGRESS_INDICATOR_B = 0;
-constexpr int PROGRESS_INDICATOR_ALPHA = 255;
+constexpr int32_t PROGRESS_INDICATOR_R = 255;
+constexpr int32_t PROGRESS_INDICATOR_G = 215;
+constexpr int32_t PROGRESS_INDICATOR_B = 0;
+constexpr int32_t PROGRESS_INDICATOR_ALPHA = 255;
 } // namespace RenderColors
 
-VideoRecorder::VideoRecorder(int width, int height)
+VideoRecorder::VideoRecorder(int32_t width, int32_t height)
     : width(width), height(height), recording(false), playing(false),
       paused(false), current_frame(0),
       playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS), last_frame_time(0),
@@ -376,7 +375,7 @@ void VideoRecorder::renderCurrentFrame() {
         texture,
         nullptr,
         display_buffer.data(),
-        static_cast<int>(width * sizeof(uint32_t))
+        static_cast<int32_t>(width * sizeof(uint32_t))
     );
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
@@ -390,7 +389,7 @@ void VideoRecorder::renderCurrentFrame() {
         );
         progress_indicator.x =
             progress_bar.x +
-            static_cast<int>(
+            static_cast<int32_t>(
                 progress *
                 static_cast<float>(progress_bar.w - progress_indicator.w)
             );
@@ -458,8 +457,8 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
         return false;
     }
 
-    int file_width = 0;
-    int file_height = 0;
+    int32_t file_width = 0;
+    int32_t file_height = 0;
     uint32_t frame_count = 0;
 
     file.read(reinterpret_cast<char*>(&file_width), sizeof(file_width));

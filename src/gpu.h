@@ -1,3 +1,5 @@
+#include "vr.h"
+
 #include <SDL2/SDL.h>
 #include <array>
 #include <cstdint>
@@ -5,9 +7,7 @@
 
 #pragma once
 
-// Forward declaration
 class Console;
-class VideoRecorder; // Add this line
 
 class GPU {
   public:
@@ -29,7 +29,6 @@ class GPU {
 
     void setExternalVRAM(uint8_t* ptr);
 
-    // Add this line
     void setVideoRecorder(VideoRecorder* recorder);
 
   private:
@@ -43,7 +42,6 @@ class GPU {
 
     uint8_t* external_vram = nullptr;
 
-    // Add this line
     VideoRecorder* video_recorder = nullptr;
 };
 
