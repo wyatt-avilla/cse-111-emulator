@@ -7,6 +7,7 @@
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
+#include "vr.h"
 
 class Console {
   public:
@@ -22,7 +23,14 @@ class Console {
     [[nodiscard]] bool isRunning() const;
     [[nodiscard]] bool graphicalSession() const;
 
+    void setVideoRecorder(VideoRecorder* recorder);
+
+    [[nodiscard]] VideoRecorder* getVideoRecorder() const {
+        return video_recorder;
+    }
+
   private:
     bool is_running{true};
     bool graphics{true};
+    VideoRecorder* video_recorder{nullptr};
 };

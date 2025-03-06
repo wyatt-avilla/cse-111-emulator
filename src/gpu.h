@@ -1,10 +1,11 @@
+#include "vr.h"
+
 #include <SDL2/SDL.h>
 #include <array>
 #include <cstdint>
 #include <stdexcept>
 
 #pragma once
-
 
 class Console;
 
@@ -28,6 +29,8 @@ class GPU {
 
     void setExternalVRAM(uint8_t* ptr);
 
+    void setVideoRecorder(VideoRecorder* recorder);
+
   private:
     Console* console;
 
@@ -38,6 +41,8 @@ class GPU {
     std::array<uint8_t, VRAM_SIZE> vram{};
 
     uint8_t* external_vram = nullptr;
+
+    VideoRecorder* video_recorder = nullptr;
 };
 
 class GraphicsException : public std::runtime_error {
