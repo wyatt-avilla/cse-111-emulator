@@ -27,7 +27,9 @@ class Console {
 
     // Method to connect a VideoRecorder
     void setVideoRecorder(VideoRecorder* recorder);
-    VideoRecorder* getVideoRecorder() const { return video_recorder; }
+    
+    // Add [[nodiscard]] to getVideoRecorder
+    [[nodiscard]] VideoRecorder* getVideoRecorder() const { return video_recorder; }
 
   private:
     bool is_running{true};
