@@ -306,9 +306,15 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
         bool running = true;
         while (running) {
             running = video_recorder->handleEvents();
+            if (!running) {
+                break; // Exit immediately when X is clicked
+            }
             video_recorder->updateDisplay();
             SDL_Delay(1); // Small delay to avoid consuming 100% CPU
         }
+        
+        // Explicitly close the playback window
+        video_recorder->closePlaybackWindow();
     } else {
         wxMessageBox(
             "Failed to initialize playback window.",

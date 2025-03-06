@@ -111,6 +111,28 @@ bool VideoRecorder::initPlaybackWindow() {
     return true;
 }
 
+void VideoRecorder::closePlaybackWindow() {
+    // Clean up SDL resources
+    if (texture) {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
+    
+    if (renderer) {
+        SDL_DestroyRenderer(renderer);
+        renderer = nullptr;
+    }
+    
+    if (window) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+    }
+    
+    playing = false;
+    paused = false;
+    std::cout << "Playback window closed" << std::endl;
+}
+
 void VideoRecorder::play() {
     if (frames.empty())
         return;
