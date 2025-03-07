@@ -257,7 +257,7 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
         }
 
         // Apply the color filter to the image's pixels
-        Filter::applyBackgroundColorFilter(pixelArray, 10, 5, 4);
+        Filter::applyBackgroundColorFilter(pixelArray, red, green, blue);
 
         // Refresh the image after modification
         image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image

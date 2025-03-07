@@ -111,10 +111,19 @@ void GPU::renderFrame() {
     }
 
     std::array<uint32_t, 65536> pixels{};  
-    
+
+    std::cout << "Before applying filter:" << std::endl;
+    for (size_t i = 0; i < 10; ++i) { // Print first 10 values for debugging
+        std::cout << pixels[i] << std::endl;
+    }
+
     // Apply the background color filter with the desired RGB values
     Filter::applyBackgroundColorFilter(pixels, 10, 5, 4); // Set background to black (you can change RGB values as needed)
 
+    std::cout << "After applying filter:" << std::endl;
+    for (size_t i = 0; i < 10; ++i) {
+        std::cout << pixels[i] << std::endl;
+    }
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
         pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
