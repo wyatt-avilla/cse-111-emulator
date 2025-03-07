@@ -1,4 +1,5 @@
 #include "gpu.h"
+#include "filter.h"
 
 #include "bit_definitions.h"
 #include "console.h"
@@ -110,6 +111,9 @@ void GPU::renderFrame() {
     }
 
     std::array<uint32_t, VRAM_SIZE> pixels{};
+    // Apply the background color filter with the desired RGB values
+    Filter::applyBackgroundColorFilter(pixels, 0, 0, 0); // Set background to black (you can change RGB values as needed)
+
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
         pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
