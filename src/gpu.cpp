@@ -113,7 +113,7 @@ void GPU::renderFrame() {
     std::array<uint32_t, 65536> pixels{};  
     
     // Apply the background color filter with the desired RGB values
-    //Filter::applyBackgroundColorFilter(pixels, 0, 0, 0); // Set background to black (you can change RGB values as needed)
+    Filter::applyBackgroundColorFilter(pixels, 10, 5, 4); // Set background to black (you can change RGB values as needed)
 
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
