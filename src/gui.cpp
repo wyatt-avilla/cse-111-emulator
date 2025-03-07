@@ -6,6 +6,7 @@
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
+#include "filter.h"
 
 #include "console.h"
 #include "vr.h"
@@ -20,6 +21,8 @@
 #include <wx/statbmp.h>
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
+#include <wx/colour.h>  // For wxColour dialog
+#include <wx/colordlg.h> // For the color dialog
 
 const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
 const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
@@ -130,6 +133,15 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     playback_button->Disable(); // Initially disabled
 
+    auto* color_button = new wxButton(
+        panel,
+        wxID_ANY,
+        "Change Background Color",
+        wxDefaultPosition,
+        wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y)
+    );
+    color_button->Bind(wxEVT_BUTTON, &MyFrame::onChangeColor, this); // Bind the event handler
+
     // Button Styling
     wxColour const button_color(30, 30, 30);   // Darker black
     wxColour const outline_color(255, 215, 0); // Yellow outline
@@ -155,6 +167,12 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     button_sizer->Add(
         playback_button,
+        0,
+        wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
+        BUTTON_SIZE
+    );
+    button_sizer->Add(
+        color_button,
         0,
         wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
         BUTTON_SIZE
@@ -214,6 +232,22 @@ void MyFrame::onResize(wxSizeEvent& event) {
     }
 
     event.Skip(); // Allow normal event processing
+}
+
+void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
+    wxColourDialog colorDialog(this);
+    if (colorDialog.ShowModal() == wxID_OK) {
+        wxColour color = colorDialog.GetColourData().GetColour(); // Get selected color
+        uint8_t red = color.Red(); // Get the RGB values
+        uint8_t green = color.Green();
+        uint8_t blue = color.Blue();
+
+        // Apply the color filter to the background (using the Filter class)
+        Filter::applyBackgroundColorFilter(pixels, red, green, blue);
+
+        // Refresh the window to show the updated background
+        Refresh();
+    }
 }
 
 // Handle file selection
