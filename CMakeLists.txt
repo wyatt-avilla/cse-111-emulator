@@ -39,6 +39,7 @@ add_executable(${PROJECT_NAME}
     src/controller.cpp
     src/gui.cpp
     src/vr.cpp
+    src/filter.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
