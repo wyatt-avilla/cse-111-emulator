@@ -235,6 +235,7 @@ void MyFrame::onResize(wxSizeEvent& event) {
 }
 
 void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
+    // Create a color dialog to let the user choose a color
     wxColourDialog colorDialog(this);
     if (colorDialog.ShowModal() == wxID_OK) {
         wxColour color = colorDialog.GetColourData().GetColour(); // Get selected color
@@ -242,11 +243,18 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
         uint8_t green = color.Green();
         uint8_t blue = color.Blue();
 
-        // Apply the color filter to the background (using the Filter class)
+        // Assuming you have a wxImage to manipulate
+        wxImage image = image_bitmap->GetBitmap().ConvertToImage();
+        
+        // Now we can modify the image's pixels
+        unsigned char* pixels = image.GetData(); // Get raw pixel data
+
+        // Apply the color filter to the image's pixels
         Filter::applyBackgroundColorFilter(pixels, red, green, blue);
 
-        // Refresh the window to show the updated background
-        Refresh();
+        // Refresh the image after modification
+        image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image
+        Refresh(); // Refresh the window to show the updated background
     }
 }
 
