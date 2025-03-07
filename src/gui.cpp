@@ -248,9 +248,16 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
         
         // Now we can modify the image's pixels
         unsigned char* pixels = image.GetData(); // Get raw pixel data
+        std::array<unsigned int, 65536> pixelArray;
+
+        // Convert raw pixel data (unsigned char*) to std::array<unsigned int, 65536>
+        for (size_t i = 0; i < 65536; ++i) {
+            // Assuming each pixel is 4 bytes (RGBA format), this may need adjusting based on your image format
+            pixelArray[i] = (pixels[i * 4] << 24) | (pixels[i * 4 + 1] << 16) | (pixels[i * 4 + 2] << 8) | pixels[i * 4 + 3];
+        }
 
         // Apply the color filter to the image's pixels
-        Filter::applyBackgroundColorFilter(pixels, red, green, blue);
+        Filter::applyBackgroundColorFilter(pixelArray, red, green, blue);
 
         // Refresh the image after modification
         image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image
