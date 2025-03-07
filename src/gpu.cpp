@@ -110,7 +110,8 @@ void GPU::renderFrame() {
         video_recorder->addFrame(vram.data());
     }
 
-    std::array<uint32_t, VRAM_SIZE> pixels{};
+    std::array<uint32_t, 65536> pixels{};  
+    
     // Apply the background color filter with the desired RGB values
     Filter::applyBackgroundColorFilter(pixels, 0, 0, 0); // Set background to black (you can change RGB values as needed)
 
