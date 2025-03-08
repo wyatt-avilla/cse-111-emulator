@@ -129,6 +129,7 @@ void GPU::renderFrame() {
         pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
                     (gray << BITS_PER_BYTE * 2) | (gray << BITS_PER_BYTE) |
                     gray;
+        std::cout << pixels[i] << std::endl;
     }
 
     SDL_UpdateTexture(
