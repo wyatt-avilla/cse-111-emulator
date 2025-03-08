@@ -138,7 +138,7 @@ void GPU::renderFrame() {
         pixels.data(),
         FRAME_WIDTH * sizeof(uint32_t)
     );
-
+    SDL_SetTextureColorMod(texture, 255, 0, 0);
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
