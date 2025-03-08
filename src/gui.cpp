@@ -245,7 +245,7 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
 
         // Assuming you have a wxImage to manipulate
         wxImage image = image_bitmap->GetBitmap().ConvertToImage();
-        
+
         // Now we can modify the image's pixels
         unsigned char* pixels = image.GetData(); // Get raw pixel data
         std::array<unsigned int, 65536> pixelArray;
@@ -261,6 +261,11 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
 
         // Refresh the image after modification
         image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image
+
+        // Optionally, set the SDL texture color mode (you'd have to link this logic with your existing SDL code)
+        SDL_SetTextureColorMode(texture, SDL_TEXTURECOLORMOD_COLOR); // Use the appropriate SDL color mode
+        SDL_SetTextureColorMode(texture, SDL_TEXTURECOLORMOD_RGB, red, green, blue); // Apply selected color
+
         Refresh(); // Refresh the window to show the updated background
     }
 }
