@@ -136,7 +136,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     auto* color_button = new wxButton(
         panel,
         wxID_ANY,
-        "Change Background Color",
+        "Background Color",
         wxDefaultPosition,
         wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y)
     );
