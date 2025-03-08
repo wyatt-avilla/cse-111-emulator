@@ -129,6 +129,9 @@ void GPU::renderFrame() {
         pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
                     (gray << BITS_PER_BYTE * 2) | (gray << BITS_PER_BYTE) |
                     gray;
+    }
+    std::cout << "After for loop :" << std::endl;
+    for (size_t i = 0; i < 10; ++i) {
         std::cout << pixels[i] << std::endl;
     }
 
