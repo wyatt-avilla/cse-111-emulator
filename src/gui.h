@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <wx/wx.h>
+#include <SDL2/SDL.h>
 
 
 class MyFrame : public wxFrame {
