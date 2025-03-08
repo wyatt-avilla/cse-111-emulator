@@ -118,7 +118,7 @@ void GPU::renderFrame() {
     }
 
     // Apply the background color filter with the desired RGB values
-    Filter::applyBackgroundColorFilter(pixels, 10, 5, 4); // Set background to black (you can change RGB values as needed)
+    Filter::applyBackgroundColorFilter(pixels, 1, 6, 5); // Set background to black (you can change RGB values as needed)
 
     std::cout << "After applying filter:" << std::endl;
     for (size_t i = 0; i < 10; ++i) {
