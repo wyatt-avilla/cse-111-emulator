@@ -263,8 +263,7 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
         image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image
 
         // Optionally, set the SDL texture color mode (you'd have to link this logic with your existing SDL code)
-        SDL_SetTextureColorMode(texture, SDL_TEXTURECOLORMOD_COLOR); // Use the appropriate SDL color mode
-        SDL_SetTextureColorMode(texture, SDL_TEXTURECOLORMOD_RGB, red, green, blue); // Apply selected color
+        //SDL_SetTextureColorMod(texture, SDL_TEXTURECOLORMOD_RGB, red, green, blue); // Apply selected color
 
         Refresh(); // Refresh the window to show the updated background
     }
