@@ -47,7 +47,7 @@ class GPU {
 
     struct Color {
         uint8_t r, g, b;
-    } selectedColorMod = {255, 255, 255};
+    } selectedColorMod = {255, 0, 0};
 };
 
 class GraphicsException : public std::runtime_error {
