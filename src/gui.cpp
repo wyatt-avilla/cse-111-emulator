@@ -321,6 +321,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
              if (gpu) {  // Make sure gpu is properly initialized
                 gpu->setSelectedColor(selectedred, selectedgreen, selectedblue);
             }
+            SDL_SetRenderDrawColor(renderer, selectedred, selectedgreen, selectedblue, 255);
             
         }
 
