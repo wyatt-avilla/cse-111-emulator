@@ -111,6 +111,7 @@ void GPU::renderFrame() {
         }
     }
 
+    // Copy external VRAM data to internal VRAM
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
     if (video_recorder != nullptr) {
@@ -119,26 +120,30 @@ void GPU::renderFrame() {
 
     std::array<uint32_t, 65536> pixels{};  
 
-
+    // Update pixel data based on VRAM content
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
         pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
                     (gray << BITS_PER_BYTE * 2) | (gray << BITS_PER_BYTE) |
                     gray;
     }
-    
-    std::cout << "Applying color mod in render: R=" << (int)selectedColorMod.r
-    << ", G=" << (int)selectedColorMod.g
-    << ", B=" << (int)selectedColorMod.b << std::endl;
 
+    std::cout << "Applying color mod in render: R=" << (int)selectedColorMod.r
+              << ", G=" << (int)selectedColorMod.g
+              << ", B=" << (int)selectedColorMod.b << std::endl;
+
+    // Update the texture with new pixel data
     SDL_UpdateTexture(
         texture,
         nullptr,
         pixels.data(),
         FRAME_WIDTH * sizeof(uint32_t)
     );
-// Apply the selected color modification
-    SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b); 
+
+    // Apply the selected color modification here
+    SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
+
+    // Render the texture to the screen
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
