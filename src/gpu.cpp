@@ -15,7 +15,7 @@ const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU(Console* console)
-    : console(console), window(nullptr), renderer(nullptr), texture(nullptr), selectedColorMod{0, 128, 0} {}
+    : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {}
 
 GPU::~GPU() {
     if (texture != nullptr) {
