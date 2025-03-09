@@ -141,7 +141,6 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y)
     );
-    color_button->Bind(wxEVT_BUTTON, &MyFrame::onChangeColor, this); // Bind the event handler
 
     // Button Styling
     wxColour const button_color(30, 30, 30);   // Darker black
