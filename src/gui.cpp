@@ -3,11 +3,12 @@
 // and then further modified with this thread of chat
 // https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
+#include "wx/mstream.h"
 #ifndef HEADLESS_BUILD
 
-#include "gui.h"
-
+#include "banana.png.h"
 #include "console.h"
+#include "gui.h"
 #include "vr.h"
 
 #include <iostream>
@@ -81,23 +82,10 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxFONTWEIGHT_BOLD
     ));
 
-    // Get dynamic image path
-    wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
-    wxFileName file(exe_path);
-    file.Normalize(wxPATH_NORM_ABSOLUTE);
-    wxString const image_path =
-        file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
-
     // Load Image
     wxInitAllImageHandlers();
-    wxImage image(image_path, wxBITMAP_TYPE_PNG);
-    if (!image.IsOk()) {
-        wxMessageBox(
-            "Failed to load image: " + image_path,
-            "Error",
-            wxOK | wxICON_ERROR
-        );
-    }
+    wxMemoryInputStream stream(banana_png, banana_png_len);
+    wxImage image(stream, wxBITMAP_TYPE_PNG);
 
     image.Rescale(RESCALE_X, RESCALE_Y); // Initial size
     image_bitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
@@ -194,15 +182,9 @@ void MyFrame::onResize(wxSizeEvent& event) {
         new_size.GetWidth() * 0.6;             // Scale to 60% of window width
     double const new_height = new_width * 0.5; // Maintain aspect ratio
 
-    wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
-    wxFileName file(exe_path);
-    file.Normalize(wxPATH_NORM_ABSOLUTE);
-    wxString const image_path =
-        file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
-
-    // NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall)
-    wxImage image(image_path, wxBITMAP_TYPE_PNG);
-    // NOLINTEND(clang-analyzer-optin.cplusplus.VirtualCall)
+    wxInitAllImageHandlers();
+    wxMemoryInputStream stream(banana_png, banana_png_len);
+    wxImage image(stream, wxBITMAP_TYPE_PNG);
 
     if (image.IsOk()) {
         image.Rescale(
