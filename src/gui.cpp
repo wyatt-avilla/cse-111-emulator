@@ -172,7 +172,6 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         DEFAULT_VIDEO_RECORDER_WIDTH,
         DEFAULT_VIDEO_RECORDER_HEIGHT
     );
-    has_recording = false;
 }
 
 // Handle window resizing
@@ -184,7 +183,9 @@ void MyFrame::onResize(wxSizeEvent& event) {
 
     wxInitAllImageHandlers();
     wxMemoryInputStream stream(banana_png, banana_png_len);
+    // NOLINTBEGIN(clang-analyzer-optin.cplusplus.VirtualCall)
     wxImage image(stream, wxBITMAP_TYPE_PNG);
+    // NOLINTEND(clang-analyzer-optin.cplusplus.VirtualCall)
 
     if (image.IsOk()) {
         image.Rescale(
