@@ -141,7 +141,7 @@ void GPU::renderFrame() {
     );
 
     // Apply the selected color modification here
-    SDL_SetTextureColorMod(texture, 0, 255, 0);
+    SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
 
     // Render the texture to the screen
     SDL_RenderClear(renderer);
