@@ -10,11 +10,12 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the build type." FORCE)
 endif()
 
-set(BUILD_SHARED_LIBS ON)
-set(SDL_SHARED ON CACHE BOOL "" FORCE)
-set(SDL_STATIC OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF)
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
-set(wxBUILD_SHARED ON CACHE BOOL "" FORCE)
+set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(wxBUILD_STATIC ON CACHE BOOL "" FORCE)
 
 # these are sets to ensure that the build happens faster with threads and cacheing
 include(ProcessorCount)
@@ -54,7 +55,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 # **Link wxWidgets and SDL2**
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL2 wx::core wx::base)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL2-static wx::core wx::base)
 
 # Add a target to launch GDB
 add_custom_target(debug
@@ -65,4 +66,3 @@ add_custom_target(debug
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "wxWidgets libraries: ${wxWidgets_LIBRARIES}")
-
