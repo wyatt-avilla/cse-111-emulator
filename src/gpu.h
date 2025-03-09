@@ -45,9 +45,7 @@ class GPU {
 
     VideoRecorder* video_recorder = nullptr;
 
-    struct Color {
-        uint8_t r, g, b;
-    } selectedColorMod = {255, 0, 0};
+    
 };
 
 class GraphicsException : public std::runtime_error {
