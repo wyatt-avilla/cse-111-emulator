@@ -274,10 +274,9 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             wxMessageBox(colorMessage, "Color Selected", wxOK | wxICON_INFORMATION);
             //SDL_SetTextureColorMod(texture, selectedred, selectedgreen, selectedblue);
              // Assuming GPU is a member of MyFrame, you would call the function to set the color
-             if (gpu) {  // Make sure gpu is properly initialized
-                gpu->setSelectedColor(selectedred, selectedgreen, selectedblue);
-            }
-            SDL_SetRenderDrawColor(renderer, selectedred, selectedgreen, selectedblue, 255);
+            gpu->setSelectedColor(selectedred, selectedgreen, selectedblue);
+            
+            //SDL_SetRenderDrawColor(renderer, selectedred, selectedgreen, selectedblue, 255);
             
         }
 
