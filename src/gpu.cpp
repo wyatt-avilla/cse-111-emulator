@@ -81,7 +81,7 @@ void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
     selectedColorMod.r = r;
     selectedColorMod.g=g;
     selectedColorMod.b=b;
-    std::cout << "Color set to in GPU: R=" << (int)r << ", G=" << (int)g << ", B=" << (int)b << std::endl;
+    std::cout << "Color set to in GPU: R=" << (int)selectedColorMod.r << ", G=" << (int)selectedColorMod.g << ", B=" << (int)selectedColorMod.b << std::endl;
 }
 
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
