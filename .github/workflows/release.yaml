@@ -48,13 +48,13 @@ jobs:
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
       - name: Package Release (ZIP)
-        if: startsWith(github.ref, 'refs/tags/v')
+        #if: startsWith(github.ref, 'refs/tags/v')
         run: |
           cd ${{ github.workspace }}/build
           zip -r ../release-${{ github.ref_name }}.zip .
 
       - name: Upload Artifact (for debugging)
-        if: startsWith(github.ref, 'refs/tags/v')
+        #if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
           name: release-${{ github.ref_name }}
