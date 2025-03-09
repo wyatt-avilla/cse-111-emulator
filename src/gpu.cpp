@@ -15,7 +15,7 @@ const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
 const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU(Console* console)
-    : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {}
+    : console(console), window(nullptr), renderer(nullptr), texture(nullptr), selectedColorMod{255, 255, 255} {}
 
 GPU::~GPU() {
     if (texture != nullptr) {
@@ -77,6 +77,10 @@ void GPU::initializeRenderer() {
     }
 }
 
+void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
+    selectedColorMod = {r, g, b};
+}
+
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
     return static_cast<std::underlying_type_t<Memory::Address>>(
                Memory::Address::STACK_END
@@ -127,7 +131,8 @@ void GPU::renderFrame() {
         pixels.data(),
         FRAME_WIDTH * sizeof(uint32_t)
     );
-    //SDL_SetTextureColorMod(texture, 255, 0, 0);
+// Apply the selected color modification
+    SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b); 
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);

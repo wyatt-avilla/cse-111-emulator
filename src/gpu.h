@@ -31,6 +31,7 @@ class GPU {
 
     void setVideoRecorder(VideoRecorder* recorder);
 
+    void setSelectedColor(uint8_t r, uint8_t g, uint8_t b);
   private:
     Console* console;
 
@@ -43,6 +44,10 @@ class GPU {
     uint8_t* external_vram = nullptr;
 
     VideoRecorder* video_recorder = nullptr;
+
+    struct Color {
+        uint8_t r, g, b;
+    } selectedColorMod = {255, 255, 255};
 };
 
 class GraphicsException : public std::runtime_error {

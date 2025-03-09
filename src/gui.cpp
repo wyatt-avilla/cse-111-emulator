@@ -10,6 +10,7 @@
 
 #include "console.h"
 #include "vr.h"
+#include "gpu.h"
 
 #include <iostream>
 #include <thread>
@@ -316,7 +317,10 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             wxString colorMessage = wxString::Format("Selected Color: RGB(%d, %d, %d)", selectedred, selectedgreen, selectedblue);
             wxMessageBox(colorMessage, "Color Selected", wxOK | wxICON_INFORMATION);
             //SDL_SetTextureColorMod(texture, selectedred, selectedgreen, selectedblue);
-            
+             // Assuming GPU is a member of MyFrame, you would call the function to set the color
+             if (gpu) {  // Make sure gpu is properly initialized
+                gpu->setSelectedColor(selectedRed, selectedGreen, selectedBlue);
+            }
             
         }
 
