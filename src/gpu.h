@@ -33,9 +33,7 @@ class GPU {
 
     void setSelectedColor(uint8_t r, uint8_t g, uint8_t b);
   private:
-    struct Color {
-      uint8_t r, g, b;
-  };
+    
 
     Console* console;
 
@@ -48,7 +46,7 @@ class GPU {
     uint8_t* external_vram = nullptr;
 
     VideoRecorder* video_recorder = nullptr;
-    Color selectedColorMod; 
+    SDL_Color selectedColorMod; 
     
 };
 
