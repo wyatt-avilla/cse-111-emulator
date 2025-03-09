@@ -134,13 +134,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     playback_button->Disable(); // Initially disabled
 
-    auto* color_button = new wxButton(
-        panel,
-        wxID_ANY,
-        "Background Color",
-        wxDefaultPosition,
-        wxSize(SELECT_BUTTON_X, SELECT_BUTTON_Y)
-    );
+    
 
     // Button Styling
     wxColour const button_color(30, 30, 30);   // Darker black
