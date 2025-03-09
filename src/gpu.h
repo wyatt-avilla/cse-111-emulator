@@ -25,7 +25,7 @@ class GPU {
 
     void setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level);
 
-    void renderFrame(uint8_t r, uint8_t g, uint8_t b);
+    void renderFrame();
 
     void setExternalVRAM(uint8_t* ptr);
 

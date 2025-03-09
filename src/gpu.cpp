@@ -102,7 +102,7 @@ void GPU::setPixel(
     vram[index] = gray_level;
 }
 
-void GPU::renderFrame(uint8_t r, uint8_t g, uint8_t b) {
+void GPU::renderFrame() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
@@ -128,9 +128,9 @@ void GPU::renderFrame(uint8_t r, uint8_t g, uint8_t b) {
                     gray;
     }
 
-    std::cout << "Applying color mod in render: R=" << (int)r
-              << ", G=" << (int)g
-              << ", B=" << (int)b << std::endl;
+    std::cout << "Applying color mod in render: R=" << (int)selectedColorMod.r
+              << ", G=" << (int)selectedColorMod.g
+              << ", B=" << (int)selectedColorMod.b << std::endl;
 
     // Update the texture with new pixel data
     SDL_UpdateTexture(
@@ -141,7 +141,7 @@ void GPU::renderFrame(uint8_t r, uint8_t g, uint8_t b) {
     );
 
     // Apply the selected color modification here
-    SDL_SetTextureColorMod(texture, r, g, b);
+    SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
 
     // Render the texture to the screen
     SDL_RenderClear(renderer);
