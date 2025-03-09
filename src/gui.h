@@ -16,16 +16,14 @@ class MyFrame : public wxFrame {
     wxButton* select_button;
     wxButton* execute_button;
     wxButton* playback_button;
-    wxButton* color_button;
+    
     wxStaticBitmap* image_bitmap;
     wxString file_path;
 
     std::unique_ptr<VideoRecorder> video_recorder;
     bool has_recording = false;
 
-    // Function to handle changing background color
-    void onChangeColor(wxCommandEvent& event);
-
+  
     void onFileSelect(wxCommandEvent& event);
     void onExecute(wxCommandEvent& event);
     void onPlayback(wxCommandEvent& event);
