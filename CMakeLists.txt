@@ -16,6 +16,7 @@ set(SDL_STATIC ON CACHE BOOL "" FORCE)
 set(SDL_TEST OFF CACHE BOOL "" FORCE)
 set(wxBUILD_SHARED OFF CACHE BOOL "" FORCE)
 set(wxBUILD_STATIC ON CACHE BOOL "" FORCE)
+set(wxWidgets_USE_STATIC ON CACHE BOOL "" FORCE)
 
 # these are sets to ensure that the build happens faster with threads and cacheing
 include(ProcessorCount)
