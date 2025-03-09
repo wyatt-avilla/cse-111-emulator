@@ -9,7 +9,7 @@
 class MyFrame : public wxFrame {
   public:
     MyFrame();
-
+    GPU* gpu;
     SDL_Texture* texture;
     SDL_Renderer* renderer;
   private:

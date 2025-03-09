@@ -59,7 +59,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
           wxDefaultPosition,
           wxSize(WX_FRAME_X_POSTION, WX_FRAME_Y_POSTION)
       ) {
-
+    gpu = new GPU();
     auto* panel = new wxPanel(this, wxID_ANY);
     panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)
     ); // Dark grayish black background
@@ -319,7 +319,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             //SDL_SetTextureColorMod(texture, selectedred, selectedgreen, selectedblue);
              // Assuming GPU is a member of MyFrame, you would call the function to set the color
              if (gpu) {  // Make sure gpu is properly initialized
-                gpu->setSelectedColor(selectedRed, selectedGreen, selectedBlue);
+                gpu->setSelectedColor(selectedred, selectedgreen, selectedblue);
             }
             
         }
