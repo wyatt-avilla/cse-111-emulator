@@ -79,6 +79,7 @@ void GPU::initializeRenderer() {
 
 void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
     selectedColorMod = {r, g, b};
+    std::cout << "Color set to in GPU: R=" << (int)r << ", G=" << (int)g << ", B=" << (int)b << std::endl;
 }
 
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
@@ -124,6 +125,9 @@ void GPU::renderFrame() {
                     gray;
     }
     
+    std::cout << "Applying color mod in render: R=" << (int)selectedColorMod.r
+    << ", G=" << (int)selectedColorMod.g
+    << ", B=" << (int)selectedColorMod.b << std::endl;
 
     SDL_UpdateTexture(
         texture,
