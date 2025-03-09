@@ -51,7 +51,7 @@ jobs:
         #if: startsWith(github.ref, 'refs/tags/v')
         run: |
           cd ${{ github.workspace }}/build
-          zip -r ../release-TEST.zip .
+          zip ../release-TEST.zip ./emulator
 
       - name: Upload Artifact (for debugging)
         #if: startsWith(github.ref, 'refs/tags/v')
