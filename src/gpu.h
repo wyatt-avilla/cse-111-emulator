@@ -33,8 +33,6 @@ class GPU {
 
     void setSelectedColor(uint8_t r, uint8_t g, uint8_t b);
   private:
-    
-
     Console* console;
 
     SDL_Window* window;
@@ -46,8 +44,10 @@ class GPU {
     uint8_t* external_vram = nullptr;
 
     VideoRecorder* video_recorder = nullptr;
-    SDL_Color selectedColorMod; 
-    
+
+    struct Color {
+        uint8_t r, g, b;
+    } selectedColorMod = {255, 0, 0};
 };
 
 class GraphicsException : public std::runtime_error {
