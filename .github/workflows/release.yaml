@@ -48,7 +48,7 @@ jobs:
 
       - name: Configure CMake
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DwxUSE_LIBJPEG=builtin -DwxUSE_LIBPNG=builtin -DwxUSE_LIBTIFF=builtin -DwxUSE_ZLIB=builtin -DwxUSE_EXPAT=builtin
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DwxUSE_LIBJPEG=builtin -DSDL_UNIX_CONSOLE_BUILD=ON
 
       - name: Build
         run: |
