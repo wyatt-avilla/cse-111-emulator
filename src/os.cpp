@@ -67,7 +67,7 @@ void OS::loopIteration() {
     }
 
     if (this->c->graphicalSession()) {
-        this->c->gpu.renderFrame();
+        this->c->gpu.renderFrame(255,255,255);
     }
 
     auto iteration_end = std::chrono::steady_clock::now();
