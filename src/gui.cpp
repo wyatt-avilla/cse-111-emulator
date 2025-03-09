@@ -315,6 +315,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             // Optionally, display the color that was selected in a message box or log it
             wxString colorMessage = wxString::Format("Selected Color: RGB(%d, %d, %d)", red, green, blue);
             wxMessageBox(colorMessage, "Color Selected", wxOK | wxICON_INFORMATION);
+            SDL_SetTextureColorMod(texture, red, green, blue);
 
             // You can also store or use the selected color in your recording logic
             // For example, modify texture or background color using SDL_SetTextureColorMod or other methods
