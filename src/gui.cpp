@@ -172,12 +172,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
         BUTTON_SIZE
     );
-    button_sizer->Add(
-        color_button,
-        0,
-        wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
-        BUTTON_SIZE
-    );
+    
 
     // Layout
     main_sizer->Add(title, 0, wxALIGN_CENTER | wxALIGN_TOP, TITLE_SIZE);
@@ -233,38 +228,6 @@ void MyFrame::onResize(wxSizeEvent& event) {
     }
 
     event.Skip(); // Allow normal event processing
-}
-
-void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
-    // Create a color dialog to let the user choose a color
-    wxColourDialog colorDialog(this);
-    if (colorDialog.ShowModal() == wxID_OK) {
-        wxColour color = colorDialog.GetColourData().GetColour(); // Get selected color
-        uint8_t red = color.Red(); // Get the RGB values
-        uint8_t green = color.Green();
-        uint8_t blue = color.Blue();
-
-        // Assuming you have a wxImage to manipulate
-        wxImage image = image_bitmap->GetBitmap().ConvertToImage();
-
-        // Now we can modify the image's pixels
-        unsigned char* pixels = image.GetData(); // Get raw pixel data
-        std::array<unsigned int, 65536> pixelArray;
-
-        // Convert raw pixel data (unsigned char*) to std::array<unsigned int, 65536>
-        for (size_t i = 0; i < 65536; ++i) {
-            // Assuming each pixel is 4 bytes (RGBA format), this may need adjusting based on your image format
-            pixelArray[i] = (pixels[i * 4] << 24) | (pixels[i * 4 + 1] << 16) | (pixels[i * 4 + 2] << 8) | pixels[i * 4 + 3];
-        }
-
-        // Apply the color filter to the image's pixels
-        SDL_SetTextureColorMod(texture, red, green, blue); 
-        // Refresh the image after modification
-        image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image
-
-        
-        Refresh(); // Refresh the window to show the updated background
-    }
 }
 
 // Handle file selection
