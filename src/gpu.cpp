@@ -125,9 +125,9 @@ void GPU::renderFrame() {
                     gray;
     }
     
-    std::cout << "Applying color mod in render: R=" << (int)r
-    << ", G=" << (int)g
-    << ", B=" << (int)b << std::endl;
+    std::cout << "Applying color mod in render: R=" << (int)selectedColorMod.r
+    << ", G=" << (int)selectedColorMod.g
+    << ", B=" << (int)selectedColorMod.b << std::endl;
 
     SDL_UpdateTexture(
         texture,
