@@ -78,7 +78,9 @@ void GPU::initializeRenderer() {
 }
 
 void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
-    selectedColorMod = {r, g, b};
+    selectedColorMod.r = r;
+    selectedColorMod.g=g;
+    selectedColorMod.b=b;
     std::cout << "Color set to in GPU: R=" << (int)r << ", G=" << (int)g << ", B=" << (int)b << std::endl;
 }
 
