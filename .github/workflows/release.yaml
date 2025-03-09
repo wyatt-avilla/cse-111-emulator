@@ -1,80 +1,112 @@
-name: C++ Release
+name: Release
 
 on:
   push:
-    branches: ["main"]
     tags:
       - "v*"
-  pull_request:
-    branches: ["main"]
-
-env:
-  BUILD_TYPE: Release
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Release]
+        include:
+          - os: ubuntu-latest
+            artifact_name: emulator-linux
+            extra_deps:
+              sudo apt-get update && sudo apt-get install -y build-essential libgtk-3-dev
+              libgl1-mesa-dev
+          - os: windows-latest
+            artifact_name: emulator-windows
+            extra_deps: ""
+          - os: macos-latest
+            artifact_name: emulator-macos
+            extra_deps: ""
 
     steps:
-      - name: Checkout repository with submodules
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
           submodules: recursive
-          fetch-depth: 0
-          token: ${{ secrets.PAT_TOKEN }}
 
-      - name: Cache External Builds
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}/build
-            ${{ github.workspace }}/external/SDL
-            ${{ github.workspace }}/external/wxWidgets
-          key:
-            ${{ runner.os }}-external-${{ hashFiles('external/SDL/**', 'external/wxWidgets/**') }}
-          restore-keys: |
-            ${{ runner.os }}-external-
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: ${{ matrix.extra_deps }}
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt-get install -y libgtk-3-dev
+      - name: Set up MSVC Developer Command Prompt (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: ${{ matrix.extra_deps }}
 
       - name: Configure CMake
         run: |
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DwxUSE_LIBJPEG=builtin -DSDL_UNIX_CONSOLE_BUILD=ON
+          cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DwxUSE_LIBJPEG=builtin -DwxUSE_LIBPNG=builtin -DwxUSE_LIBTIFF=builtin -DwxUSE_ZLIB=builtin -DwxUSE_EXPAT=builtin
 
       - name: Build
-        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-      - name: Package Release (ZIP)
-        #if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          cd ${{ github.workspace }}/build
-          zip ../release-TEST.zip ./emulator
+          cmake --build build --config ${{ matrix.build_type }} --parallel
 
-      - name: Upload Artifact (for debugging)
-        #if: startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v4
+      - name: Package artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir -p dist
+          cp build/emulator dist/
+          chmod +x dist/emulator
+          cd dist && tar -czvf ../emulator-linux.tar.gz *
+
+      - name: Package artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mkdir -p dist
+          cp build/Release/emulator.exe dist/
+          cd dist && 7z a -tzip ../emulator-windows.zip *
+
+      - name: Package artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          mkdir -p dist
+          cp build/emulator dist/
+          chmod +x dist/emulator
+          cd dist && tar -czvf ../emulator-macos.tar.gz *
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: release-TEST
-          path: ${{ github.workspace }}/release-TEST.zip
+          name: ${{ matrix.artifact_name }}
+          path: |
+            emulator-linux.tar.gz
+            emulator-windows.zip
+            emulator-macos.tar.gz
+          if-no-files-found: ignore
 
   release:
+    name: Create Release
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: release-${{ github.ref_name }}
-          path: .
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
 
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: List files
+        run: find . -type f | sort
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          files: release-${{ github.ref_name }}.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            emulator-linux/emulator-linux.tar.gz
+            emulator-windows/emulator-windows.zip
+            emulator-macos/emulator-macos.tar.gz
+          draft: false
+          prerelease: false
+          generate_release_notes: true
