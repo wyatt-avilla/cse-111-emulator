@@ -6,11 +6,12 @@
 #include <wx/wx.h>
 #include <SDL2/SDL.h>
 
-
 class MyFrame : public wxFrame {
   public:
     MyFrame();
 
+    SDL_Texture* texture;
+    SDL_Renderer* renderer;
   private:
     wxButton* select_button;
     wxButton* execute_button;

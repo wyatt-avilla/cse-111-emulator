@@ -257,14 +257,11 @@ void MyFrame::onChangeColor(wxCommandEvent& /*unused*/) {
         }
 
         // Apply the color filter to the image's pixels
-        Filter::applyBackgroundColorFilter(pixelArray, red, green, blue);
-
+        SDL_SetTextureColorMod(texture, red, green, blue); 
         // Refresh the image after modification
         image_bitmap->SetBitmap(wxBitmap(image)); // Update the displayed image
 
-        // Optionally, set the SDL texture color mode (you'd have to link this logic with your existing SDL code)
-        //SDL_SetTextureColorMod(texture, SDL_TEXTURECOLORMOD_RGB, red, green, blue); // Apply selected color
-
+        
         Refresh(); // Refresh the window to show the updated background
     }
 }
