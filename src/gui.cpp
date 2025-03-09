@@ -304,6 +304,22 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
 
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
+        // Show the color dialog to let the user pick a color
+        wxColourDialog colorDialog(this);
+        if (colorDialog.ShowModal() == wxID_OK) {
+            wxColour color = colorDialog.GetColourData().GetColour();  // Get selected color
+            uint8_t red = color.Red();   // Get the RGB values
+            uint8_t green = color.Green();
+            uint8_t blue = color.Blue();
+
+            // Optionally, display the color that was selected in a message box or log it
+            wxString colorMessage = wxString::Format("Selected Color: RGB(%d, %d, %d)", red, green, blue);
+            wxMessageBox(colorMessage, "Color Selected", wxOK | wxICON_INFORMATION);
+
+            // You can also store or use the selected color in your recording logic
+            // For example, modify texture or background color using SDL_SetTextureColorMod or other methods
+        }
+
         try {
             video_recorder = std::make_unique<VideoRecorder>(
                 DEFAULT_VIDEO_RECORDER_WIDTH,
@@ -338,7 +354,6 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
         }
     }
 }
-
 void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
     if (!has_recording || !video_recorder) {
         wxMessageBox(
