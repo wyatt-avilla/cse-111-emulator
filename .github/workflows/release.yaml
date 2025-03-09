@@ -1,4 +1,4 @@
-name: C++ Build and Release
+name: C++ Release
 
 on:
   push:
@@ -51,7 +51,7 @@ jobs:
         #if: startsWith(github.ref, 'refs/tags/v')
         run: |
           cd ${{ github.workspace }}/build
-          zip -r ../release-TEST.zip ./emulator
+          zip -r ../release-TEST.zip .
 
       - name: Upload Artifact (for debugging)
         #if: startsWith(github.ref, 'refs/tags/v')
