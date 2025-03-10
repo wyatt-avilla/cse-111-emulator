@@ -114,12 +114,13 @@ void GPU::renderFrame() {
     // Copy external VRAM data to internal VRAM
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
-    if (video_recorder != nullptr) {
-        video_recorder->addFrame(vram.data());
-    }
     std::cout << "Applying color mod in render: R=" << (int)selectedColorMod.r
               << ", G=" << (int)selectedColorMod.g
               << ", B=" << (int)selectedColorMod.b << std::endl;
+    if (video_recorder != nullptr) {
+        video_recorder->addFrame(vram.data());
+    }
+    
 
     std::array<uint32_t, 65536> pixels{};  
 
