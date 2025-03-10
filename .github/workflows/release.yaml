@@ -4,8 +4,8 @@ on:
   push:
     tags:
       - "v*"
-  branches:
-    - cross-platform-release
+    branches:
+      - cross-platform-release
   workflow_dispatch:
 
 jobs:
