@@ -3,6 +3,12 @@
 // and then further modified with this thread of chat
 // https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
+
+
+//This is the chats used for the code used in changing color of pixel
+//https://claude.ai/share/e2202135-6906-4180-a017-fe71cb2a1a5a
+//https://chatgpt.com/share/67cfe91c-19d4-8011-930b-dc9923808d79
+
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
