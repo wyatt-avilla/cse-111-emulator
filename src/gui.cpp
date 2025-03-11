@@ -29,9 +29,6 @@
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
 
-const int32_t DEFAULT_VIDEO_RECORDER_WIDTH = 128;
-const int32_t DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
-
 const int32_t WX_FRAME_X_POSTION = 500;
 const int32_t WX_FRAME_Y_POSTION = 400;
 const int32_t GREY_COLOR = 40;
@@ -50,12 +47,13 @@ const int32_t IMAGE_SIZE = 10;
 const int32_t TITLE_SIZE = 20;
 
 bool MyApp::OnInit() {
-    auto* frame = new MyFrame();
+    auto* console = new Console(true);
+    auto* frame = new MyFrame(console);
     frame->Show(true);
     return true;
 }
 
-MyFrame::MyFrame() // NOLINT(readability-function-size)
+MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     : wxFrame(
           nullptr,
           wxID_ANY,
@@ -63,7 +61,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
           wxDefaultPosition,
           wxSize(WX_FRAME_X_POSTION, WX_FRAME_Y_POSTION)
       ),
-      gpu(new GPU()) {
+      console(console) {
 
     auto* panel = new wxPanel(this, wxID_ANY);
     panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)
@@ -191,10 +189,6 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
 
-    video_recorder = std::make_unique<VideoRecorder>(
-        DEFAULT_VIDEO_RECORDER_WIDTH,
-        DEFAULT_VIDEO_RECORDER_HEIGHT
-    );
     has_recording = false;
 }
 
@@ -300,18 +294,11 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
 
         // Set default gray color first
         uint8_t const default_gray_value = 128;
-        if (gpu != nullptr) {
-            gpu->setSelectedColor(
-                default_gray_value,
-                default_gray_value,
-                default_gray_value
-            );
-            std::cout << "Setting default GRAY: R=128, G=128, B=128"
-                      << std::endl;
-        } else {
-            std::cerr << "Error: GPU instance is null" << std::endl;
-            return;
-        }
+        console->filter.setColor(
+            default_gray_value,
+            default_gray_value,
+            default_gray_value
+        );
 
         while (!color_chosen) {
             // Create color data for each iteration
@@ -380,55 +367,18 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
 
             // User confirmed - set the color
             color_chosen = true;
-            if (gpu != nullptr) {
-                gpu->setSelectedColor(
-                    selected_red,
-                    selected_green,
-                    selected_blue
-                );
-            } else {
-                std::cerr << "Error: GPU instance is null when setting color"
-                          << std::endl;
-                return;
-            }
+            console->filter
+                .setColor(selected_red, selected_green, selected_blue);
         }
 
         try {
-            video_recorder = std::make_unique<VideoRecorder>(
-                DEFAULT_VIDEO_RECORDER_WIDTH,
-                DEFAULT_VIDEO_RECORDER_HEIGHT
-            );
+            console->video_recorder.startRecording();
 
-            if (!video_recorder) {
-                throw std::runtime_error("Failed to create video recorder");
-            }
+            console->run(std::string(file_path.ToStdString()));
 
-            video_recorder->startRecording();
+            console->video_recorder.stopRecording();
 
-            Console banana(true);
-
-            // Important: Transfer the color from the GUI's GPU to the console's
-            // GPU
-            banana.gpu.setSelectedColor(
-                gpu->getSelectedColorR(),
-                gpu->getSelectedColorG(),
-                gpu->getSelectedColorB()
-            );
-
-            // Pass the selected color to the video recorder
-            if (video_recorder) {
-                video_recorder->setColorTint(
-                    gpu->getSelectedColorR(),
-                    gpu->getSelectedColorG(),
-                    gpu->getSelectedColorB()
-                );
-            }
-
-            banana.gpu.setVideoRecorder(video_recorder.get());
-            banana.run(std::string(file_path.ToStdString()));
-
-            video_recorder->stopRecording();
-            has_recording = (video_recorder->getFrameCount() > 0);
+            has_recording = (console->video_recorder.getFrameCount() > 0);
 
             if (has_recording) {
                 playback_button->Enable();
@@ -460,7 +410,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
     }
 }
 void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
-    if (!has_recording || !video_recorder) {
+    if (!has_recording) {
         wxMessageBox(
             "No recording available to play back.",
             "Playback Error",
@@ -469,20 +419,20 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
         return;
     }
 
-    if (video_recorder->initPlaybackWindow()) {
-        video_recorder->play();
+    if (console->video_recorder.initPlaybackWindow()) {
+        console->video_recorder.play();
 
         bool running = true;
         while (running) {
-            running = video_recorder->handleEvents();
+            running = console->video_recorder.handleEvents();
             if (!running) {
                 break;
             }
-            video_recorder->updateDisplay();
+            console->video_recorder.updateDisplay();
             SDL_Delay(1); // Small delay to avoid consuming 100% CPU
         }
 
-        video_recorder->closePlaybackWindow();
+        console->video_recorder.closePlaybackWindow();
     } else {
         wxMessageBox(
             "Failed to initialize playback window.",

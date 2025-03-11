@@ -76,28 +76,6 @@ void GPU::initializeRenderer() {
     }
 }
 
-void GPU::setSelectedColor(uint8_t red, uint8_t green, uint8_t blue) {
-    // Store the color values
-    selected_color_mod.r = red;
-    selected_color_mod.g = green;
-    selected_color_mod.b = blue;
-
-    std::cout << "*** Color SET to: R=" << (int) red << ", G=" << (int) green
-              << ", B=" << (int) blue << " ***" << std::endl;
-
-    // If texture exists, apply color immediately
-    if (texture != nullptr) {
-        int32_t const result =
-            SDL_SetTextureColorMod(texture, red, green, blue);
-        if (result != 0) {
-            std::cerr << "Failed to set texture color: " << SDL_GetError()
-                      << std::endl;
-        } else {
-            std::cout << "Applied color to texture directly" << std::endl;
-        }
-    }
-}
-
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
     return static_cast<std::underlying_type_t<Memory::Address>>(
                Memory::Address::STACK_END
@@ -121,21 +99,13 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
             std::cerr << "Quit event received, stopping execution" << std::endl;
+            SDL_DestroyWindow(window);
             console->stopExecution();
         }
     }
 
     // Copy external VRAM data to internal VRAM
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
-
-    if (video_recorder != nullptr) {
-        video_recorder->setColorTint(
-            selected_color_mod.r,
-            selected_color_mod.g,
-            selected_color_mod.b
-        );
-        video_recorder->addFrame(vram.data());
-    }
 
     std::array<uint32_t, VRAM_SIZE> pixels{};
 
@@ -147,6 +117,16 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
                     gray;
     }
 
+    // Apply color tint AFTER updating texture content
+    Filter::Color color = console->filter.getColor();
+    int32_t const result =
+        SDL_SetTextureColorMod(texture, color.red, color.green, color.blue);
+    if (result != 0) {
+        std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError()
+                  << std::endl;
+    }
+    console->video_recorder.addFrame(vram.data());
+
     // Update the texture with new pixel data
     SDL_UpdateTexture(
         texture,
@@ -155,18 +135,6 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
         FRAME_WIDTH * sizeof(uint32_t)
     );
 
-    // Apply color tint AFTER updating texture content
-    int32_t const result = SDL_SetTextureColorMod(
-        texture,
-        selected_color_mod.r,
-        selected_color_mod.g,
-        selected_color_mod.b
-    );
-    if (result != 0) {
-        std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError()
-                  << std::endl;
-    }
-
     // Render the texture to the screen
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
@@ -174,7 +142,3 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
 }
 
 void GPU::setExternalVRAM(uint8_t* ptr) { external_vram = ptr; }
-
-void GPU::setVideoRecorder(VideoRecorder* recorder) {
-    video_recorder = recorder;
-}

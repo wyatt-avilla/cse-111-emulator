@@ -6,6 +6,9 @@
 
 #include "vr.h"
 
+#include "console.h"
+#include "filter.h"
+
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -25,8 +28,20 @@ constexpr int32_t PROGRESS_INDICATOR_B = 0;
 constexpr int32_t PROGRESS_INDICATOR_ALPHA = 255;
 } // namespace RenderColors
 
-VideoRecorder::VideoRecorder(int32_t width, int32_t height)
-    : width(width), height(height), recording(false), playing(false),
+VideoRecorder::VideoRecorder(Console* console, int32_t width, int32_t height)
+    : console(console), width(width), height(height), recording(false),
+      playing(false), paused(false), current_frame(0),
+      playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS), last_frame_time(0),
+      window(nullptr), renderer(nullptr), texture(nullptr),
+      dragging_progress(false) {
+    display_buffer.resize(static_cast<size_t>(
+        static_cast<long long>(width) * static_cast<long long>(height)
+    ));
+}
+
+VideoRecorder::VideoRecorder(Console* console)
+    : console(console), width(DEFAULT_VIDEO_RECORDER_WIDTH),
+      height(DEFAULT_VIDEO_RECORDER_HEIGHT), recording(false), playing(false),
       paused(false), current_frame(0),
       playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS), last_frame_time(0),
       window(nullptr), renderer(nullptr), texture(nullptr),
@@ -363,9 +378,10 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
         const uint8_t gray = frame[i];
 
         // Apply color tint to grayscale value
-        uint8_t const red = (gray * color_tint.r) / 255;
-        uint8_t const green = (gray * color_tint.g) / 255;
-        uint8_t const blue = (gray * color_tint.b) / 255;
+        Filter::Color color = console->filter.getColor();
+        uint8_t const red = (gray * color.red) / 255;
+        uint8_t const green = (gray * color.green) / 255;
+        uint8_t const blue = (gray * color.blue) / 255;
 
         display_buffer[i] =
             (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
@@ -443,18 +459,14 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
         sizeof(frame_count)
     );
 
+    Filter::Color color = console->filter.getColor();
+
+    file.write(reinterpret_cast<const char*>(&color.red), sizeof(color.red));
     file.write(
-        reinterpret_cast<const char*>(&color_tint.r),
-        sizeof(color_tint.r)
+        reinterpret_cast<const char*>(&color.green),
+        sizeof(color.green)
     );
-    file.write(
-        reinterpret_cast<const char*>(&color_tint.g),
-        sizeof(color_tint.g)
-    );
-    file.write(
-        reinterpret_cast<const char*>(&color_tint.b),
-        sizeof(color_tint.b)
-    );
+    file.write(reinterpret_cast<const char*>(&color.blue), sizeof(color.blue));
 
     for (const auto& frame : frames) {
         file.write(
@@ -484,9 +496,11 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&file_height), sizeof(file_height));
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
 
-    file.read(reinterpret_cast<char*>(&color_tint.r), sizeof(color_tint.r));
-    file.read(reinterpret_cast<char*>(&color_tint.g), sizeof(color_tint.g));
-    file.read(reinterpret_cast<char*>(&color_tint.b), sizeof(color_tint.b));
+    Filter::Color color = console->filter.getColor();
+
+    file.read(reinterpret_cast<char*>(&color.red), sizeof(color.red));
+    file.read(reinterpret_cast<char*>(&color.green), sizeof(color.green));
+    file.read(reinterpret_cast<char*>(&color.blue), sizeof(color.blue));
 
 
     if (file_width != width || file_height != height) {

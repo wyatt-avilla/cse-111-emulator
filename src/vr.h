@@ -1,11 +1,11 @@
 #pragma once
 
-#include "bit_definitions.h"
-
 #include <SDL2/SDL.h>
 #include <cstdint>
 #include <string>
 #include <vector>
+
+class Console;
 
 class VideoRecorder {
   public:
@@ -17,6 +17,9 @@ class VideoRecorder {
     static constexpr int32_t PROGRESS_INDICATOR_WIDTH = 10;
     static constexpr int32_t DEFAULT_PLAYBACK_DELAY_MS = 17; // ~60fps
     static constexpr int32_t SCALE_FACTOR = 4;
+    static constexpr int32_t DEFAULT_VIDEO_RECORDER_WIDTH = 128;
+    static constexpr int32_t DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
+
 
     // Color and bit shift constants
     static constexpr uint32_t COLOR_ALPHA_FULL = 0xFF;
@@ -25,7 +28,8 @@ class VideoRecorder {
     static constexpr int32_t GREEN_SHIFT = 8;
     static constexpr int32_t BLUE_SHIFT = 0;
 
-    VideoRecorder(int32_t width, int32_t height);
+    VideoRecorder(Console* console);
+    VideoRecorder(Console* console, int32_t width, int32_t height);
     ~VideoRecorder();
 
     void startRecording();
@@ -51,14 +55,10 @@ class VideoRecorder {
 
     bool saveRecording(const std::string& filename);
     bool loadRecording(const std::string& filename);
-    void setColorTint(uint8_t red, uint8_t green, uint8_t blue) {
-        color_tint.r = red;
-        color_tint.g = green;
-        color_tint.b = blue;
-    }
 
 
   private:
+    Console* console;
     int32_t width;
     int32_t height;
     bool recording;
@@ -91,9 +91,4 @@ class VideoRecorder {
 
     void convertFrameToRGBA(size_t frame_index);
     void renderCurrentFrame();
-    struct {
-        uint8_t r = BYTE_MASK;
-        uint8_t g = BYTE_MASK;
-        uint8_t b = BYTE_MASK;
-    } color_tint;
 };

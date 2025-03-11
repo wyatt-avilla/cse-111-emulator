@@ -7,14 +7,17 @@
 #include <memory>
 #include <wx/wx.h>
 
+class Console;
+
 class MyFrame : public wxFrame {
   public:
-    MyFrame();
+    MyFrame(Console* console);
     GPU* gpu;
     SDL_Texture* texture;
     SDL_Renderer* renderer;
 
   private:
+    Console* console;
     wxButton* select_button;
     wxButton* execute_button;
     wxButton* playback_button;
@@ -22,7 +25,6 @@ class MyFrame : public wxFrame {
     wxStaticBitmap* image_bitmap;
     wxString file_path;
 
-    std::unique_ptr<VideoRecorder> video_recorder;
     bool has_recording = false;
 
 
@@ -30,10 +32,10 @@ class MyFrame : public wxFrame {
     void onExecute(wxCommandEvent& event);
     void onPlayback(wxCommandEvent& event);
     void onResize(wxSizeEvent& event);
-    // void onInitUI();  // Initialize UI components including the color button
 };
 
 class MyApp : public wxApp {
   public:
     bool OnInit() override;
+    Console* console;
 };

@@ -30,19 +30,6 @@ class GPU {
 
     void setExternalVRAM(uint8_t* ptr);
 
-    void setVideoRecorder(VideoRecorder* recorder);
-
-    void setSelectedColor(uint8_t red, uint8_t green, uint8_t blue);
-    [[nodiscard]] uint8_t getSelectedColorR() const {
-        return selected_color_mod.r;
-    }
-    [[nodiscard]] uint8_t getSelectedColorG() const {
-        return selected_color_mod.g;
-    }
-    [[nodiscard]] uint8_t getSelectedColorB() const {
-        return selected_color_mod.b;
-    }
-
   private:
     Console* console;
 
@@ -53,12 +40,6 @@ class GPU {
     std::array<uint8_t, VRAM_SIZE> vram{};
 
     uint8_t* external_vram = nullptr;
-
-    VideoRecorder* video_recorder = nullptr;
-
-    struct Color {
-        uint8_t r, g, b;
-    } selected_color_mod = {BYTE_MASK, 0, 0};
 };
 
 class GraphicsException : public std::runtime_error {
