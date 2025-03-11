@@ -95,10 +95,11 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
     }
 
     std::array<uint32_t, VRAM_SIZE> pixels{};
-    uint8_t* vram = console->memory.getPointerToMemArray() +
-                    static_cast<std::underlying_type_t<Memory::Address>>(
-                        Memory::Address::VRAM_START
-                    );
+    const uint8_t* const vram =
+        console->memory.getPointerToMemArray() +
+        static_cast<std::underlying_type_t<Memory::Address>>(
+            Memory::Address::VRAM_START
+        );
 
     // Update pixel data based on VRAM content
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
@@ -109,7 +110,7 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
     }
 
     // Apply color tint AFTER updating texture content
-    Filter::Color color = console->filter.getColor();
+    const Filter::Color color = console->filter.getColor();
     int32_t const result =
         SDL_SetTextureColorMod(texture, color.red, color.green, color.blue);
     if (result != 0) {

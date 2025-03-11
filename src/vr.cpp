@@ -378,7 +378,7 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
         const uint8_t gray = frame[i];
 
         // Apply color tint to grayscale value
-        Filter::Color color = console->filter.getColor();
+        const Filter::Color color = console->filter.getColor();
         uint8_t const red = (gray * color.red) / 255;
         uint8_t const green = (gray * color.green) / 255;
         uint8_t const blue = (gray * color.blue) / 255;
