@@ -130,6 +130,7 @@ void GPU::renderFrame() {
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
     if (video_recorder != nullptr) {
+        video_recorder->setColorTint(selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
         video_recorder->addFrame(vram.data());
     }
 

@@ -354,7 +354,6 @@ bool VideoRecorder::handleEvents() {
     }
     return true;
 }
-
 void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     if (frame_index >= frames.size())
         return;
@@ -362,11 +361,17 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     const auto& frame = frames[frame_index];
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
+        
+        // Apply color tint to grayscale value
+        uint8_t r = (gray * colorTint.r) / 255;
+        uint8_t g = (gray * colorTint.g) / 255;
+        uint8_t b = (gray * colorTint.b) / 255;
+        
         display_buffer[i] =
             (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
-            (static_cast<uint32_t>(gray) << RED_SHIFT) |
-            (static_cast<uint32_t>(gray) << GREEN_SHIFT) |
-            static_cast<uint32_t>(gray);
+            (static_cast<uint32_t>(r) << RED_SHIFT) |
+            (static_cast<uint32_t>(g) << GREEN_SHIFT) |
+            static_cast<uint32_t>(b);
     }
 }
 
@@ -430,12 +435,17 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
     }
 
     const auto frame_count = static_cast<uint32_t>(frames.size());
+
     file.write(reinterpret_cast<const char*>(&width), sizeof(width));
     file.write(reinterpret_cast<const char*>(&height), sizeof(height));
     file.write(
         reinterpret_cast<const char*>(&frame_count),
         sizeof(frame_count)
     );
+
+    file.write(reinterpret_cast<const char*>(&colorTint.r), sizeof(colorTint.r));
+    file.write(reinterpret_cast<const char*>(&colorTint.g), sizeof(colorTint.g));
+    file.write(reinterpret_cast<const char*>(&colorTint.b), sizeof(colorTint.b));
 
     for (const auto& frame : frames) {
         file.write(
@@ -464,6 +474,11 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&file_width), sizeof(file_width));
     file.read(reinterpret_cast<char*>(&file_height), sizeof(file_height));
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
+
+    file.read(reinterpret_cast<char*>(&colorTint.r), sizeof(colorTint.r));
+    file.read(reinterpret_cast<char*>(&colorTint.g), sizeof(colorTint.g));
+    file.read(reinterpret_cast<char*>(&colorTint.b), sizeof(colorTint.b));
+
 
     if (file_width != width || file_height != height) {
         std::cerr << "Recording dimensions (" << file_width << "x"
