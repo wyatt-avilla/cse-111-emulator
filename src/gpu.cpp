@@ -78,16 +78,16 @@ void GPU::initializeRenderer() {
 
 void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
     // Store the color values
-    selectedColorMod.r = r;
-    selectedColorMod.g = g;
-    selectedColorMod.b = b;
+    selected_color_mod.r = r;
+    selected_color_mod.g = g;
+    selected_color_mod.b = b;
 
     std::cout << "*** Color SET to: R=" << (int) r << ", G=" << (int) g
               << ", B=" << (int) b << " ***" << std::endl;
 
     // If texture exists, apply color immediately
     if (texture != nullptr) {
-        int result = SDL_SetTextureColorMod(texture, r, g, b);
+        int const result = SDL_SetTextureColorMod(texture, r, g, b);
         if (result != 0) {
             std::cerr << "Failed to set texture color: " << SDL_GetError()
                       << std::endl;
@@ -130,9 +130,9 @@ void GPU::renderFrame() {
 
     if (video_recorder != nullptr) {
         video_recorder->setColorTint(
-            selectedColorMod.r,
-            selectedColorMod.g,
-            selectedColorMod.b
+            selected_color_mod.r,
+            selected_color_mod.g,
+            selected_color_mod.b
         );
         video_recorder->addFrame(vram.data());
     }
@@ -156,11 +156,11 @@ void GPU::renderFrame() {
     );
 
     // Apply color tint AFTER updating texture content
-    int result = SDL_SetTextureColorMod(
+    int const result = SDL_SetTextureColorMod(
         texture,
-        selectedColorMod.r,
-        selectedColorMod.g,
-        selectedColorMod.b
+        selected_color_mod.r,
+        selected_color_mod.g,
+        selected_color_mod.b
     );
     if (result != 0) {
         std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError()

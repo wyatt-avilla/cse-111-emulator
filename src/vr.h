@@ -50,9 +50,9 @@ class VideoRecorder {
     bool saveRecording(const std::string& filename);
     bool loadRecording(const std::string& filename);
     void setColorTint(uint8_t r, uint8_t g, uint8_t b) {
-        colorTint.r = r;
-        colorTint.g = g;
-        colorTint.b = b;
+        color_tint.r = r;
+        color_tint.g = g;
+        color_tint.b = b;
     }
 
 
@@ -93,5 +93,5 @@ class VideoRecorder {
         uint8_t r = 255;
         uint8_t g = 255;
         uint8_t b = 255;
-    } colorTint;
+    } color_tint;
 };

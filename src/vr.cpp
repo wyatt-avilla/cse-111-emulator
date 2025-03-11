@@ -363,9 +363,9 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
         const uint8_t gray = frame[i];
 
         // Apply color tint to grayscale value
-        uint8_t r = (gray * colorTint.r) / 255;
-        uint8_t g = (gray * colorTint.g) / 255;
-        uint8_t b = (gray * colorTint.b) / 255;
+        uint8_t const r = (gray * color_tint.r) / 255;
+        uint8_t const g = (gray * color_tint.g) / 255;
+        uint8_t const b = (gray * color_tint.b) / 255;
 
         display_buffer[i] =
             (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
@@ -444,16 +444,16 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
     );
 
     file.write(
-        reinterpret_cast<const char*>(&colorTint.r),
-        sizeof(colorTint.r)
+        reinterpret_cast<const char*>(&color_tint.r),
+        sizeof(color_tint.r)
     );
     file.write(
-        reinterpret_cast<const char*>(&colorTint.g),
-        sizeof(colorTint.g)
+        reinterpret_cast<const char*>(&color_tint.g),
+        sizeof(color_tint.g)
     );
     file.write(
-        reinterpret_cast<const char*>(&colorTint.b),
-        sizeof(colorTint.b)
+        reinterpret_cast<const char*>(&color_tint.b),
+        sizeof(color_tint.b)
     );
 
     for (const auto& frame : frames) {
@@ -484,9 +484,9 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&file_height), sizeof(file_height));
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
 
-    file.read(reinterpret_cast<char*>(&colorTint.r), sizeof(colorTint.r));
-    file.read(reinterpret_cast<char*>(&colorTint.g), sizeof(colorTint.g));
-    file.read(reinterpret_cast<char*>(&colorTint.b), sizeof(colorTint.b));
+    file.read(reinterpret_cast<char*>(&color_tint.r), sizeof(color_tint.r));
+    file.read(reinterpret_cast<char*>(&color_tint.g), sizeof(color_tint.g));
+    file.read(reinterpret_cast<char*>(&color_tint.b), sizeof(color_tint.b));
 
 
     if (file_width != width || file_height != height) {
