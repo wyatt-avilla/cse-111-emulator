@@ -32,6 +32,9 @@ class GPU {
     void setVideoRecorder(VideoRecorder* recorder);
 
     void setSelectedColor(uint8_t r, uint8_t g, uint8_t b);
+    uint8_t getSelectedColorR() const { return selectedColorMod.r; }
+    uint8_t getSelectedColorG() const { return selectedColorMod.g; }
+    uint8_t getSelectedColorB() const { return selectedColorMod.b; }
   private:
     Console* console;
 

@@ -78,10 +78,24 @@ void GPU::initializeRenderer() {
 }
 
 void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
+    // Store the color values
     selectedColorMod.r = r;
-    selectedColorMod.g=g;
-    selectedColorMod.b=b;
-    std::cout << "Color set to in GPU: R=" << (int)selectedColorMod.r << ", G=" << (int)selectedColorMod.g << ", B=" << (int)selectedColorMod.b << std::endl;
+    selectedColorMod.g = g;
+    selectedColorMod.b = b;
+    
+    std::cout << "*** Color SET to: R=" << (int)r 
+              << ", G=" << (int)g 
+              << ", B=" << (int)b << " ***" << std::endl;
+    
+    // If texture exists, apply color immediately
+    if (texture != nullptr) {
+        int result = SDL_SetTextureColorMod(texture, r, g, b);
+        if (result != 0) {
+            std::cerr << "Failed to set texture color: " << SDL_GetError() << std::endl;
+        } else {
+            std::cout << "Applied color to texture directly" << std::endl;
+        }
+    }
 }
 
 uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
@@ -114,15 +128,16 @@ void GPU::renderFrame() {
     // Copy external VRAM data to internal VRAM
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
-    std::cout << "Applying before reset color mod in render: R=" << (int)selectedColorMod.r
-              << ", G=" << (int)selectedColorMod.g
+    std::cout << "Rendering frame with color: R=" << (int)selectedColorMod.r 
+              << ", G=" << (int)selectedColorMod.g 
               << ", B=" << (int)selectedColorMod.b << std::endl;
+
+    // For video recording
     if (video_recorder != nullptr) {
         video_recorder->addFrame(vram.data());
     }
-    
 
-    std::array<uint32_t, 65536> pixels{};  
+    std::array<uint32_t, VRAM_SIZE> pixels{};  
 
     // Update pixel data based on VRAM content
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
@@ -132,8 +147,6 @@ void GPU::renderFrame() {
                     gray;
     }
 
-    
-
     // Update the texture with new pixel data
     SDL_UpdateTexture(
         texture,
@@ -142,8 +155,11 @@ void GPU::renderFrame() {
         FRAME_WIDTH * sizeof(uint32_t)
     );
 
-    // Apply the selected color modification here
-    SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
+    // Apply color tint AFTER updating texture content
+    int result = SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
+    if (result != 0) {
+        std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError() << std::endl;
+    }
 
     // Render the texture to the screen
     SDL_RenderClear(renderer);

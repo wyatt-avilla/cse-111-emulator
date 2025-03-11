@@ -264,21 +264,25 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
         // Show the color dialog to let the user pick a color
         wxColourDialog colorDialog(this);
         if (colorDialog.ShowModal() == wxID_OK) {
-            wxColour color = colorDialog.GetColourData().GetColour();  // Get selected color
-            uint8_t selectedred = color.Red();   // Get the RGB values
-            uint8_t selectedgreen = color.Green();
-            uint8_t selectedblue = color.Blue();
+            wxColour color = colorDialog.GetColourData().GetColour();
+            uint8_t selectedRed = color.Red();
+            uint8_t selectedGreen = color.Green();
+            uint8_t selectedBlue = color.Blue();
 
-            // Optionally, display the color that was selected in a message box or log it
-            wxString colorMessage = wxString::Format("Selected Color: RGB(%d, %d, %d)", selectedred, selectedgreen, selectedblue);
+            // Display the selected color information
+            wxString colorMessage = wxString::Format(
+                "Selected Color: RGB(%d, %d, %d)", 
+                selectedRed, selectedGreen, selectedBlue
+            );
             wxMessageBox(colorMessage, "Color Selected", wxOK | wxICON_INFORMATION);
-            //SDL_SetTextureColorMod(texture, selectedred, selectedgreen, selectedblue);
-             // Assuming GPU is a member of MyFrame, you would call the function to set the color
-             std::cout << "Selected Color (from wxColourDialog): R=" << (int)selectedred
-          << ", G=" << (int)selectedgreen << ", B=" << (int)selectedblue << std::endl;
-
-            gpu->setSelectedColor(selectedred, selectedgreen, selectedblue);
-                                    
+            
+            std::cout << "GUI COLOR SELECTION: R=" << (int)selectedRed
+                      << ", G=" << (int)selectedGreen 
+                      << ", B=" << (int)selectedBlue << std::endl;
+            
+            // Make sure the correct GPU instance gets the color setting
+            // Both the member variable GPU and the GPU in the Console should be updated
+            gpu->setSelectedColor(selectedRed, selectedGreen, selectedBlue);
         }
 
         try {
@@ -289,9 +293,15 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             video_recorder->startRecording();
 
             Console banana(true);
-
+            
+            // Important: Transfer the color from the GUI's GPU to the console's GPU
+            banana.gpu.setSelectedColor(
+                gpu->getSelectedColorR(),
+                gpu->getSelectedColorG(),
+                gpu->getSelectedColorB()
+            );
+            
             banana.gpu.setVideoRecorder(video_recorder.get());
-
             banana.run(std::string(file_path.ToStdString()));
 
             video_recorder->stopRecording();
@@ -300,8 +310,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             if (has_recording) {
                 playback_button->Enable();
                 wxMessageBox(
-                    "Gameplay recorded successfully. Click 'View Recording' to "
-                    "replay.",
+                    "Gameplay recorded successfully. Click 'View Recording' to replay.",
                     "Recording Complete",
                     wxOK | wxICON_INFORMATION
                 );
