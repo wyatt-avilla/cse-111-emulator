@@ -83,16 +83,6 @@ uint32_t GPU::getPixelAddress(const uint32_t x_coord, const uint32_t y_coord) {
            (x_coord + y_coord * FRAME_WIDTH);
 }
 
-void GPU::setPixel(
-    const uint32_t x_coord,
-    const uint32_t y_coord,
-    const uint8_t gray_level
-) {
-    if (x_coord >= FRAME_WIDTH || y_coord >= FRAME_HEIGHT)
-        return;
-    uint32_t const index = x_coord + (y_coord * FRAME_WIDTH);
-    vram[index] = gray_level;
-}
 void GPU::renderFrame() { // NOLINT(readability-function-size)
     SDL_Event event;
 
@@ -104,10 +94,11 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
         }
     }
 
-    // Copy external VRAM data to internal VRAM
-    std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
-
     std::array<uint32_t, VRAM_SIZE> pixels{};
+    uint8_t* vram = console->memory.getPointerToMemArray() +
+                    static_cast<std::underlying_type_t<Memory::Address>>(
+                        Memory::Address::VRAM_START
+                    );
 
     // Update pixel data based on VRAM content
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
@@ -125,7 +116,7 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
         std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError()
                   << std::endl;
     }
-    console->video_recorder.addFrame(vram.data());
+    console->video_recorder.addFrame(vram);
 
     // Update the texture with new pixel data
     SDL_UpdateTexture(
@@ -140,5 +131,3 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
 }
-
-void GPU::setExternalVRAM(uint8_t* ptr) { external_vram = ptr; }

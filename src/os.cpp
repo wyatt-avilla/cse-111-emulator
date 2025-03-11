@@ -29,15 +29,6 @@ void OS::reset(const std::string& filename) {
         )
     );
 
-    if (this->c->graphicalSession()) {
-        this->c->gpu.setExternalVRAM(
-            this->c->memory.getPointerToMemArray() +
-            static_cast<std::underlying_type_t<Memory::Address>>(
-                Memory::Address::STACK_END
-            )
-        );
-    }
-
     setup();
 }
 
