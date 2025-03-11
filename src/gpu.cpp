@@ -118,6 +118,9 @@ void GPU::setPixel(
 
 void GPU::renderFrame() {
     SDL_Event event;
+    std::cout << "Applying color start of renderFrame: R=" << (int)selectedColorMod.r
+              << ", G=" << (int)selectedColorMod.g
+              << ", B=" << (int)selectedColorMod.b << std::endl;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
             std::cerr << "Quit event received, stopping execution" << std::endl;
@@ -125,14 +128,17 @@ void GPU::renderFrame() {
         }
     }
 
+    std::cout << "Applying color before VRAM: R=" << (int)selectedColorMod.r
+              << ", G=" << (int)selectedColorMod.g
+              << ", B=" << (int)selectedColorMod.b << std::endl;
+
     // Copy external VRAM data to internal VRAM
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
-    std::cout << "Rendering frame with color: R=" << (int)selectedColorMod.r 
-              << ", G=" << (int)selectedColorMod.g 
+    std::cout << "Applying color after VRAM: R=" << (int)selectedColorMod.r
+              << ", G=" << (int)selectedColorMod.g
               << ", B=" << (int)selectedColorMod.b << std::endl;
 
-    // For video recording
     if (video_recorder != nullptr) {
         video_recorder->addFrame(vram.data());
     }
