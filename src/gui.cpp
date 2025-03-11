@@ -6,7 +6,7 @@
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
-#include "filter.h"
+
 
 #include "console.h"
 #include "vr.h"
