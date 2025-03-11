@@ -356,7 +356,6 @@ bool VideoRecorder::handleEvents() {
 }
 
 void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
-    std::cout << "Converting frame " << frame_index << " to RGBA" << std::endl;
     if (frame_index >= frames.size())
         return;
 
