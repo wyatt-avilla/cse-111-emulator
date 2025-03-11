@@ -223,8 +223,8 @@ void MyFrame::onResize(wxSizeEvent& event) {
     event.Skip(); // Allow normal event processing
 }
 
-// Handle file selection
 void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
+    // Open the file dialog
     wxFileDialog open_file_dialog(
         this,
         "Open .slug File",
@@ -250,39 +250,124 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
         return;
     }
 
-    wxMessageBox(
-        "You selected: " + file_path,
-        "File Selected",
-        wxOK | wxICON_INFORMATION
+    // Check if the file is in the games directory
+    wxFileName fileName(file_path);
+    wxString parentDir = "";
+    if (fileName.GetDirCount() > 0) {
+        parentDir = fileName.GetDirs().Last().Lower();
+    }
+    
+    if (parentDir != "games") {
+        wxMessageBox(
+            "Only .slug files from the 'games' directory are allowed.\n"
+            "Please select a file from the games directory.",
+            "Invalid Directory",
+            wxOK | wxICON_ERROR
+        );
+        return;
+    }
+
+    // Ask user to confirm file selection with Yes/No buttons
+    int confirmResult = wxMessageBox(
+        "You selected: " + file_path + "\n\nDo you want to use this file?",
+        "Confirm File Selection",
+        wxYES_NO | wxICON_QUESTION
     );
-    execute_button->Enable(
-    ); // Enable execute button after selecting a valid file
+    
+    if (confirmResult != wxYES) {
+        // User didn't confirm, go back to file selection
+        return;
+    }
+    
+    execute_button->Enable(); // Enable execute button after selecting a valid file
 }
 
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
-        // Show the color dialog to let the user pick a color
-        wxColourDialog colorDialog(this);
-        if (colorDialog.ShowModal() == wxID_OK) {
-            wxColour color = colorDialog.GetColourData().GetColour();
+        bool colorChosen = false;
+        
+        // Set default gray color first
+        uint8_t defaultGrayValue = 128;
+        if (gpu != nullptr) {
+            gpu->setSelectedColor(defaultGrayValue, defaultGrayValue, defaultGrayValue);
+            std::cout << "Setting default GRAY: R=128, G=128, B=128" << std::endl;
+        } else {
+            std::cerr << "Error: GPU instance is null" << std::endl;
+            return;
+        }
+        
+        while (!colorChosen) {
+            // Create color data for each iteration
+            wxColourData colorData;
+            wxColour defaultGray(128, 128, 128); // Medium gray
+            colorData.SetColour(defaultGray);
+            
+            // Create a new dialog each time
+            wxColourDialog* colorDialog = new wxColourDialog(this, &colorData);
+            
+            if (!colorDialog) {
+                std::cerr << "Failed to create color dialog" << std::endl;
+                return;
+            }
+            
+            int result = colorDialog->ShowModal();
+            
+            // If user cancels/closes the color dialog, don't proceed
+            if (result != wxID_OK) {
+                colorDialog->Destroy();
+                return;
+            }
+            
+            // Get the color data safely
+            wxColour color = colorDialog->GetColourData().GetColour();
             uint8_t selectedRed = color.Red();
             uint8_t selectedGreen = color.Green();
             uint8_t selectedBlue = color.Blue();
-
-            // Display the selected color information
+            
+            // Clean up the dialog before continuing
+            colorDialog->Destroy();
+            
+            // Check if the color is black
+            if (selectedRed == 0 && selectedGreen == 0 && selectedBlue == 0) {
+                wxMessageBox(
+                    "Pure black (0,0,0) is not allowed. Please select a different color.",
+                    "Invalid Color",
+                    wxOK | wxICON_WARNING
+                );
+                continue;
+            }
+            
+            // Display the selected color information as a confirmation
             wxString colorMessage = wxString::Format(
-                "Selected Color: RGB(%d, %d, %d)", 
+                "Selected Color: RGB(%d, %d, %d)\n\nDo you want to use this color?", 
                 selectedRed, selectedGreen, selectedBlue
             );
-            wxMessageBox(colorMessage, "Color Selected", wxOK | wxICON_INFORMATION);
             
+            // Use a simple message dialog for confirmation
+            int confirmResult = wxMessageBox(
+                colorMessage,
+                "Confirm Color Selection",
+                wxYES_NO | wxICON_QUESTION,
+                this
+            );
+            
+            if (confirmResult != wxYES) {
+                // User didn't confirm, go back to color selection
+                continue;
+            }
+            
+            // User confirmed - set the color
+            colorChosen = true;
             std::cout << "GUI COLOR SELECTION: R=" << (int)selectedRed
-                      << ", G=" << (int)selectedGreen 
-                      << ", B=" << (int)selectedBlue << std::endl;
+                    << ", G=" << (int)selectedGreen 
+                    << ", B=" << (int)selectedBlue << std::endl;
             
-            // Make sure the correct GPU instance gets the color setting
-            // Both the member variable GPU and the GPU in the Console should be updated
-            gpu->setSelectedColor(selectedRed, selectedGreen, selectedBlue);
+            if (gpu != nullptr) {
+                gpu->setSelectedColor(selectedRed, selectedGreen, selectedBlue);
+            } else {
+                std::cerr << "Error: GPU instance is null when setting color" << std::endl;
+                return;
+            }
         }
 
         try {
@@ -291,7 +376,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                 DEFAULT_VIDEO_RECORDER_HEIGHT
             );
             video_recorder->startRecording();
-
+            
             Console banana(true);
             
             // Important: Transfer the color from the GUI's GPU to the console's GPU
@@ -300,6 +385,15 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                 gpu->getSelectedColorG(),
                 gpu->getSelectedColorB()
             );
+            
+            // Pass the selected color to the video recorder
+            if (video_recorder) {
+                video_recorder->setColorTint(
+                    gpu->getSelectedColorR(),
+                    gpu->getSelectedColorG(),
+                    gpu->getSelectedColorB()
+                );
+            }
             
             banana.gpu.setVideoRecorder(video_recorder.get());
             banana.run(std::string(file_path.ToStdString()));
