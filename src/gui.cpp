@@ -279,7 +279,10 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
         return;
     }
     
-    execute_button->Enable(); // Enable execute button after selecting a valid file
+    // Enable execute button and disable playback when a new file is selected
+    execute_button->Enable();
+    playback_button->Disable();
+    has_recording = false; // Reset recording state
 }
 
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
@@ -375,6 +378,11 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                 DEFAULT_VIDEO_RECORDER_WIDTH,
                 DEFAULT_VIDEO_RECORDER_HEIGHT
             );
+            
+            if (!video_recorder) {
+                throw std::runtime_error("Failed to create video recorder");
+            }
+            
             video_recorder->startRecording();
             
             Console banana(true);
@@ -409,12 +417,23 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                     wxOK | wxICON_INFORMATION
                 );
             }
+            
+            // Reset the file path and disable only the execute button
+            file_path = "";
+            execute_button->Disable();
+            // Note: We don't disable the playback button here to allow replays
+            
         } catch (const std::exception& e) {
             wxMessageBox(
                 "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
                 "Execution Error",
                 wxOK | wxICON_ERROR
             );
+            
+            // Reset file path and disable execute button on error
+            file_path = "";
+            execute_button->Disable();
+            // Don't change playback button state on error
         }
     }
 }
