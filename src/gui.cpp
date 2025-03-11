@@ -29,25 +29,25 @@
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
 
-const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
-const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
+const int32_t DEFAULT_VIDEO_RECORDER_WIDTH = 128;
+const int32_t DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
 
-const int WX_FRAME_X_POSTION = 500;
-const int WX_FRAME_Y_POSTION = 400;
-const int GREY_COLOR = 40;
-const int FOREGROUND_COLOUR_1 = 255;
-const int FOREGROUND_COLOUR_2 = 215;
-const int FOREGROUND_COLOUR_3 = 0;
-const int FONT_SIZE = 14;
-const int RESCALE_X = 300;
-const int RESCALE_Y = 150;
-const int SELECT_BUTTON_X = 150;
-const int SELECT_BUTTON_Y = 40;
-const int EXECUTE_BUTTON_X = 150;
-const int EXECUTE_BUTTON_Y = 40;
-const int BUTTON_SIZE = 10;
-const int IMAGE_SIZE = 10;
-const int TITLE_SIZE = 20;
+const int32_t WX_FRAME_X_POSTION = 500;
+const int32_t WX_FRAME_Y_POSTION = 400;
+const int32_t GREY_COLOR = 40;
+const int32_t FOREGROUND_COLOUR_1 = 255;
+const int32_t FOREGROUND_COLOUR_2 = 215;
+const int32_t FOREGROUND_COLOUR_3 = 0;
+const int32_t FONT_SIZE = 14;
+const int32_t RESCALE_X = 300;
+const int32_t RESCALE_Y = 150;
+const int32_t SELECT_BUTTON_X = 150;
+const int32_t SELECT_BUTTON_Y = 40;
+const int32_t EXECUTE_BUTTON_X = 150;
+const int32_t EXECUTE_BUTTON_Y = 40;
+const int32_t BUTTON_SIZE = 10;
+const int32_t IMAGE_SIZE = 10;
+const int32_t TITLE_SIZE = 20;
 
 bool MyApp::OnInit() {
     auto* frame = new MyFrame();
@@ -62,8 +62,9 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
           "Banana Emulator",
           wxDefaultPosition,
           wxSize(WX_FRAME_X_POSTION, WX_FRAME_Y_POSTION)
-      ), gpu(new GPU()) {
-    
+      ),
+      gpu(new GPU()) {
+
     auto* panel = new wxPanel(this, wxID_ANY);
     panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)
     ); // Dark grayish black background
@@ -226,7 +227,9 @@ void MyFrame::onResize(wxSizeEvent& event) {
     event.Skip(); // Allow normal event processing
 }
 
-void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
+void MyFrame::onFileSelect( // NOLINT(readability-function-size)
+    wxCommandEvent&         /*unused*/
+) {
     // Open the file dialog
     wxFileDialog open_file_dialog(
         this,
@@ -271,7 +274,7 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     }
 
     // Ask user to confirm file selection with Yes/No buttons
-    int const confirm_result = wxMessageBox(
+    int32_t const confirm_result = wxMessageBox(
         "You selected: " + file_path + "\n\nDo you want to use this file?",
         "Confirm File Selection",
         wxYES_NO | wxICON_QUESTION
@@ -288,7 +291,10 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     has_recording = false; // Reset recording state
 }
 
-void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
+void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
+                         // readability-function-size)
+    wxCommandEvent&      /*unused*/
+) {
     if (!file_path.IsEmpty()) {
         bool color_chosen = false;
 
@@ -321,7 +327,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                 return;
             }
 
-            int const result = color_dialog->ShowModal();
+            int32_t const result = color_dialog->ShowModal();
 
             // If user cancels/closes the color dialog, don't proceed
             if (result != wxID_OK) {
@@ -339,7 +345,8 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             color_dialog->Destroy();
 
             // Check if the color is black
-            if (selected_red == 0 && selected_green == 0 && selected_blue == 0) {
+            if (selected_red == 0 && selected_green == 0 &&
+                selected_blue == 0) {
                 wxMessageBox(
                     "Pure black (0,0,0) is not allowed. Please select a "
                     "different color.",
@@ -359,7 +366,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             );
 
             // Use a simple message dialog for confirmation
-            int const confirm_result = wxMessageBox(
+            int32_t const confirm_result = wxMessageBox(
                 color_message,
                 "Confirm Color Selection",
                 wxYES_NO | wxICON_QUESTION,
@@ -373,12 +380,12 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
 
             // User confirmed - set the color
             color_chosen = true;
-            std::cout << "GUI COLOR SELECTION: R=" << (int) selected_red
-                      << ", G=" << (int) selected_green
-                      << ", B=" << (int) selected_blue << std::endl;
-
             if (gpu != nullptr) {
-                gpu->setSelectedColor(selected_red, selected_green, selected_blue);
+                gpu->setSelectedColor(
+                    selected_red,
+                    selected_green,
+                    selected_blue
+                );
             } else {
                 std::cerr << "Error: GPU instance is null when setting color"
                           << std::endl;

@@ -363,15 +363,15 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
         const uint8_t gray = frame[i];
 
         // Apply color tint to grayscale value
-        uint8_t const r = (gray * color_tint.r) / 255;
-        uint8_t const g = (gray * color_tint.g) / 255;
-        uint8_t const b = (gray * color_tint.b) / 255;
+        uint8_t const red = (gray * color_tint.r) / 255;
+        uint8_t const green = (gray * color_tint.g) / 255;
+        uint8_t const blue = (gray * color_tint.b) / 255;
 
         display_buffer[i] =
             (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
-            (static_cast<uint32_t>(r) << RED_SHIFT) |
-            (static_cast<uint32_t>(g) << GREEN_SHIFT) |
-            static_cast<uint32_t>(b);
+            (static_cast<uint32_t>(red) << RED_SHIFT) |
+            (static_cast<uint32_t>(green) << GREEN_SHIFT) |
+            static_cast<uint32_t>(blue);
     }
 }
 

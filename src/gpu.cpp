@@ -9,9 +9,9 @@
 #include <cstring>
 #include <iostream>
 
-const int WINDOW_SCALE = 4;
-const int WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
-const int WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
+const int32_t WINDOW_SCALE = 4;
+const int32_t WINDOW_WIDTH = GPU::FRAME_WIDTH * WINDOW_SCALE;
+const int32_t WINDOW_HEIGHT = GPU::FRAME_HEIGHT * WINDOW_SCALE;
 
 GPU::GPU(Console* console)
     : console(console), window(nullptr), renderer(nullptr), texture(nullptr) {}
@@ -76,18 +76,19 @@ void GPU::initializeRenderer() {
     }
 }
 
-void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
+void GPU::setSelectedColor(uint8_t red, uint8_t green, uint8_t blue) {
     // Store the color values
-    selected_color_mod.r = r;
-    selected_color_mod.g = g;
-    selected_color_mod.b = b;
+    selected_color_mod.r = red;
+    selected_color_mod.g = green;
+    selected_color_mod.b = blue;
 
-    std::cout << "*** Color SET to: R=" << (int) r << ", G=" << (int) g
-              << ", B=" << (int) b << " ***" << std::endl;
+    std::cout << "*** Color SET to: R=" << (int) red << ", G=" << (int) green
+              << ", B=" << (int) blue << " ***" << std::endl;
 
     // If texture exists, apply color immediately
     if (texture != nullptr) {
-        int const result = SDL_SetTextureColorMod(texture, r, g, b);
+        int32_t const result =
+            SDL_SetTextureColorMod(texture, red, green, blue);
         if (result != 0) {
             std::cerr << "Failed to set texture color: " << SDL_GetError()
                       << std::endl;
@@ -114,8 +115,7 @@ void GPU::setPixel(
     uint32_t const index = x_coord + (y_coord * FRAME_WIDTH);
     vram[index] = gray_level;
 }
-
-void GPU::renderFrame() {
+void GPU::renderFrame() { // NOLINT(readability-function-size)
     SDL_Event event;
 
     while (SDL_PollEvent(&event) != 0) {
@@ -156,7 +156,7 @@ void GPU::renderFrame() {
     );
 
     // Apply color tint AFTER updating texture content
-    int const result = SDL_SetTextureColorMod(
+    int32_t const result = SDL_SetTextureColorMod(
         texture,
         selected_color_mod.r,
         selected_color_mod.g,

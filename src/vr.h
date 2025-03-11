@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bit_definitions.h"
+
 #include <SDL2/SDL.h>
 #include <cstdint>
 #include <string>
@@ -49,10 +51,10 @@ class VideoRecorder {
 
     bool saveRecording(const std::string& filename);
     bool loadRecording(const std::string& filename);
-    void setColorTint(uint8_t r, uint8_t g, uint8_t b) {
-        color_tint.r = r;
-        color_tint.g = g;
-        color_tint.b = b;
+    void setColorTint(uint8_t red, uint8_t green, uint8_t blue) {
+        color_tint.r = red;
+        color_tint.g = green;
+        color_tint.b = blue;
     }
 
 
@@ -90,8 +92,8 @@ class VideoRecorder {
     void convertFrameToRGBA(size_t frame_index);
     void renderCurrentFrame();
     struct {
-        uint8_t r = 255;
-        uint8_t g = 255;
-        uint8_t b = 255;
+        uint8_t r = BYTE_MASK;
+        uint8_t g = BYTE_MASK;
+        uint8_t b = BYTE_MASK;
     } color_tint;
 };
