@@ -361,12 +361,12 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     const auto& frame = frames[frame_index];
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
-        
+
         // Apply color tint to grayscale value
         uint8_t r = (gray * colorTint.r) / 255;
         uint8_t g = (gray * colorTint.g) / 255;
         uint8_t b = (gray * colorTint.b) / 255;
-        
+
         display_buffer[i] =
             (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
             (static_cast<uint32_t>(r) << RED_SHIFT) |
@@ -443,9 +443,18 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
         sizeof(frame_count)
     );
 
-    file.write(reinterpret_cast<const char*>(&colorTint.r), sizeof(colorTint.r));
-    file.write(reinterpret_cast<const char*>(&colorTint.g), sizeof(colorTint.g));
-    file.write(reinterpret_cast<const char*>(&colorTint.b), sizeof(colorTint.b));
+    file.write(
+        reinterpret_cast<const char*>(&colorTint.r),
+        sizeof(colorTint.r)
+    );
+    file.write(
+        reinterpret_cast<const char*>(&colorTint.g),
+        sizeof(colorTint.g)
+    );
+    file.write(
+        reinterpret_cast<const char*>(&colorTint.b),
+        sizeof(colorTint.b)
+    );
 
     for (const auto& frame : frames) {
         file.write(

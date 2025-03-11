@@ -1,6 +1,5 @@
 #include "gpu.h"
 
-
 #include "bit_definitions.h"
 #include "console.h"
 #include "memory.h"
@@ -82,16 +81,16 @@ void GPU::setSelectedColor(uint8_t r, uint8_t g, uint8_t b) {
     selectedColorMod.r = r;
     selectedColorMod.g = g;
     selectedColorMod.b = b;
-    
-    std::cout << "*** Color SET to: R=" << (int)r 
-              << ", G=" << (int)g 
-              << ", B=" << (int)b << " ***" << std::endl;
-    
+
+    std::cout << "*** Color SET to: R=" << (int) r << ", G=" << (int) g
+              << ", B=" << (int) b << " ***" << std::endl;
+
     // If texture exists, apply color immediately
     if (texture != nullptr) {
         int result = SDL_SetTextureColorMod(texture, r, g, b);
         if (result != 0) {
-            std::cerr << "Failed to set texture color: " << SDL_GetError() << std::endl;
+            std::cerr << "Failed to set texture color: " << SDL_GetError()
+                      << std::endl;
         } else {
             std::cout << "Applied color to texture directly" << std::endl;
         }
@@ -118,7 +117,7 @@ void GPU::setPixel(
 
 void GPU::renderFrame() {
     SDL_Event event;
-    
+
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
             std::cerr << "Quit event received, stopping execution" << std::endl;
@@ -130,11 +129,15 @@ void GPU::renderFrame() {
     std::memcpy(vram.begin(), external_vram, VRAM_SIZE);
 
     if (video_recorder != nullptr) {
-        video_recorder->setColorTint(selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
+        video_recorder->setColorTint(
+            selectedColorMod.r,
+            selectedColorMod.g,
+            selectedColorMod.b
+        );
         video_recorder->addFrame(vram.data());
     }
 
-    std::array<uint32_t, VRAM_SIZE> pixels{};  
+    std::array<uint32_t, VRAM_SIZE> pixels{};
 
     // Update pixel data based on VRAM content
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
@@ -153,9 +156,15 @@ void GPU::renderFrame() {
     );
 
     // Apply color tint AFTER updating texture content
-    int result = SDL_SetTextureColorMod(texture, selectedColorMod.r, selectedColorMod.g, selectedColorMod.b);
+    int result = SDL_SetTextureColorMod(
+        texture,
+        selectedColorMod.r,
+        selectedColorMod.g,
+        selectedColorMod.b
+    );
     if (result != 0) {
-        std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError() << std::endl;
+        std::cerr << "Failed to apply color in renderFrame: " << SDL_GetError()
+                  << std::endl;
     }
 
     // Render the texture to the screen

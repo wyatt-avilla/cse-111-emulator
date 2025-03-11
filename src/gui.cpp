@@ -4,22 +4,22 @@
 // https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
 
-
-//This is the chats used for the code used in changing color of pixel
-//https://claude.ai/share/e2202135-6906-4180-a017-fe71cb2a1a5a
-//https://chatgpt.com/share/67cfe91c-19d4-8011-930b-dc9923808d79
+// This is the chats used for the code used in changing color of pixel
+// https://claude.ai/share/e2202135-6906-4180-a017-fe71cb2a1a5a
+// https://chatgpt.com/share/67cfe91c-19d4-8011-930b-dc9923808d79
 
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
 
-
 #include "console.h"
-#include "vr.h"
 #include "gpu.h"
+#include "vr.h"
 
 #include <iostream>
 #include <thread>
+#include <wx/colordlg.h> // For the color dialog
+#include <wx/colour.h>   // For wxColour dialog
 #include <wx/filedlg.h>
 #include <wx/filename.h>
 #include <wx/image.h>
@@ -28,8 +28,6 @@
 #include <wx/statbmp.h>
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
-#include <wx/colour.h>  // For wxColour dialog
-#include <wx/colordlg.h> // For the color dialog
 
 const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
 const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
@@ -140,7 +138,6 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     playback_button->Disable(); // Initially disabled
 
-    
 
     // Button Styling
     wxColour const button_color(30, 30, 30);   // Darker black
@@ -171,7 +168,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
         BUTTON_SIZE
     );
-    
+
 
     // Layout
     main_sizer->Add(title, 0, wxALIGN_CENTER | wxALIGN_TOP, TITLE_SIZE);
@@ -262,7 +259,7 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     if (fileName.GetDirCount() > 0) {
         parentDir = fileName.GetDirs().Last().Lower();
     }
-    
+
     if (parentDir != "games") {
         wxMessageBox(
             "Only .slug files from the 'games' directory are allowed.\n"
@@ -279,12 +276,12 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
         "Confirm File Selection",
         wxYES_NO | wxICON_QUESTION
     );
-    
+
     if (confirmResult != wxYES) {
         // User didn't confirm, go back to file selection
         return;
     }
-    
+
     // Enable execute button and disable playback when a new file is selected
     execute_button->Enable();
     playback_button->Disable();
@@ -294,64 +291,73 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
 void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
         bool colorChosen = false;
-        
+
         // Set default gray color first
         uint8_t defaultGrayValue = 128;
         if (gpu != nullptr) {
-            gpu->setSelectedColor(defaultGrayValue, defaultGrayValue, defaultGrayValue);
-            std::cout << "Setting default GRAY: R=128, G=128, B=128" << std::endl;
+            gpu->setSelectedColor(
+                defaultGrayValue,
+                defaultGrayValue,
+                defaultGrayValue
+            );
+            std::cout << "Setting default GRAY: R=128, G=128, B=128"
+                      << std::endl;
         } else {
             std::cerr << "Error: GPU instance is null" << std::endl;
             return;
         }
-        
+
         while (!colorChosen) {
             // Create color data for each iteration
             wxColourData colorData;
             wxColour defaultGray(128, 128, 128); // Medium gray
             colorData.SetColour(defaultGray);
-            
+
             // Create a new dialog each time
             wxColourDialog* colorDialog = new wxColourDialog(this, &colorData);
-            
+
             if (!colorDialog) {
                 std::cerr << "Failed to create color dialog" << std::endl;
                 return;
             }
-            
+
             int result = colorDialog->ShowModal();
-            
+
             // If user cancels/closes the color dialog, don't proceed
             if (result != wxID_OK) {
                 colorDialog->Destroy();
                 return;
             }
-            
+
             // Get the color data safely
             wxColour color = colorDialog->GetColourData().GetColour();
             uint8_t selectedRed = color.Red();
             uint8_t selectedGreen = color.Green();
             uint8_t selectedBlue = color.Blue();
-            
+
             // Clean up the dialog before continuing
             colorDialog->Destroy();
-            
+
             // Check if the color is black
             if (selectedRed == 0 && selectedGreen == 0 && selectedBlue == 0) {
                 wxMessageBox(
-                    "Pure black (0,0,0) is not allowed. Please select a different color.",
+                    "Pure black (0,0,0) is not allowed. Please select a "
+                    "different color.",
                     "Invalid Color",
                     wxOK | wxICON_WARNING
                 );
                 continue;
             }
-            
+
             // Display the selected color information as a confirmation
             wxString colorMessage = wxString::Format(
-                "Selected Color: RGB(%d, %d, %d)\n\nDo you want to use this color?", 
-                selectedRed, selectedGreen, selectedBlue
+                "Selected Color: RGB(%d, %d, %d)\n\nDo you want to use this "
+                "color?",
+                selectedRed,
+                selectedGreen,
+                selectedBlue
             );
-            
+
             // Use a simple message dialog for confirmation
             int confirmResult = wxMessageBox(
                 colorMessage,
@@ -359,22 +365,23 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                 wxYES_NO | wxICON_QUESTION,
                 this
             );
-            
+
             if (confirmResult != wxYES) {
                 // User didn't confirm, go back to color selection
                 continue;
             }
-            
+
             // User confirmed - set the color
             colorChosen = true;
-            std::cout << "GUI COLOR SELECTION: R=" << (int)selectedRed
-                    << ", G=" << (int)selectedGreen 
-                    << ", B=" << (int)selectedBlue << std::endl;
-            
+            std::cout << "GUI COLOR SELECTION: R=" << (int) selectedRed
+                      << ", G=" << (int) selectedGreen
+                      << ", B=" << (int) selectedBlue << std::endl;
+
             if (gpu != nullptr) {
                 gpu->setSelectedColor(selectedRed, selectedGreen, selectedBlue);
             } else {
-                std::cerr << "Error: GPU instance is null when setting color" << std::endl;
+                std::cerr << "Error: GPU instance is null when setting color"
+                          << std::endl;
                 return;
             }
         }
@@ -384,22 +391,23 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                 DEFAULT_VIDEO_RECORDER_WIDTH,
                 DEFAULT_VIDEO_RECORDER_HEIGHT
             );
-            
+
             if (!video_recorder) {
                 throw std::runtime_error("Failed to create video recorder");
             }
-            
+
             video_recorder->startRecording();
-            
+
             Console banana(true);
-            
-            // Important: Transfer the color from the GUI's GPU to the console's GPU
+
+            // Important: Transfer the color from the GUI's GPU to the console's
+            // GPU
             banana.gpu.setSelectedColor(
                 gpu->getSelectedColorR(),
                 gpu->getSelectedColorG(),
                 gpu->getSelectedColorB()
             );
-            
+
             // Pass the selected color to the video recorder
             if (video_recorder) {
                 video_recorder->setColorTint(
@@ -408,7 +416,7 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                     gpu->getSelectedColorB()
                 );
             }
-            
+
             banana.gpu.setVideoRecorder(video_recorder.get());
             banana.run(std::string(file_path.ToStdString()));
 
@@ -418,24 +426,25 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
             if (has_recording) {
                 playback_button->Enable();
                 wxMessageBox(
-                    "Gameplay recorded successfully. Click 'View Recording' to replay.",
+                    "Gameplay recorded successfully. Click 'View Recording' to "
+                    "replay.",
                     "Recording Complete",
                     wxOK | wxICON_INFORMATION
                 );
             }
-            
+
             // Reset the file path and disable only the execute button
             file_path = "";
             execute_button->Disable();
             // Note: We don't disable the playback button here to allow replays
-            
+
         } catch (const std::exception& e) {
             wxMessageBox(
                 "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
                 "Execution Error",
                 wxOK | wxICON_ERROR
             );
-            
+
             // Reset file path and disable execute button on error
             file_path = "";
             execute_button->Disable();

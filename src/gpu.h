@@ -35,6 +35,7 @@ class GPU {
     uint8_t getSelectedColorR() const { return selectedColorMod.r; }
     uint8_t getSelectedColorG() const { return selectedColorMod.g; }
     uint8_t getSelectedColorB() const { return selectedColorMod.b; }
+
   private:
     Console* console;
 
