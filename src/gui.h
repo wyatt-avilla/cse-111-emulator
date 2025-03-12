@@ -1,24 +1,32 @@
 #pragma once
 
+#include "gpu.h"
 #include "vr.h"
 
+#include <SDL2/SDL.h>
 #include <memory>
 #include <wx/wx.h>
 
+class Console;
 
 class MyFrame : public wxFrame {
   public:
-    MyFrame();
+    MyFrame(Console* console);
+    GPU* gpu;
+    SDL_Texture* texture;
+    SDL_Renderer* renderer;
 
   private:
+    Console* console;
     wxButton* select_button;
     wxButton* execute_button;
     wxButton* playback_button;
+
     wxStaticBitmap* image_bitmap;
     wxString file_path;
 
-    std::unique_ptr<VideoRecorder> video_recorder;
     bool has_recording = false;
+
 
     void onFileSelect(wxCommandEvent& event);
     void onExecute(wxCommandEvent& event);
@@ -29,4 +37,5 @@ class MyFrame : public wxFrame {
 class MyApp : public wxApp {
   public:
     bool OnInit() override;
+    Console* console;
 };

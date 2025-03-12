@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 
 const uint8_t BITS_PER_BYTE = 8;

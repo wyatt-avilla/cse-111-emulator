@@ -1,3 +1,4 @@
+#include "bit_definitions.h"
 #include "vr.h"
 
 #include <SDL2/SDL.h>
@@ -23,13 +24,7 @@ class GPU {
 
     static uint32_t getPixelAddress(uint32_t x_coord, uint32_t y_coord);
 
-    void setPixel(uint32_t x_coord, uint32_t y_coord, uint8_t gray_level);
-
     void renderFrame();
-
-    void setExternalVRAM(uint8_t* ptr);
-
-    void setVideoRecorder(VideoRecorder* recorder);
 
   private:
     Console* console;
@@ -37,12 +32,6 @@ class GPU {
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
-
-    std::array<uint8_t, VRAM_SIZE> vram{};
-
-    uint8_t* external_vram = nullptr;
-
-    VideoRecorder* video_recorder = nullptr;
 };
 
 class GraphicsException : public std::runtime_error {
