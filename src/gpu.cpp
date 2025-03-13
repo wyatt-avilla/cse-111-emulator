@@ -126,7 +126,7 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
         FRAME_WIDTH * sizeof(uint32_t)
     );
 
-    
+
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);
