@@ -1,4 +1,4 @@
-### Group 9 Final Project
+# Group 9 Final Project
 
 Placeholder text
 
