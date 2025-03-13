@@ -1,6 +1,4 @@
-// This chat has code that I used to help create vr.cpp, vr.h, as well as
-// updating several of the other previous files: console.h, console.cpp, gui.h,
-// gui.cpp, gpu.h and gpu.cpp
+// This is the chat that helped me figure out how to add a movable playback bar
 // https://chatgpt.com/share/67c991d1-73e4-8011-92b6-c258630717c1
 
 
@@ -26,7 +24,7 @@ constexpr int32_t PROGRESS_INDICATOR_R = 255;
 constexpr int32_t PROGRESS_INDICATOR_G = 215;
 constexpr int32_t PROGRESS_INDICATOR_B = 0;
 constexpr int32_t PROGRESS_INDICATOR_ALPHA = 255;
-} // namespace RenderColors
+} 
 
 VideoRecorder::VideoRecorder(Console* console, int32_t width, int32_t height)
     : console(console), width(width), height(height), recording(false),
@@ -377,7 +375,7 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
 
-        // Apply color tint to grayscale value
+        
         const Filter::Color color = console->filter.getColor();
         uint8_t const red = (gray * color.red) / 255;
         uint8_t const green = (gray * color.green) / 255;

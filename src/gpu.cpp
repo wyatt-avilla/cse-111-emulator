@@ -101,7 +101,7 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
             Memory::Address::VRAM_START
         );
 
-    // Update pixel data based on VRAM content
+
     for (size_t i = 0; i < VRAM_SIZE; ++i) {
         uint8_t const gray = vram[i];
         pixels[i] = (BYTE_MASK << BITS_PER_BYTE * 3) |
@@ -109,7 +109,7 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
                     gray;
     }
 
-    // Apply color tint AFTER updating texture content
+
     const Filter::Color color = console->filter.getColor();
     int32_t const result =
         SDL_SetTextureColorMod(texture, color.red, color.green, color.blue);
@@ -119,7 +119,6 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
     }
     console->video_recorder.addFrame(vram);
 
-    // Update the texture with new pixel data
     SDL_UpdateTexture(
         texture,
         nullptr,
@@ -127,7 +126,7 @@ void GPU::renderFrame() { // NOLINT(readability-function-size)
         FRAME_WIDTH * sizeof(uint32_t)
     );
 
-    // Render the texture to the screen
+    
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
     SDL_RenderPresent(renderer);

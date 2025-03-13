@@ -4,7 +4,7 @@
 // https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
 
-// This is the chats used for the code used in changing color of pixel
+// These are the chats used for fixing the pixel color issue
 // https://claude.ai/share/e2202135-6906-4180-a017-fe71cb2a1a5a
 // https://chatgpt.com/share/67cfe91c-19d4-8011-930b-dc9923808d79
 
@@ -18,8 +18,8 @@
 
 #include <iostream>
 #include <thread>
-#include <wx/colordlg.h> // For the color dialog
-#include <wx/colour.h>   // For wxColour dialog
+#include <wx/colordlg.h> 
+#include <wx/colour.h>   
 #include <wx/filedlg.h>
 #include <wx/filename.h>
 #include <wx/image.h>
@@ -65,11 +65,11 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
 
     auto* panel = new wxPanel(this, wxID_ANY);
     panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)
-    ); // Dark grayish black background
+    ); 
 
     auto* main_sizer = new wxBoxSizer(wxVERTICAL);
 
-    // Title
+
     auto* title = new wxStaticText(
         panel,
         wxID_ANY,
@@ -80,7 +80,7 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     );
     title->SetForegroundColour(
         wxColour(FOREGROUND_COLOUR_1, FOREGROUND_COLOUR_2, FOREGROUND_COLOUR_3)
-    ); // Yellow title text
+    ); 
     title->SetFont(wxFont(
         FONT_SIZE,
         wxFONTFAMILY_DEFAULT,
@@ -88,14 +88,14 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         wxFONTWEIGHT_BOLD
     ));
 
-    // Get dynamic image path
+    
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
     file.Normalize(wxPATH_NORM_ABSOLUTE);
     wxString const image_path =
         file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
 
-    // Load Image
+    
     wxInitAllImageHandlers();
     wxImage image(image_path, wxBITMAP_TYPE_PNG);
     if (!image.IsOk()) {
@@ -106,10 +106,10 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         );
     }
 
-    image.Rescale(RESCALE_X, RESCALE_Y); // Initial size
+    image.Rescale(RESCALE_X, RESCALE_Y); 
     image_bitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
 
-    // Buttons
+    
     auto* button_sizer = new wxBoxSizer(wxVERTICAL);
     select_button = new wxButton(
         panel,
@@ -125,9 +125,9 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
     );
-    execute_button->Disable(); // Initially disabled
+    execute_button->Disable(); 
 
-    // Add playback button
+    
     playback_button = new wxButton(
         panel,
         wxID_ANY,
@@ -135,12 +135,12 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
     );
-    playback_button->Disable(); // Initially disabled
+    playback_button->Disable(); 
 
 
-    // Button Styling
-    wxColour const button_color(30, 30, 30);   // Darker black
-    wxColour const outline_color(255, 215, 0); // Yellow outline
+    
+    wxColour const button_color(30, 30, 30);   
+    wxColour const outline_color(255, 215, 0); 
 
     select_button->SetBackgroundColour(button_color);
     select_button->SetForegroundColour(outline_color);
@@ -169,7 +169,7 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     );
 
 
-    // Layout
+    
     main_sizer->Add(title, 0, wxALIGN_CENTER | wxALIGN_TOP, TITLE_SIZE);
     main_sizer->Add(
         image_bitmap,
@@ -183,21 +183,21 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
 
     panel->SetSizer(main_sizer);
 
-    // Bind Events
+    
     select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
-    Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
+    Bind(wxEVT_SIZE, &MyFrame::onResize, this); 
 
     has_recording = false;
 }
 
-// Handle window resizing
+
 void MyFrame::onResize(wxSizeEvent& event) {
     wxSize const new_size = GetClientSize();
     double const new_width =
-        new_size.GetWidth() * 0.6;             // Scale to 60% of window width
-    double const new_height = new_width * 0.5; // Maintain aspect ratio
+        new_size.GetWidth() * 0.6;             
+    double const new_height = new_width * 0.5; 
 
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
@@ -215,16 +215,16 @@ void MyFrame::onResize(wxSizeEvent& event) {
             static_cast<int32_t>(new_height)
         );
         image_bitmap->SetBitmap(wxBitmap(image));
-        Layout(); // Refresh layout
+        Layout(); 
     }
 
-    event.Skip(); // Allow normal event processing
+    event.Skip(); 
 }
 
 void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     wxCommandEvent&         /*unused*/
 ) {
-    // Open the file dialog
+    
     wxFileDialog open_file_dialog(
         this,
         "Open .slug File",
@@ -235,12 +235,12 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     );
 
     if (open_file_dialog.ShowModal() == wxID_CANCEL) {
-        return; // User cancelled the dialog
+        return; 
     }
 
     file_path = open_file_dialog.GetPath();
 
-    // Ensure the file has a ".slug" extension
+    
     if (!file_path.Lower().EndsWith(".slug")) {
         wxMessageBox(
             "Invalid file type! Please select a .slug file.",
@@ -250,7 +250,7 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
         return;
     }
 
-    // Check if the file is in the games directory
+    
     wxFileName const file_name(file_path);
     wxString parent_dir = "";
     if (file_name.GetDirCount() > 0) {
@@ -267,7 +267,7 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
         return;
     }
 
-    // Ask user to confirm file selection with Yes/No buttons
+    
     int32_t const confirm_result = wxMessageBox(
         "You selected: " + file_path + "\n\nDo you want to use this file?",
         "Confirm File Selection",
@@ -275,14 +275,14 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     );
 
     if (confirm_result != wxYES) {
-        // User didn't confirm, go back to file selection
+        
         return;
     }
 
-    // Enable execute button and disable playback when a new file is selected
+    
     execute_button->Enable();
     playback_button->Disable();
-    has_recording = false; // Reset recording state
+    has_recording = false; 
 }
 
 void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
@@ -292,7 +292,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
     if (!file_path.IsEmpty()) {
         bool color_chosen = false;
 
-        // Set default gray color first
+        
         uint8_t const default_gray_value = 128;
         console->filter.setColor(
             default_gray_value,
@@ -301,12 +301,12 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
         );
 
         while (!color_chosen) {
-            // Create color data for each iteration
+            
             wxColourData color_data;
-            wxColour const default_gray(128, 128, 128); // Medium gray
+            wxColour const default_gray(128, 128, 128); 
             color_data.SetColour(default_gray);
 
-            // Create a new dialog each time
+        
             auto* color_dialog = new wxColourDialog(this, &color_data);
 
             if (color_dialog == nullptr) {
@@ -316,22 +316,22 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
 
             int32_t const result = color_dialog->ShowModal();
 
-            // If user cancels/closes the color dialog, don't proceed
+            
             if (result != wxID_OK) {
                 color_dialog->Destroy();
                 return;
             }
 
-            // Get the color data safely
+            
             wxColour const color = color_dialog->GetColourData().GetColour();
             uint8_t const selected_red = color.Red();
             uint8_t const selected_green = color.Green();
             uint8_t const selected_blue = color.Blue();
 
-            // Clean up the dialog before continuing
+            
             color_dialog->Destroy();
 
-            // Check if the color is black
+            
             if (selected_red == 0 && selected_green == 0 &&
                 selected_blue == 0) {
                 wxMessageBox(
@@ -343,7 +343,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 continue;
             }
 
-            // Display the selected color information as a confirmation
+            
             wxString const color_message = wxString::Format(
                 "Selected Color: RGB(%d, %d, %d)\n\nDo you want to use this "
                 "color?",
@@ -352,7 +352,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 selected_blue
             );
 
-            // Use a simple message dialog for confirmation
+        
             int32_t const confirm_result = wxMessageBox(
                 color_message,
                 "Confirm Color Selection",
@@ -361,11 +361,11 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
             );
 
             if (confirm_result != wxYES) {
-                // User didn't confirm, go back to color selection
+                
                 continue;
             }
 
-            // User confirmed - set the color
+            
             color_chosen = true;
             console->filter
                 .setColor(selected_red, selected_green, selected_blue);
@@ -390,10 +390,10 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 );
             }
 
-            // Reset the file path and disable only the execute button
+            
             file_path = "";
             execute_button->Disable();
-            // Note: We don't disable the playback button here to allow replays
+            
 
         } catch (const std::exception& e) {
             wxMessageBox(
@@ -402,10 +402,10 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 wxOK | wxICON_ERROR
             );
 
-            // Reset file path and disable execute button on error
+            
             file_path = "";
             execute_button->Disable();
-            // Don't change playback button state on error
+            
         }
     }
 }
@@ -429,7 +429,7 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
                 break;
             }
             console->video_recorder.updateDisplay();
-            SDL_Delay(1); // Small delay to avoid consuming 100% CPU
+            SDL_Delay(1); 
         }
 
         console->video_recorder.closePlaybackWindow();
