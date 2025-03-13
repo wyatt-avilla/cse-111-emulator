@@ -2,7 +2,7 @@ name: Convert Markdown to PDF
 on:
   push:
     paths:
-      - "report.md"
+      - "report/report.md"
     branches:
       - main
   workflow_dispatch:
@@ -20,11 +20,11 @@ jobs:
 
       - name: Convert Markdown to PDF
         run: |
-          pandoc report.md \
+          pandoc report/report.md \
                 -f markdown \
                 -t pdf \
                 --pdf-engine=xelatex \
-                -o report.pdf
+                -o report/report.pdf
 
       - name: Commit PDFs
         run: |
