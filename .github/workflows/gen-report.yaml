@@ -4,7 +4,7 @@ on:
     paths:
       - "report/report.md"
     branches:
-      - main final-report
+      - ["main", "final-report"]
   workflow_dispatch:
 
 jobs:
