@@ -15,13 +15,13 @@ class VideoRecorder {
     static constexpr int32_t PROGRESS_BAR_HEIGHT = 10;
     static constexpr int32_t PROGRESS_BAR_BOTTOM_MARGIN = 30;
     static constexpr int32_t PROGRESS_INDICATOR_WIDTH = 10;
-    static constexpr int32_t DEFAULT_PLAYBACK_DELAY_MS = 17; // ~60fps
+    static constexpr int32_t DEFAULT_PLAYBACK_DELAY_MS = 17; 
     static constexpr int32_t SCALE_FACTOR = 4;
     static constexpr int32_t DEFAULT_VIDEO_RECORDER_WIDTH = 128;
     static constexpr int32_t DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
 
 
-    // Color and bit shift constants
+    
     static constexpr uint32_t COLOR_ALPHA_FULL = 0xFF;
     static constexpr int32_t ALPHA_SHIFT = 24;
     static constexpr int32_t RED_SHIFT = 16;
