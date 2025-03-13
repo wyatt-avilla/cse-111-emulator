@@ -18,8 +18,8 @@
 
 #include <iostream>
 #include <thread>
-#include <wx/colordlg.h> 
-#include <wx/colour.h>   
+#include <wx/colordlg.h>
+#include <wx/colour.h>
 #include <wx/filedlg.h>
 #include <wx/filename.h>
 #include <wx/image.h>
@@ -64,8 +64,7 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
       console(console) {
 
     auto* panel = new wxPanel(this, wxID_ANY);
-    panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)
-    ); 
+    panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR));
 
     auto* main_sizer = new wxBoxSizer(wxVERTICAL);
 
@@ -80,7 +79,7 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     );
     title->SetForegroundColour(
         wxColour(FOREGROUND_COLOUR_1, FOREGROUND_COLOUR_2, FOREGROUND_COLOUR_3)
-    ); 
+    );
     title->SetFont(wxFont(
         FONT_SIZE,
         wxFONTFAMILY_DEFAULT,
@@ -88,14 +87,14 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         wxFONTWEIGHT_BOLD
     ));
 
-    
+
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
     file.Normalize(wxPATH_NORM_ABSOLUTE);
     wxString const image_path =
         file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
 
-    
+
     wxInitAllImageHandlers();
     wxImage image(image_path, wxBITMAP_TYPE_PNG);
     if (!image.IsOk()) {
@@ -106,10 +105,10 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         );
     }
 
-    image.Rescale(RESCALE_X, RESCALE_Y); 
+    image.Rescale(RESCALE_X, RESCALE_Y);
     image_bitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
 
-    
+
     auto* button_sizer = new wxBoxSizer(wxVERTICAL);
     select_button = new wxButton(
         panel,
@@ -125,9 +124,9 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
     );
-    execute_button->Disable(); 
+    execute_button->Disable();
 
-    
+
     playback_button = new wxButton(
         panel,
         wxID_ANY,
@@ -135,12 +134,11 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
     );
-    playback_button->Disable(); 
+    playback_button->Disable();
 
 
-    
-    wxColour const button_color(30, 30, 30);   
-    wxColour const outline_color(255, 215, 0); 
+    wxColour const button_color(30, 30, 30);
+    wxColour const outline_color(255, 215, 0);
 
     select_button->SetBackgroundColour(button_color);
     select_button->SetForegroundColour(outline_color);
@@ -169,7 +167,6 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     );
 
 
-    
     main_sizer->Add(title, 0, wxALIGN_CENTER | wxALIGN_TOP, TITLE_SIZE);
     main_sizer->Add(
         image_bitmap,
@@ -183,11 +180,11 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
 
     panel->SetSizer(main_sizer);
 
-    
+
     select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
-    Bind(wxEVT_SIZE, &MyFrame::onResize, this); 
+    Bind(wxEVT_SIZE, &MyFrame::onResize, this);
 
     has_recording = false;
 }
@@ -195,9 +192,8 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
 
 void MyFrame::onResize(wxSizeEvent& event) {
     wxSize const new_size = GetClientSize();
-    double const new_width =
-        new_size.GetWidth() * 0.6;             
-    double const new_height = new_width * 0.5; 
+    double const new_width = new_size.GetWidth() * 0.6;
+    double const new_height = new_width * 0.5;
 
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
@@ -215,16 +211,16 @@ void MyFrame::onResize(wxSizeEvent& event) {
             static_cast<int32_t>(new_height)
         );
         image_bitmap->SetBitmap(wxBitmap(image));
-        Layout(); 
+        Layout();
     }
 
-    event.Skip(); 
+    event.Skip();
 }
 
 void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     wxCommandEvent&         /*unused*/
 ) {
-    
+
     wxFileDialog open_file_dialog(
         this,
         "Open .slug File",
@@ -235,12 +231,12 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     );
 
     if (open_file_dialog.ShowModal() == wxID_CANCEL) {
-        return; 
+        return;
     }
 
     file_path = open_file_dialog.GetPath();
 
-    
+
     if (!file_path.Lower().EndsWith(".slug")) {
         wxMessageBox(
             "Invalid file type! Please select a .slug file.",
@@ -250,7 +246,7 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
         return;
     }
 
-    
+
     wxFileName const file_name(file_path);
     wxString parent_dir = "";
     if (file_name.GetDirCount() > 0) {
@@ -267,7 +263,7 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
         return;
     }
 
-    
+
     int32_t const confirm_result = wxMessageBox(
         "You selected: " + file_path + "\n\nDo you want to use this file?",
         "Confirm File Selection",
@@ -275,14 +271,14 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     );
 
     if (confirm_result != wxYES) {
-        
+
         return;
     }
 
-    
+
     execute_button->Enable();
     playback_button->Disable();
-    has_recording = false; 
+    has_recording = false;
 }
 
 void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
@@ -292,7 +288,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
     if (!file_path.IsEmpty()) {
         bool color_chosen = false;
 
-        
+
         uint8_t const default_gray_value = 128;
         console->filter.setColor(
             default_gray_value,
@@ -301,12 +297,12 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
         );
 
         while (!color_chosen) {
-            
+
             wxColourData color_data;
-            wxColour const default_gray(128, 128, 128); 
+            wxColour const default_gray(128, 128, 128);
             color_data.SetColour(default_gray);
 
-        
+
             auto* color_dialog = new wxColourDialog(this, &color_data);
 
             if (color_dialog == nullptr) {
@@ -316,22 +312,22 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
 
             int32_t const result = color_dialog->ShowModal();
 
-            
+
             if (result != wxID_OK) {
                 color_dialog->Destroy();
                 return;
             }
 
-            
+
             wxColour const color = color_dialog->GetColourData().GetColour();
             uint8_t const selected_red = color.Red();
             uint8_t const selected_green = color.Green();
             uint8_t const selected_blue = color.Blue();
 
-            
+
             color_dialog->Destroy();
 
-            
+
             if (selected_red == 0 && selected_green == 0 &&
                 selected_blue == 0) {
                 wxMessageBox(
@@ -343,7 +339,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 continue;
             }
 
-            
+
             wxString const color_message = wxString::Format(
                 "Selected Color: RGB(%d, %d, %d)\n\nDo you want to use this "
                 "color?",
@@ -352,7 +348,7 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 selected_blue
             );
 
-        
+
             int32_t const confirm_result = wxMessageBox(
                 color_message,
                 "Confirm Color Selection",
@@ -361,11 +357,11 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
             );
 
             if (confirm_result != wxYES) {
-                
+
                 continue;
             }
 
-            
+
             color_chosen = true;
             console->filter
                 .setColor(selected_red, selected_green, selected_blue);
@@ -390,10 +386,10 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 );
             }
 
-            
+
             file_path = "";
             execute_button->Disable();
-            
+
 
         } catch (const std::exception& e) {
             wxMessageBox(
@@ -402,10 +398,9 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
                 wxOK | wxICON_ERROR
             );
 
-            
+
             file_path = "";
             execute_button->Disable();
-            
         }
     }
 }
@@ -429,7 +424,7 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
                 break;
             }
             console->video_recorder.updateDisplay();
-            SDL_Delay(1); 
+            SDL_Delay(1);
         }
 
         console->video_recorder.closePlaybackWindow();
