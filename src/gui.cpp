@@ -215,12 +215,11 @@ void MyFrame::onResize(wxSizeEvent& event) {
     }
 
     event.Skip();
-}
+}                                              
 
-void MyFrame::onFileSelect( // NOLINT(readability-function-size)
-    wxCommandEvent&         /*unused*/
-) {
-
+void MyFrame::onFileSelect(// NOLINT(readability-function-size) 
+    wxCommandEvent&
+    /*unused*/ ) {
     wxFileDialog open_file_dialog(
         this,
         "Open .slug File",
@@ -236,7 +235,6 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
 
     file_path = open_file_dialog.GetPath();
 
-
     if (!file_path.Lower().EndsWith(".slug")) {
         wxMessageBox(
             "Invalid file type! Please select a .slug file.",
@@ -246,24 +244,6 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
         return;
     }
 
-
-    wxFileName const file_name(file_path);
-    wxString parent_dir = "";
-    if (file_name.GetDirCount() > 0) {
-        parent_dir = file_name.GetDirs().Last().Lower();
-    }
-
-    if (parent_dir != "games") {
-        wxMessageBox(
-            "Only .slug files from the 'games' directory are allowed.\n"
-            "Please select a file from the games directory.",
-            "Invalid Directory",
-            wxOK | wxICON_ERROR
-        );
-        return;
-    }
-
-
     int32_t const confirm_result = wxMessageBox(
         "You selected: " + file_path + "\n\nDo you want to use this file?",
         "Confirm File Selection",
@@ -271,10 +251,8 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     );
 
     if (confirm_result != wxYES) {
-
         return;
     }
-
 
     execute_button->Enable();
     playback_button->Disable();
