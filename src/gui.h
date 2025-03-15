@@ -13,6 +13,7 @@ class MyFrame : public wxFrame {
   private:
     wxButton* select_button;
     wxButton* execute_button;
+    wxButton* disassemble_button;
     wxButton* playback_button;
     wxStaticBitmap* image_bitmap;
     wxString file_path;
@@ -22,6 +23,7 @@ class MyFrame : public wxFrame {
 
     void onFileSelect(wxCommandEvent& event);
     void onExecute(wxCommandEvent& event);
+    void onDisassemble(wxCommandEvent& event);
     void onPlayback(wxCommandEvent& event);
     void onResize(wxSizeEvent& event);
 };
