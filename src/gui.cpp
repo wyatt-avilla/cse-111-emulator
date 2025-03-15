@@ -215,11 +215,12 @@ void MyFrame::onResize(wxSizeEvent& event) {
     }
 
     event.Skip();
-}                                              
+}
 
-void MyFrame::onFileSelect(// NOLINT(readability-function-size) 
+void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     wxCommandEvent&
-    /*unused*/ ) {
+    /*unused*/
+) {
     wxFileDialog open_file_dialog(
         this,
         "Open .slug File",
