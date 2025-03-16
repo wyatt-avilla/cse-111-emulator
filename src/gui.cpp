@@ -13,9 +13,9 @@
 #include "gui.h"
 
 #include "console.h"
+#include "disassembler.h"
 #include "gpu.h"
 #include "vr.h"
-#include "disassembler.h"
 
 #include <iostream>
 #include <thread>
