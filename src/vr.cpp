@@ -24,7 +24,12 @@ constexpr int32_t PROGRESS_INDICATOR_R = 255;
 constexpr int32_t PROGRESS_INDICATOR_G = 215;
 constexpr int32_t PROGRESS_INDICATOR_B = 0;
 constexpr int32_t PROGRESS_INDICATOR_ALPHA = 255;
-} // namespace RenderColors
+constexpr float PROGRESS_BAR_WIDTH_RATIO = 0.8F;   
+constexpr float PROGRESS_BAR_HEIGHT_RATIO = 0.02F; 
+constexpr float PROGRESS_INDICATOR_SCALE = 1.5F;  
+constexpr int32_t PROGRESS_BAR_Y_OFFSET = 3; 
+
+} 
 
 VideoRecorder::VideoRecorder(Console* console, int32_t width, int32_t height)
     : console(console), width(width), height(height), recording(false),
@@ -107,13 +112,11 @@ void VideoRecorder::handleMouseMotion(const SDL_Event& event) {
 }
 
 void VideoRecorder::updateFrameFromMousePosition(float normalized_pos) {
-    normalized_pos = std::clamp(normalized_pos, 0.0F, 1.0F);
+    float clamped_pos = std::clamp(normalized_pos, 0.0F, 1.0F);
 
     size_t frame_index = 0;
     if (frames.size() > 1) {
-        frame_index = static_cast<size_t>(
-            normalized_pos * static_cast<float>(frames.size() - 1)
-        );
+        frame_index = static_cast<size_t>(clamped_pos * static_cast<float>(frames.size() - 1));
     }
 
     setFrameIndex(frame_index);
@@ -225,41 +228,29 @@ bool VideoRecorder::createSDLResources() {
 }
 
 void VideoRecorder::initializeProgressBar() {
-    int window_width, window_height;
+    int window_width = 0;
+    int window_height = 0;
     SDL_GetWindowSize(
         window,
         &window_width,
         &window_height
     ); // Get the actual window size
 
-    // Scale the progress bar dynamically
-    progress_bar.w =
-        static_cast<int>(window_width * 0.8); // 80% of window width
-    progress_bar.x =
-        (window_width - progress_bar.w) / 2; // Center it horizontally
-    progress_bar.h =
-        static_cast<int>(window_height * 0.02); // 2% of window height
-    progress_bar.y =
-        window_height - (progress_bar.h * 3); // Position near bottom
+    progress_bar.w = static_cast<int>(window_width * RenderColors::PROGRESS_BAR_WIDTH_RATIO);
+    progress_bar.h = static_cast<int>(window_height * RenderColors::PROGRESS_BAR_HEIGHT_RATIO);
+    progress_bar.y = window_height - (progress_bar.h * RenderColors::PROGRESS_BAR_Y_OFFSET); 
 
-    // Scale progress indicator to match the progress bar
-    progress_indicator.w = static_cast<int>(progress_bar.h * 1.5);
+    progress_indicator.w = static_cast<int>(progress_bar.h * RenderColors::PROGRESS_INDICATOR_SCALE);
     progress_indicator.h = progress_bar.h;
-    progress_indicator.x = progress_bar.x; // Reset X based on new bar position
+    progress_indicator.x = progress_bar.x;
     progress_indicator.y = progress_bar.y;
 
-    // If user was dragging, recalculate the indicator position to avoid jumps
     if (dragging_progress) {
-        float normalized_pos = static_cast<float>(current_frame) /
-                               static_cast<float>(frames.size() - 1);
-        progress_indicator.x =
-            progress_bar.x +
-            static_cast<int>(
-                normalized_pos * (progress_bar.w - progress_indicator.w)
-            );
+        float clamped_pos = std::clamp(static_cast<float>(current_frame) / static_cast<float>(frames.size() - 1), 0.0F, 1.0F);
+        progress_indicator.x = progress_bar.x + static_cast<int>(clamped_pos * (progress_bar.w - progress_indicator.w));
     }
 
-    dragging_progress = false; // Reset dragging after resize
+    dragging_progress = false;
 }
 
 
