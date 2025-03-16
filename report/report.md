@@ -117,6 +117,16 @@ Placeholder Text
 
 ## Extra Features Photos
 
+### Graphical User Interface (GUI)
+
+TODO
+
+### Pixel Filter
+
+TODO
+
+### Game Recorder and Playback
+
 TODO
 
 ## File Organization

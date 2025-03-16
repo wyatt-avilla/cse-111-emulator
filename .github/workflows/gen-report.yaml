@@ -17,7 +17,7 @@ jobs:
       - name: Install pandoc and LaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-xetex
+          sudo apt-get install -y pandoc texlive-xetex fonts-dejavu
 
       - name: Convert Markdown to PDF
         run: |
@@ -25,6 +25,7 @@ jobs:
                 -f markdown \
                 -t pdf \
                 --pdf-engine=xelatex \
+                -V monofont="DejaVu Sans Mono" \
                 -o report/report.pdf
 
       - name: Commit PDFs
