@@ -404,11 +404,11 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
     }
 }
 
-void MyFrame::onDisassemble(wxCommandEvent&) {
+void MyFrame::onDisassemble(wxCommandEvent& /*unused*/) {
     if (!file_path.IsEmpty()) {
         try {
-            Disassembler d(file_path.ToStdString());
-            std::string disassemble_path = d.disassemble();
+            Disassembler disassembler(file_path.ToStdString());
+            const std::string disassemble_path = disassembler.disassemble();
             wxMessageBox(
                 "Disassembled file stored in " + disassemble_path,
                 "Disassembly Complete",
