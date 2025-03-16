@@ -13,6 +13,7 @@
 #include "gui.h"
 
 #include "console.h"
+#include "disassembler.h"
 #include "gpu.h"
 #include "vr.h"
 
@@ -126,7 +127,16 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     );
     execute_button->Disable();
 
+    disassemble_button = new wxButton(
+        panel,
+        wxID_ANY,
+        "Disassemble",
+        wxDefaultPosition,
+        wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
+    );
+    disassemble_button->Disable(); // Initially disabled
 
+    // Add playback button
     playback_button = new wxButton(
         panel,
         wxID_ANY,
@@ -144,6 +154,8 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     select_button->SetForegroundColour(outline_color);
     execute_button->SetBackgroundColour(button_color);
     execute_button->SetForegroundColour(outline_color);
+    disassemble_button->SetBackgroundColour(button_color);
+    disassemble_button->SetForegroundColour(outline_color);
     playback_button->SetBackgroundColour(button_color);
     playback_button->SetForegroundColour(outline_color);
 
@@ -155,6 +167,12 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     );
     button_sizer->Add(
         execute_button,
+        0,
+        wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
+        BUTTON_SIZE
+    );
+    button_sizer->Add(
+        disassemble_button,
         0,
         wxALIGN_CENTER | wxALIGN_CENTER_HORIZONTAL,
         BUTTON_SIZE
@@ -183,6 +201,7 @@ MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
 
     select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
+    disassemble_button->Bind(wxEVT_BUTTON, &MyFrame::onDisassemble, this);
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
     Bind(wxEVT_SIZE, &MyFrame::onResize, this);
 
@@ -256,6 +275,7 @@ void MyFrame::onFileSelect( // NOLINT(readability-function-size)
     }
 
     execute_button->Enable();
+    disassemble_button->Enable();
     playback_button->Disable();
     has_recording = false;
 }
@@ -383,6 +403,27 @@ void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
         }
     }
 }
+
+void MyFrame::onDisassemble(wxCommandEvent& /*unused*/) {
+    if (!file_path.IsEmpty()) {
+        try {
+            Disassembler disassembler(file_path.ToStdString());
+            const std::string disassemble_path = disassembler.disassemble();
+            wxMessageBox(
+                "Disassembled file stored in " + disassemble_path,
+                "Disassembly Complete",
+                wxOK | wxICON_INFORMATION
+            );
+        } catch (const std::exception& e) {
+            wxMessageBox(
+                "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
+                "Execution Error",
+                wxOK | wxICON_ERROR
+            );
+        }
+    }
+}
+
 void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
     if (!has_recording) {
         wxMessageBox(

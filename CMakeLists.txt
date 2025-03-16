@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
     src/os.cpp
     src/gpu.cpp
     src/controller.cpp
+    src/disassembler.cpp
     src/gui.cpp
     src/vr.cpp
     src/filter.cpp
