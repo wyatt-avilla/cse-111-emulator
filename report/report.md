@@ -60,12 +60,14 @@ with thread sanitization to ensure concurrent safety.
 
 I used GitHub issues to keep track of bugs, in-progress features, and to-dos. The “tags” and
 “assignees” features made it extremely easy to see everyone’s contributions. For example, you’re
-able to see who worked on what features by filtering closed issues by the “extra features” tag.
+able to see who worked on what features by
+[filtering closed issues by the “extra features” tag](https://github.com/wyatt-avilla/cse-111-emulator/issues?q=is%3Aissue%20state%3Aclosed%20label%3A%22extra%20feature%22).
 
-Another highlight of using GitHub issues was how easy it made checkoff 1. Opening an issue for the
-checkoff meant that Charles could directly reference places in our codebase that needed to be
-changed. Further, it gave us a centralized place for a to-do list that all team members could modify
-and allowed us to track the changes related to the review.
+Another highlight of using GitHub issues was how easy it made checkoff 1. Opening an
+[issue for the checkoff](https://github.com/wyatt-avilla/cse-111-emulator/issues/17) meant that
+Charles could directly reference places in our codebase that needed to be changed. Further, it gave
+us a centralized place for a to-do list that all team members could modify and allowed us to track
+the changes related to the review.
 
 ---
 
