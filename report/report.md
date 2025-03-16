@@ -151,11 +151,28 @@ Placeholder Text
 
 Placeholder Text
 
-## Extra Features Photos
+## Extra Features
+
+### Disassembler
+
+Sample of disassembled Slug instructions.
+
+```txt
+8200		ADDI ZERO,r1,128
+8204		AND r4,r1,r2
+8208		JR r31,ZERO,ZERO
+820c		SLL ZERO,ZERO,ZERO
+8210		ADDI ZERO,r1,64
+8214		AND r4,r1,r2
+8218		JR r31,ZERO,ZERO
+821c		SLL ZERO,ZERO,ZERO
+8220		ADDI ZERO,r1,32
+8224		AND r4,r1,r2
+```
 
 ### Graphical User Interface (GUI)
 
-TODO
+![Graphical User Interface](./report/gui.png){ width=50% }
 
 ### Pixel Filter
 
