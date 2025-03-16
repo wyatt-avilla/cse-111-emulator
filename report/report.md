@@ -91,15 +91,49 @@ Placeholder Text
 
 #### Extra Feature: Video Recorder
 
-Placeholder Text
+I am extremely proud of implementing the video recorder feature, which allowed the game to be
+recorded and viewed as a video. I used SDL(Simple DirectMedia Link), which is a type of graphics
+library that we discussed that renders VRAM content. The way this works is that it creates an SDL
+window, and `startRecording()` starts enabling recording, and `stopRecording()` disables recording.
+Then, `saveRecording()` and `loadRecording()` allow the video recording to be saved and watched.
+
+My favorite part of this feature was creating a movable progress bar, where the user could move a
+yellow box at any point in game execution. This works because when a user clicks the progress bar,
+the `dragging_process` is set to true, which allows the user to adjust the progress box to their
+liking. Additionally, I added a button called View Recording, which, after the execution of the
+game, allows the user to press the button to see the video. The View Recording button gets
+temporarily disabled after the user confirms that the next slug file that they choose is the one
+that they want. Once the game execution is finished, the View Recording button is enabled.
+
+I had to fix an issue regarding chosen colors not showing up as needed when the game video was
+played. I realized that the issue was due to the `VideoRecorder` class not storing information
+regarding color, and there wasn’t a way for the color information to go from GPU to the video
+recorder. The way I fixed this was by creating `filter.cpp` and `filter.h`, where I made a separate
+Filter class where color information was stored. Then I made sure convertFrameToRGBA() uses the
+filter’s colors in the code. Then, in the `loadRecording` and `saveRecording` methods, I made code
+to save and load the color information. By fixing this issue, when a person picks a color from the
+catalog, it is reflected correctly in the video recording.
 
 #### GPU
 
-Placeholder Text
+I was responsible for making the GPU portion of the Banana Emulator. For the emulator to show the
+games in motion, I used SDL. The way I created the GPU included the initialization process, which
+included initializing SDL for rendering, creating a window, and creating a renderer and texture to
+hold pixel data. After this, the rendering process involves checking for interactions with the user,
+such as checking if the window is closed. It also included getting pixel data from VRAM, converting
+grayscale pixels into ARGB format, and rendering each frame onto the screen.
 
 #### GUI and Pixel Filters
 
-Placeholder Text
+I helped enhance a couple of GUI and pixel-related parts of the final project. One thing I decided
+to do was to disable the color black from being used in the game. The reason why I wanted to do this
+is because I noticed that whenever I would apply a solid black color to be my pixel color, the
+color-changing pixels would fully blend in with the black background, which was problematic. I also
+ensured that the default color would be grey on the color catalog so that if a person didn’t choose
+a specific color, grey would automatically be used in the game. Additionally, I created a visual
+message that the solid black color cannot be used in the game if someone decided to press on solid
+black. The message then redirects the user to the color catalog to choose a different color for the
+game.
 
 ---
 
