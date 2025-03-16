@@ -22,6 +22,8 @@ const uint16_t REG_C_MASK = 0xF800;
 const uint16_t SHIFT_VALUE_MASK = 0x7C0;
 const uint8_t FUNCTION_MASK = 0x3F;
 const uint16_t IMMEDIATE_MASK = 0xFFFF;
+const uint16_t MISC_FUNCTIONS_BEGIN = 0x200;
+const uint16_t DATA_SIZE_LOCATION = 0x1F0;
 
 const std::unordered_map<uint8_t, std::string> i_types = {
   {0, "BEQ"},
@@ -81,12 +83,20 @@ std::string Disassembler::disassemble() {
       disassembled << (char) slug_file[i];
   }
 
+  disassembled << std::endl << std::endl;
+
   uint16_t setup_address = ((uint16_t) slug_file[SETUP_ADR_LOCATION] << 8 | slug_file[SETUP_ADR_LOCATION+1]) - SLUG_FILE_SIZE;
   uint16_t loop_address = ((uint16_t) slug_file[LOOP_ADR_LOCATION] << 8 | slug_file[LOOP_ADR_LOCATION+1]) - SLUG_FILE_SIZE;
   uint16_t rom_address = ((uint16_t) slug_file[ROM_ADR_LOCATION] << 8 | slug_file[ROM_ADR_LOCATION+1]) - SLUG_FILE_SIZE;
-  disassembled << std::endl << std::endl << "setup:" << std::endl;
+  uint32_t data_size = ((uint32_t) slug_file[DATA_SIZE_LOCATION] << 24 | slug_file[DATA_SIZE_LOCATION+1] << 16);
+  data_size |= ((uint16_t) slug_file[DATA_SIZE_LOCATION+2] << 8 | slug_file[DATA_SIZE_LOCATION+3]);
 
-  for (uint16_t i = setup_address; i < loop_address; i += 4) {
+  for (uint16_t i = MISC_FUNCTIONS_BEGIN; i < rom_address; i += 4) {
+    if (i == setup_address)
+      disassembled << std::endl << "setup:" << std::endl;
+    else if (i == loop_address)
+      disassembled << std::endl << "loop:" << std::endl;
+    disassembled << std::hex << i + SLUG_FILE_SIZE << "\t\t" << std::dec;
     uint32_t instruction = (uint32_t) slug_file[i] << 24;
     instruction |= (uint32_t) slug_file[i+1] << 16;
     instruction |= (uint32_t) slug_file[i+2] << 8;
@@ -141,66 +151,17 @@ std::string Disassembler::disassemble() {
     }
   }
 
-  disassembled << std::endl << "loop:" << std::endl;
+  disassembled << std::endl << ".data:" << std::endl << std::hex;
 
-  for (uint16_t i = loop_address; i < rom_address; i += 4) {
-    uint32_t instruction = (uint32_t) slug_file[i] << 24;
-    instruction |= (uint32_t) slug_file[i+1] << 16;
-    instruction |= (uint32_t) slug_file[i+2] << 8;
-    instruction |= (uint32_t) slug_file[i+3];
+  uint16_t data_limit = rom_address + data_size;
 
-    uint8_t opcode = (uint8_t) ((instruction & OPCODE_MASK) >> 26);
-    uint8_t reg_a = (uint8_t) ((instruction & REG_A_MASK) >> 21);
-    uint8_t reg_b = (uint8_t) ((instruction & REG_B_MASK) >> 16);
-    if (opcode == 62) {
-      uint8_t reg_c = (uint8_t) ((instruction & REG_C_MASK) >> 11);
-      int8_t shift_value = (uint8_t) ((instruction & SHIFT_VALUE_MASK) >> 6);
-      uint8_t function = (uint8_t) (instruction & FUNCTION_MASK);
-      if (r_types.find(function) != r_types.end()) {
-        disassembled << r_types.at(function) << " ";
-        if (reg_names.find(reg_a) != reg_names.end()) {
-          disassembled << reg_names.at(reg_a) << ",";
-        } else {
-          disassembled << "r" << static_cast<int>(reg_a) << ",";
-        }
-        if (reg_names.find(reg_b) != reg_names.end()) {
-          disassembled << reg_names.at(reg_b) << ",";
-        } else {
-          disassembled << "r" << static_cast<int>(reg_b) << ",";
-        }
-        if (reg_names.find(reg_c) != reg_names.end()) {
-          disassembled << reg_names.at(reg_c);
-        } else {
-          disassembled << "r" << static_cast<int>(reg_c);
-        }
-        if (shift_value)
-          disassembled  << "," << static_cast<int>(shift_value);
-        disassembled << std::endl;
-      } else {
-        disassembled << "NOP" << std::endl;
-      }
-    } else if (i_types.find(opcode) != i_types.end()) {
-      int16_t immediate = (uint16_t) (instruction & IMMEDIATE_MASK);
-      disassembled << i_types.at(opcode) << " ";
-      if (reg_names.find(reg_a) != reg_names.end()) {
-        disassembled << reg_names.at(reg_a) << ",";
-      } else {
-        disassembled << "r" << static_cast<int>(reg_a) << ",";
-      }
-      if (reg_names.find(reg_b) != reg_names.end()) {
-        disassembled << reg_names.at(reg_b) << ",";
-      } else {
-        disassembled << "r" << static_cast<int>(reg_b) << ",";
-      } 
-      disassembled << static_cast<int>(immediate) << std::endl;
-    } else {
-      disassembled << "NOP" << std::endl;
+  for (uint16_t i = rom_address; i < data_limit; i += 0x10) {
+    disassembled << i + SLUG_FILE_SIZE << "\t\t";
+    for (uint16_t bit = i; bit < data_limit && bit < i+0x10; bit++) {
+      disassembled << static_cast<int>(slug_file[bit]) << " ";
     }
+    disassembled << std::endl;
   }
-
-  // TODO
-  // Add other instructions (before setup)
-  // Add data section in hex
 
   disassembled.close();
   return disassembled_filename;
