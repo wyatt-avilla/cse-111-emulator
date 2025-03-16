@@ -225,18 +225,31 @@ bool VideoRecorder::createSDLResources() {
 }
 
 void VideoRecorder::initializeProgressBar() {
-    progress_bar.x = PROGRESS_BAR_MARGIN;
-    progress_bar.y = height * SCALE_FACTOR - PROGRESS_BAR_BOTTOM_MARGIN;
-    progress_bar.w = width * SCALE_FACTOR - (PROGRESS_BAR_MARGIN * 2);
-    progress_bar.h = PROGRESS_BAR_HEIGHT;
+    int window_width, window_height;
+    SDL_GetWindowSize(window, &window_width, &window_height); // Get the actual window size
 
-    progress_indicator.x = progress_bar.x;
-    progress_indicator.y = progress_bar.y;
-    progress_indicator.w = PROGRESS_INDICATOR_WIDTH;
+    // Scale the progress bar dynamically
+    progress_bar.w = static_cast<int>(window_width * 0.8);  // 80% of window width
+    progress_bar.x = (window_width - progress_bar.w) / 2;   // Center it horizontally
+    progress_bar.h = static_cast<int>(window_height * 0.02);  // 2% of window height
+    progress_bar.y = window_height - (progress_bar.h * 3);  // Position near bottom
+
+    // Scale progress indicator to match the progress bar
+    progress_indicator.w = static_cast<int>(progress_bar.h * 1.5);
     progress_indicator.h = progress_bar.h;
+    progress_indicator.x = progress_bar.x; // Reset X based on new bar position
+    progress_indicator.y = progress_bar.y;
 
-    dragging_progress = false;
+    // If user was dragging, recalculate the indicator position to avoid jumps
+    if (dragging_progress) {
+        float normalized_pos = static_cast<float>(current_frame) / static_cast<float>(frames.size() - 1);
+        progress_indicator.x = progress_bar.x + static_cast<int>(
+            normalized_pos * (progress_bar.w - progress_indicator.w));
+    }
+
+    dragging_progress = false; // Reset dragging after resize
 }
+
 
 void VideoRecorder::cleanupSDLResources() {
     if (texture != nullptr) {
@@ -343,6 +356,14 @@ bool VideoRecorder::handleEvents() {
         case SDL_QUIT:
             return false;
 
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+                event.window.event == SDL_WINDOWEVENT_MAXIMIZED ||
+                event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+                initializeProgressBar(); // Recalculate progress bar size and position
+            }
+            break;
+
         case SDL_MOUSEBUTTONDOWN:
             handleMouseButtonDown(event);
             break;
@@ -363,6 +384,7 @@ bool VideoRecorder::handleEvents() {
     }
     return true;
 }
+
 
 void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     if (frame_index >= frames.size())
