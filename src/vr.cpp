@@ -24,12 +24,12 @@ constexpr int32_t PROGRESS_INDICATOR_R = 255;
 constexpr int32_t PROGRESS_INDICATOR_G = 215;
 constexpr int32_t PROGRESS_INDICATOR_B = 0;
 constexpr int32_t PROGRESS_INDICATOR_ALPHA = 255;
-constexpr float PROGRESS_BAR_WIDTH_RATIO = 0.8F;   
-constexpr float PROGRESS_BAR_HEIGHT_RATIO = 0.02F; 
-constexpr float PROGRESS_INDICATOR_SCALE = 1.5F;  
-constexpr int32_t PROGRESS_BAR_Y_OFFSET = 3; 
+constexpr float PROGRESS_BAR_WIDTH_RATIO = 0.8F;
+constexpr float PROGRESS_BAR_HEIGHT_RATIO = 0.02F;
+constexpr float PROGRESS_INDICATOR_SCALE = 1.5F;
+constexpr int32_t PROGRESS_BAR_Y_OFFSET = 3;
 
-} 
+} // namespace RenderColors
 
 VideoRecorder::VideoRecorder(Console* console, int32_t width, int32_t height)
     : console(console), width(width), height(height), recording(false),
@@ -112,11 +112,13 @@ void VideoRecorder::handleMouseMotion(const SDL_Event& event) {
 }
 
 void VideoRecorder::updateFrameFromMousePosition(float normalized_pos) {
-    float clamped_pos = std::clamp(normalized_pos, 0.0F, 1.0F);
+    const float clamped_pos = std::clamp(normalized_pos, 0.0F, 1.0F);
 
     size_t frame_index = 0;
     if (frames.size() > 1) {
-        frame_index = static_cast<size_t>(clamped_pos * static_cast<float>(frames.size() - 1));
+        frame_index = static_cast<size_t>(
+            clamped_pos * static_cast<float>(frames.size() - 1)
+        );
     }
 
     setFrameIndex(frame_index);
@@ -228,26 +230,42 @@ bool VideoRecorder::createSDLResources() {
 }
 
 void VideoRecorder::initializeProgressBar() {
-    int window_width = 0;
-    int window_height = 0;
-    SDL_GetWindowSize(
-        window,
-        &window_width,
-        &window_height
-    ); // Get the actual window size
+    int32_t window_width = 0;
+    int32_t window_height = 0;
+    SDL_GetWindowSize(window, &window_width, &window_height);
 
-    progress_bar.w = static_cast<int>(window_width * RenderColors::PROGRESS_BAR_WIDTH_RATIO);
-    progress_bar.h = static_cast<int>(window_height * RenderColors::PROGRESS_BAR_HEIGHT_RATIO);
-    progress_bar.y = window_height - (progress_bar.h * RenderColors::PROGRESS_BAR_Y_OFFSET); 
+    progress_bar.w = static_cast<int32_t>(
+        static_cast<float>(window_width) *
+        RenderColors::PROGRESS_BAR_WIDTH_RATIO
+    );
+    progress_bar.h = static_cast<int32_t>(
+        static_cast<float>(window_height) *
+        RenderColors::PROGRESS_BAR_HEIGHT_RATIO
+    );
+    progress_bar.y =
+        window_height - (progress_bar.h * RenderColors::PROGRESS_BAR_Y_OFFSET);
 
-    progress_indicator.w = static_cast<int>(progress_bar.h * RenderColors::PROGRESS_INDICATOR_SCALE);
+    progress_indicator.w = static_cast<int32_t>(
+        static_cast<float>(progress_bar.h) *
+        RenderColors::PROGRESS_INDICATOR_SCALE
+    );
     progress_indicator.h = progress_bar.h;
     progress_indicator.x = progress_bar.x;
     progress_indicator.y = progress_bar.y;
 
     if (dragging_progress) {
-        float clamped_pos = std::clamp(static_cast<float>(current_frame) / static_cast<float>(frames.size() - 1), 0.0F, 1.0F);
-        progress_indicator.x = progress_bar.x + static_cast<int>(clamped_pos * (progress_bar.w - progress_indicator.w));
+        const float clamped_pos = std::clamp(
+            static_cast<float>(current_frame) /
+                static_cast<float>(frames.size() - 1),
+            0.0F,
+            1.0F
+        );
+        progress_indicator.x =
+            progress_bar.x +
+            static_cast<int32_t>(
+                clamped_pos *
+                static_cast<float>(progress_bar.w - progress_indicator.w)
+            );
     }
 
     dragging_progress = false;
@@ -363,8 +381,7 @@ bool VideoRecorder::handleEvents() {
             if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
                 event.window.event == SDL_WINDOWEVENT_MAXIMIZED ||
                 event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-                initializeProgressBar(
-                ); // Recalculate progress bar size and position
+                initializeProgressBar();
             }
             break;
 
