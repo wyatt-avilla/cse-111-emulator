@@ -123,11 +123,11 @@ TODO
 
 ### Pixel Filter
 
-TODO
+![Snake With a Purple Pixel Filter Applied](./report/filtered-snake.png){ width=50% }
 
 ### Game Recorder and Playback
 
-TODO
+![Playback of a Recorded Flappy Bird Game](./report/flappy-bird-recorder.png){ width=50% }
 
 ## File Organization
 
