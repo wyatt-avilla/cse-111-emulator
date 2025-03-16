@@ -357,16 +357,13 @@ bool VideoRecorder::handleEvents() {
             handleMouseMotion(event);
             break;
 
-        case SDL_KEYDOWN:
-            handleKeyDown(event);
-            break;
-
         default:
             break;
         }
     }
     return true;
 }
+
 void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     if (frame_index >= frames.size())
         return;
