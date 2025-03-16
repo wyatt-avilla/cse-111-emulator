@@ -5,9 +5,9 @@ project(emulator)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 
-# Set default build type to Debug if not specified
+# Set default build type to Release if not specified
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the build type." FORCE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the build type." FORCE)
 endif()
 
 set(BUILD_SHARED_LIBS ON)
@@ -40,6 +40,7 @@ add_executable(${PROJECT_NAME}
     src/disassembler.cpp
     src/gui.cpp
     src/vr.cpp
+    src/filter.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE

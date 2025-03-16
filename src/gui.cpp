@@ -3,16 +3,24 @@
 // and then further modified with this thread of chat
 // https://chatgpt.com/share/67c667e9-5dc0-8013-a471-56d7cadf7081
 
+
+// These are the chats used for fixing the pixel color issue
+// https://claude.ai/share/e2202135-6906-4180-a017-fe71cb2a1a5a
+// https://chatgpt.com/share/67cfe91c-19d4-8011-930b-dc9923808d79
+
 #ifndef HEADLESS_BUILD
 
 #include "gui.h"
 
 #include "console.h"
+#include "gpu.h"
 #include "vr.h"
 #include "disassembler.h"
 
 #include <iostream>
 #include <thread>
+#include <wx/colordlg.h>
+#include <wx/colour.h>
 #include <wx/filedlg.h>
 #include <wx/filename.h>
 #include <wx/image.h>
@@ -22,48 +30,46 @@
 #include <wx/stattext.h>
 #include <wx/stdpaths.h>
 
-const int DEFAULT_VIDEO_RECORDER_WIDTH = 128;
-const int DEFAULT_VIDEO_RECORDER_HEIGHT = 128;
-
-const int WX_FRAME_X_POSTION = 500;
-const int WX_FRAME_Y_POSTION = 400;
-const int GREY_COLOR = 40;
-const int FOREGROUND_COLOUR_1 = 255;
-const int FOREGROUND_COLOUR_2 = 215;
-const int FOREGROUND_COLOUR_3 = 0;
-const int FONT_SIZE = 14;
-const int RESCALE_X = 300;
-const int RESCALE_Y = 150;
-const int SELECT_BUTTON_X = 150;
-const int SELECT_BUTTON_Y = 40;
-const int EXECUTE_BUTTON_X = 150;
-const int EXECUTE_BUTTON_Y = 40;
-const int BUTTON_SIZE = 10;
-const int IMAGE_SIZE = 10;
-const int TITLE_SIZE = 20;
+const int32_t WX_FRAME_X_POSTION = 500;
+const int32_t WX_FRAME_Y_POSTION = 400;
+const int32_t GREY_COLOR = 40;
+const int32_t FOREGROUND_COLOUR_1 = 255;
+const int32_t FOREGROUND_COLOUR_2 = 215;
+const int32_t FOREGROUND_COLOUR_3 = 0;
+const int32_t FONT_SIZE = 14;
+const int32_t RESCALE_X = 300;
+const int32_t RESCALE_Y = 150;
+const int32_t SELECT_BUTTON_X = 150;
+const int32_t SELECT_BUTTON_Y = 40;
+const int32_t EXECUTE_BUTTON_X = 150;
+const int32_t EXECUTE_BUTTON_Y = 40;
+const int32_t BUTTON_SIZE = 10;
+const int32_t IMAGE_SIZE = 10;
+const int32_t TITLE_SIZE = 20;
 
 bool MyApp::OnInit() {
-    auto* frame = new MyFrame();
+    auto* console = new Console(true);
+    auto* frame = new MyFrame(console);
     frame->Show(true);
     return true;
 }
 
-MyFrame::MyFrame() // NOLINT(readability-function-size)
+MyFrame::MyFrame(Console* console) // NOLINT(readability-function-size)
     : wxFrame(
           nullptr,
           wxID_ANY,
           "Banana Emulator",
           wxDefaultPosition,
           wxSize(WX_FRAME_X_POSTION, WX_FRAME_Y_POSTION)
-      ) {
+      ),
+      console(console) {
 
     auto* panel = new wxPanel(this, wxID_ANY);
-    panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR)
-    ); // Dark grayish black background
+    panel->SetBackgroundColour(wxColour(GREY_COLOR, GREY_COLOR, GREY_COLOR));
 
     auto* main_sizer = new wxBoxSizer(wxVERTICAL);
 
-    // Title
+
     auto* title = new wxStaticText(
         panel,
         wxID_ANY,
@@ -74,7 +80,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
     );
     title->SetForegroundColour(
         wxColour(FOREGROUND_COLOUR_1, FOREGROUND_COLOUR_2, FOREGROUND_COLOUR_3)
-    ); // Yellow title text
+    );
     title->SetFont(wxFont(
         FONT_SIZE,
         wxFONTFAMILY_DEFAULT,
@@ -82,14 +88,14 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxFONTWEIGHT_BOLD
     ));
 
-    // Get dynamic image path
+
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
     file.Normalize(wxPATH_NORM_ABSOLUTE);
     wxString const image_path =
         file.GetPath() + wxFILE_SEP_PATH + "../src/banana.png";
 
-    // Load Image
+
     wxInitAllImageHandlers();
     wxImage image(image_path, wxBITMAP_TYPE_PNG);
     if (!image.IsOk()) {
@@ -100,10 +106,10 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         );
     }
 
-    image.Rescale(RESCALE_X, RESCALE_Y); // Initial size
+    image.Rescale(RESCALE_X, RESCALE_Y);
     image_bitmap = new wxStaticBitmap(panel, wxID_ANY, wxBitmap(image));
 
-    // Buttons
+
     auto* button_sizer = new wxBoxSizer(wxVERTICAL);
     select_button = new wxButton(
         panel,
@@ -119,7 +125,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
     );
-    execute_button->Disable(); // Initially disabled
+    execute_button->Disable();
 
     disassemble_button = new wxButton(
         panel,
@@ -138,11 +144,11 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         wxDefaultPosition,
         wxSize(EXECUTE_BUTTON_X, EXECUTE_BUTTON_Y)
     );
-    playback_button->Disable(); // Initially disabled
+    playback_button->Disable();
 
-    // Button Styling
-    wxColour const button_color(30, 30, 30);   // Darker black
-    wxColour const outline_color(255, 215, 0); // Yellow outline
+
+    wxColour const button_color(30, 30, 30);
+    wxColour const outline_color(255, 215, 0);
 
     select_button->SetBackgroundColour(button_color);
     select_button->SetForegroundColour(outline_color);
@@ -178,7 +184,7 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
         BUTTON_SIZE
     );
 
-    // Layout
+
     main_sizer->Add(title, 0, wxALIGN_CENTER | wxALIGN_TOP, TITLE_SIZE);
     main_sizer->Add(
         image_bitmap,
@@ -192,26 +198,21 @@ MyFrame::MyFrame() // NOLINT(readability-function-size)
 
     panel->SetSizer(main_sizer);
 
-    // Bind Events
+
     select_button->Bind(wxEVT_BUTTON, &MyFrame::onFileSelect, this);
     execute_button->Bind(wxEVT_BUTTON, &MyFrame::onExecute, this);
     disassemble_button->Bind(wxEVT_BUTTON, &MyFrame::onDisassemble, this);
     playback_button->Bind(wxEVT_BUTTON, &MyFrame::onPlayback, this);
-    Bind(wxEVT_SIZE, &MyFrame::onResize, this); // Resize event
+    Bind(wxEVT_SIZE, &MyFrame::onResize, this);
 
-    video_recorder = std::make_unique<VideoRecorder>(
-        DEFAULT_VIDEO_RECORDER_WIDTH,
-        DEFAULT_VIDEO_RECORDER_HEIGHT
-    );
     has_recording = false;
 }
 
-// Handle window resizing
+
 void MyFrame::onResize(wxSizeEvent& event) {
     wxSize const new_size = GetClientSize();
-    double const new_width =
-        new_size.GetWidth() * 0.6;             // Scale to 60% of window width
-    double const new_height = new_width * 0.5; // Maintain aspect ratio
+    double const new_width = new_size.GetWidth() * 0.6;
+    double const new_height = new_width * 0.5;
 
     wxFileName const exe_path(wxStandardPaths::Get().GetExecutablePath());
     wxFileName file(exe_path);
@@ -229,14 +230,16 @@ void MyFrame::onResize(wxSizeEvent& event) {
             static_cast<int32_t>(new_height)
         );
         image_bitmap->SetBitmap(wxBitmap(image));
-        Layout(); // Refresh layout
+        Layout();
     }
 
-    event.Skip(); // Allow normal event processing
+    event.Skip();
 }
 
-// Handle file selection
-void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
+void MyFrame::onFileSelect( // NOLINT(readability-function-size)
+    wxCommandEvent&
+    /*unused*/
+) {
     wxFileDialog open_file_dialog(
         this,
         "Open .slug File",
@@ -247,12 +250,11 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
     );
 
     if (open_file_dialog.ShowModal() == wxID_CANCEL) {
-        return; // User cancelled the dialog
+        return;
     }
 
     file_path = open_file_dialog.GetPath();
 
-    // Ensure the file has a ".slug" extension
     if (!file_path.Lower().EndsWith(".slug")) {
         wxMessageBox(
             "Invalid file type! Please select a .slug file.",
@@ -262,33 +264,116 @@ void MyFrame::onFileSelect(wxCommandEvent& /*unused*/) {
         return;
     }
 
-    wxMessageBox(
-        "You selected: " + file_path,
-        "File Selected",
-        wxOK | wxICON_INFORMATION
+    int32_t const confirm_result = wxMessageBox(
+        "You selected: " + file_path + "\n\nDo you want to use this file?",
+        "Confirm File Selection",
+        wxYES_NO | wxICON_QUESTION
     );
-    execute_button->Enable(
-    ); // Enable execute button after selecting a valid file
+
+    if (confirm_result != wxYES) {
+        return;
+    }
+
+    execute_button->Enable();
     disassemble_button->Enable();
+    playback_button->Disable();
+    has_recording = false;
 }
 
-void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
+void MyFrame::onExecute( // NOLINT(readability-function-cognitive-complexity
+                         // readability-function-size)
+    wxCommandEvent&      /*unused*/
+) {
     if (!file_path.IsEmpty()) {
-        try {
-            video_recorder = std::make_unique<VideoRecorder>(
-                DEFAULT_VIDEO_RECORDER_WIDTH,
-                DEFAULT_VIDEO_RECORDER_HEIGHT
+        bool color_chosen = false;
+
+
+        uint8_t const default_gray_value = 128;
+        console->filter.setColor(
+            default_gray_value,
+            default_gray_value,
+            default_gray_value
+        );
+
+        while (!color_chosen) {
+
+            wxColourData color_data;
+            wxColour const default_gray(128, 128, 128);
+            color_data.SetColour(default_gray);
+
+
+            auto* color_dialog = new wxColourDialog(this, &color_data);
+
+            if (color_dialog == nullptr) {
+                std::cerr << "Failed to create color dialog" << std::endl;
+                return;
+            }
+
+            int32_t const result = color_dialog->ShowModal();
+
+
+            if (result != wxID_OK) {
+                color_dialog->Destroy();
+                return;
+            }
+
+
+            wxColour const color = color_dialog->GetColourData().GetColour();
+            uint8_t const selected_red = color.Red();
+            uint8_t const selected_green = color.Green();
+            uint8_t const selected_blue = color.Blue();
+
+
+            color_dialog->Destroy();
+
+
+            if (selected_red == 0 && selected_green == 0 &&
+                selected_blue == 0) {
+                wxMessageBox(
+                    "Pure black (0,0,0) is not allowed. Please select a "
+                    "different color.",
+                    "Invalid Color",
+                    wxOK | wxICON_WARNING
+                );
+                continue;
+            }
+
+
+            wxString const color_message = wxString::Format(
+                "Selected Color: RGB(%d, %d, %d)\n\nDo you want to use this "
+                "color?",
+                selected_red,
+                selected_green,
+                selected_blue
             );
-            video_recorder->startRecording();
 
-            Console banana(true);
 
-            banana.gpu.setVideoRecorder(video_recorder.get());
+            int32_t const confirm_result = wxMessageBox(
+                color_message,
+                "Confirm Color Selection",
+                wxYES_NO | wxICON_QUESTION,
+                this
+            );
 
-            banana.run(std::string(file_path.ToStdString()));
+            if (confirm_result != wxYES) {
 
-            video_recorder->stopRecording();
-            has_recording = (video_recorder->getFrameCount() > 0);
+                continue;
+            }
+
+
+            color_chosen = true;
+            console->filter
+                .setColor(selected_red, selected_green, selected_blue);
+        }
+
+        try {
+            console->video_recorder.startRecording();
+
+            console->run(std::string(file_path.ToStdString()));
+
+            console->video_recorder.stopRecording();
+
+            has_recording = (console->video_recorder.getFrameCount() > 0);
 
             if (has_recording) {
                 playback_button->Enable();
@@ -299,12 +384,22 @@ void MyFrame::onExecute(wxCommandEvent& /*unused*/) {
                     wxOK | wxICON_INFORMATION
                 );
             }
+
+
+            file_path = "";
+            execute_button->Disable();
+
+
         } catch (const std::exception& e) {
             wxMessageBox(
                 "Couldn't run file:\n" + file_path + "\nError: " + e.what(),
                 "Execution Error",
                 wxOK | wxICON_ERROR
             );
+
+
+            file_path = "";
+            execute_button->Disable();
         }
     }
 }
@@ -330,7 +425,7 @@ void MyFrame::onDisassemble(wxCommandEvent&) {
 }
 
 void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
-    if (!has_recording || !video_recorder) {
+    if (!has_recording) {
         wxMessageBox(
             "No recording available to play back.",
             "Playback Error",
@@ -339,20 +434,20 @@ void MyFrame::onPlayback(wxCommandEvent& /*unused*/) {
         return;
     }
 
-    if (video_recorder->initPlaybackWindow()) {
-        video_recorder->play();
+    if (console->video_recorder.initPlaybackWindow()) {
+        console->video_recorder.play();
 
         bool running = true;
         while (running) {
-            running = video_recorder->handleEvents();
+            running = console->video_recorder.handleEvents();
             if (!running) {
                 break;
             }
-            video_recorder->updateDisplay();
-            SDL_Delay(1); // Small delay to avoid consuming 100% CPU
+            console->video_recorder.updateDisplay();
+            SDL_Delay(1);
         }
 
-        video_recorder->closePlaybackWindow();
+        console->video_recorder.closePlaybackWindow();
     } else {
         wxMessageBox(
             "Failed to initialize playback window.",

@@ -2,7 +2,7 @@
 
 Console::Console(bool graphics)
     : cpu(CPU(this)), os(OS(this)), memory(Memory(this)), gpu(this),
-      controller(Controller(this)), graphics(graphics) {}
+      controller(Controller(this)), video_recorder(this), graphics(graphics) {}
 
 void Console::stopExecution() { is_running = false; }
 
@@ -15,6 +15,7 @@ void Console::run(const std::string& slug_file_path) {
         gpu.initializeRenderer();
     }
 
+    is_running = true;
     os.reset(slug_file_path);
     while (isRunning()) {
         os.loopIteration();

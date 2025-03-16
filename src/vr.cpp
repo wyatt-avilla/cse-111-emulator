@@ -1,10 +1,11 @@
-// This chat has code that I used to help create vr.cpp, vr.h, as well as
-// updating several of the other previous files: console.h, console.cpp, gui.h,
-// gui.cpp, gpu.h and gpu.cpp
+// This is the chat that helped me figure out how to add a movable playback bar
 // https://chatgpt.com/share/67c991d1-73e4-8011-92b6-c258630717c1
 
 
 #include "vr.h"
+
+#include "console.h"
+#include "filter.h"
 
 #include <algorithm>
 #include <chrono>
@@ -25,8 +26,20 @@ constexpr int32_t PROGRESS_INDICATOR_B = 0;
 constexpr int32_t PROGRESS_INDICATOR_ALPHA = 255;
 } // namespace RenderColors
 
-VideoRecorder::VideoRecorder(int32_t width, int32_t height)
-    : width(width), height(height), recording(false), playing(false),
+VideoRecorder::VideoRecorder(Console* console, int32_t width, int32_t height)
+    : console(console), width(width), height(height), recording(false),
+      playing(false), paused(false), current_frame(0),
+      playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS), last_frame_time(0),
+      window(nullptr), renderer(nullptr), texture(nullptr),
+      dragging_progress(false) {
+    display_buffer.resize(static_cast<size_t>(
+        static_cast<long long>(width) * static_cast<long long>(height)
+    ));
+}
+
+VideoRecorder::VideoRecorder(Console* console)
+    : console(console), width(DEFAULT_VIDEO_RECORDER_WIDTH),
+      height(DEFAULT_VIDEO_RECORDER_HEIGHT), recording(false), playing(false),
       paused(false), current_frame(0),
       playback_delay_ms(DEFAULT_PLAYBACK_DELAY_MS), last_frame_time(0),
       window(nullptr), renderer(nullptr), texture(nullptr),
@@ -212,18 +225,43 @@ bool VideoRecorder::createSDLResources() {
 }
 
 void VideoRecorder::initializeProgressBar() {
-    progress_bar.x = PROGRESS_BAR_MARGIN;
-    progress_bar.y = height * SCALE_FACTOR - PROGRESS_BAR_BOTTOM_MARGIN;
-    progress_bar.w = width * SCALE_FACTOR - (PROGRESS_BAR_MARGIN * 2);
-    progress_bar.h = PROGRESS_BAR_HEIGHT;
+    int window_width, window_height;
+    SDL_GetWindowSize(
+        window,
+        &window_width,
+        &window_height
+    ); // Get the actual window size
 
-    progress_indicator.x = progress_bar.x;
-    progress_indicator.y = progress_bar.y;
-    progress_indicator.w = PROGRESS_INDICATOR_WIDTH;
+    // Scale the progress bar dynamically
+    progress_bar.w =
+        static_cast<int>(window_width * 0.8); // 80% of window width
+    progress_bar.x =
+        (window_width - progress_bar.w) / 2; // Center it horizontally
+    progress_bar.h =
+        static_cast<int>(window_height * 0.02); // 2% of window height
+    progress_bar.y =
+        window_height - (progress_bar.h * 3); // Position near bottom
+
+    // Scale progress indicator to match the progress bar
+    progress_indicator.w = static_cast<int>(progress_bar.h * 1.5);
     progress_indicator.h = progress_bar.h;
+    progress_indicator.x = progress_bar.x; // Reset X based on new bar position
+    progress_indicator.y = progress_bar.y;
 
-    dragging_progress = false;
+    // If user was dragging, recalculate the indicator position to avoid jumps
+    if (dragging_progress) {
+        float normalized_pos = static_cast<float>(current_frame) /
+                               static_cast<float>(frames.size() - 1);
+        progress_indicator.x =
+            progress_bar.x +
+            static_cast<int>(
+                normalized_pos * (progress_bar.w - progress_indicator.w)
+            );
+    }
+
+    dragging_progress = false; // Reset dragging after resize
 }
+
 
 void VideoRecorder::cleanupSDLResources() {
     if (texture != nullptr) {
@@ -330,6 +368,15 @@ bool VideoRecorder::handleEvents() {
         case SDL_QUIT:
             return false;
 
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+                event.window.event == SDL_WINDOWEVENT_MAXIMIZED ||
+                event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+                initializeProgressBar(
+                ); // Recalculate progress bar size and position
+            }
+            break;
+
         case SDL_MOUSEBUTTONDOWN:
             handleMouseButtonDown(event);
             break;
@@ -344,16 +391,13 @@ bool VideoRecorder::handleEvents() {
             handleMouseMotion(event);
             break;
 
-        case SDL_KEYDOWN:
-            handleKeyDown(event);
-            break;
-
         default:
             break;
         }
     }
     return true;
 }
+
 
 void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     if (frame_index >= frames.size())
@@ -362,11 +406,18 @@ void VideoRecorder::convertFrameToRGBA(size_t frame_index) {
     const auto& frame = frames[frame_index];
     for (size_t i = 0; i < frame.size(); i++) {
         const uint8_t gray = frame[i];
+
+
+        const Filter::Color color = console->filter.getColor();
+        uint8_t const red = (gray * color.red) / 255;
+        uint8_t const green = (gray * color.green) / 255;
+        uint8_t const blue = (gray * color.blue) / 255;
+
         display_buffer[i] =
             (static_cast<uint32_t>(COLOR_ALPHA_FULL) << ALPHA_SHIFT) |
-            (static_cast<uint32_t>(gray) << RED_SHIFT) |
-            (static_cast<uint32_t>(gray) << GREEN_SHIFT) |
-            static_cast<uint32_t>(gray);
+            (static_cast<uint32_t>(red) << RED_SHIFT) |
+            (static_cast<uint32_t>(green) << GREEN_SHIFT) |
+            static_cast<uint32_t>(blue);
     }
 }
 
@@ -430,12 +481,22 @@ bool VideoRecorder::saveRecording(const std::string& filename) {
     }
 
     const auto frame_count = static_cast<uint32_t>(frames.size());
+
     file.write(reinterpret_cast<const char*>(&width), sizeof(width));
     file.write(reinterpret_cast<const char*>(&height), sizeof(height));
     file.write(
         reinterpret_cast<const char*>(&frame_count),
         sizeof(frame_count)
     );
+
+    Filter::Color color = console->filter.getColor();
+
+    file.write(reinterpret_cast<const char*>(&color.red), sizeof(color.red));
+    file.write(
+        reinterpret_cast<const char*>(&color.green),
+        sizeof(color.green)
+    );
+    file.write(reinterpret_cast<const char*>(&color.blue), sizeof(color.blue));
 
     for (const auto& frame : frames) {
         file.write(
@@ -464,6 +525,13 @@ bool VideoRecorder::loadRecording(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&file_width), sizeof(file_width));
     file.read(reinterpret_cast<char*>(&file_height), sizeof(file_height));
     file.read(reinterpret_cast<char*>(&frame_count), sizeof(frame_count));
+
+    Filter::Color color = console->filter.getColor();
+
+    file.read(reinterpret_cast<char*>(&color.red), sizeof(color.red));
+    file.read(reinterpret_cast<char*>(&color.green), sizeof(color.green));
+    file.read(reinterpret_cast<char*>(&color.blue), sizeof(color.blue));
+
 
     if (file_width != width || file_height != height) {
         std::cerr << "Recording dimensions (" << file_width << "x"

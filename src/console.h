@@ -4,6 +4,7 @@
 
 #include "controller.h"
 #include "cpu.h"
+#include "filter.h"
 #include "gpu.h"
 #include "memory.h"
 #include "os.h"
@@ -17,20 +18,15 @@ class Console {
     Memory memory;
     GPU gpu;
     Controller controller;
+    VideoRecorder video_recorder;
+    Filter filter;
 
     void run(const std::string& slug_file_path);
     void stopExecution();
     [[nodiscard]] bool isRunning() const;
     [[nodiscard]] bool graphicalSession() const;
 
-    void setVideoRecorder(VideoRecorder* recorder);
-
-    [[nodiscard]] VideoRecorder* getVideoRecorder() const {
-        return video_recorder;
-    }
-
   private:
     bool is_running{true};
     bool graphics{true};
-    VideoRecorder* video_recorder{nullptr};
 };
