@@ -141,15 +141,48 @@ game.
 
 #### GUI (My Proudest Work)
 
-Placeholder Text
+I am most proud of my work on the GUI. Since we use wxWidgets, I followed my group's precedent and
+did a git submodule for the library. This was tricky because the library has many more dependencies
+than SDL, and I had to modify the CMAKE code significantly, including multithreading for building
+and caching, so the program could build in a reasonable amount of time. After adjusting the cmake to
+include wxWidgets, I started writing the code. My first attempt failed. I did not know how to use
+wxWidgets and could not compile the code with the competing main functions.
+
+Eventually, I settled for this type of code structure. I decided to use a class structure for the
+code. My class initializes a window with a dark gray theme, featuring a title, an image, and three
+buttons: "Select File," "Execute," and "View Recording." The code is structured with a class-based
+approach, where the `MyFrame` class handles the GUI layout, event bindings, and user interactions.
+The GUI dynamically adjusts its design based on window-resizing events, ensuring a responsive user
+experience. Furthermore, the application includes mechanisms for file selection, color
+customization, and video playback, enhancing usability and interactivity.
+
+It was cool to see my work visually. When working with memory, I could not see the differences in my
+code, even though it was essential and functional. It was cool to see the window, the buttons'
+color, and the themes that I added get applied to the end product. It made it more fun to work on
+and explore possibilities
 
 #### Memory
 
-Placeholder Text
+I was responsible for making the Memory; I followed the code and precedent set by the professor in
+one of our classes. This Memory class does a solid job handling memory operations while also
+considering endianness, which is crucial when working with low-level memory management. How we deal
+with endianness is particularly interesting in functions like `l16u`, `l32u`, `w16u`, and `w8u`.
+
+When reading multi-byte values (16-bit and 32-bit), we manually reconstruct them byte by byte using
+bit shifts, ensuring consistency regardless of the underlying system's endianness. For example, in
+`l32u`, we load four individual bytes and shift them into their correct positions, enforcing a
+little-endian layout. Similarly, when writing 16-bit values in `w16u`, we break the value into two
+bytes and store them separately, preserving the intended byte order.
+
+This approach guarantees that our memory operations remain predictable across different
+architectures, preventing issues where byte order might otherwise cause misinterpretations of stored
+values. It’s a simple but effective strategy to keep our system clean and effective.
 
 #### Build Reproducibility
 
-Placeholder Text
+As mentioned above in the GUI section, I followed Wyatt Avilla's precedent and used a GitHub module
+to import and build the wxWidgets library. This ensures that future users have access to the correct
+binary libraries that our program needs with no extra effort from the user.
 
 ## Extra Features
 
