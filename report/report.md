@@ -6,15 +6,45 @@
 
 #### OS
 
-Placeholder Text
+I made a significant amount of progress implementing the operating system and organizing the
+workflow that the CPU/GPU go through to process the .slug files. This meant that I had to become
+very familiar with how the .slug files are organized, how the console handles instructions, and how
+to initialize the system.
+
+One particular area I spent a lot of time on was organizing how each part of the emulator interacted
+with each other. As everyone was working on a different component of the system, we ran into some
+issues where the CPU/OS would need to read/write memory in specific ways, for example when initially
+running the reset sequence. Our priority was that there would be enough public functions in the
+memory class for these needs, and enough private functions to abstract features away from classes
+outside of memory. At that time, our current memory implementation didn’t fit this guideline, so I
+dug into these issues and helped organize the current implementation we have for memory access,
+although Michael was more involved with implementing the memory class itself.
 
 #### Disassembler
 
-Placeholder Text
+The extra feature I spent the most amount of time on was implementing a disassembler. This runs
+without running the actual console itself, breaking down the .slug files into human-readable text
+without spending much computing time. My thought process for picking this feature was that I had
+already spent a lot of time analyzing the raw .slug files and how they were structured with the OS,
+and so I was able to cut a lot of planning/organizing time out of the development process.
+
+The major struggle with this feature was correctly parsing through the instructions outside of the
+setup and loop functions. It was originally tough to organize these instructions in a way that was
+understandable, since these instructions didn’t belong to named functions and were only referenced
+by jump-type instructions. I settled on just listing their individual addresses in memory and making
+sure that any jump-type instructions had their immediate values printed clearly, if applicable.
+
+Some other key details of this feature is that the “disassemble” button in the GUI only activates
+once a valid .slug file is selected, there are maps specific to the disassemble.cpp file that match
+opcodes and function codes to instruction names as strings, and some extra parsing to export the
+copyright message.
 
 #### Troubleshooting/Cleanup
 
-Placeholder Text
+Throughout the project, I was involved in keeping the code clean, removing magic numbers, double
+checking variable/function names, and removing redundancies. We had a period after check-in #1 where
+I made a “cleanup” branch and cracked down on these bad practices so that we could have all good
+practices from that point forward.
 
 ---
 
