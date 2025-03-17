@@ -310,10 +310,6 @@ project is included in `starter-code/` as a git submodule for easy reference and
     └── tests
 ```
 
-## Working Slug Files
-
-TODO
-
 ## Cmake Flags
 
 The CMAKE_BUILD_TYPE flag allows users to select the desired build mode. Setting it to Debug enables
