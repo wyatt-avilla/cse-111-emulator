@@ -105,15 +105,46 @@ the changes related to the review.
 
 #### Controller
 
-Placeholder Text
+For the game emulator project, I worked extensively on implementing the controller functionality in
+`controller.cpp` and `controller.h`. The controller was designed to handle user input through the
+keyboard using SDL (Simple DirectMedia Layer).
+
+The core functionality is implemented in the `updateController()` function, which reads the current
+state of the keyboard using `SDL_GetKeyboardState()` and updates the state using bitwise operations.
+Each key press updates the corresponding bit in the controller_state variable using logical OR (|).
+If the state changes, it is written to memory at address 0x7000 using the `console->memory.w8u()`
+function, which integrates the controller with the emulator's memory system.
+
+To assist with debugging, I included logging messages in the `updateController()` function:
+
+I logged the memory address and value written to memory using `std::cerr` to track changes to the
+controller state. I also used `displayControllerState()` to print the current state of the
+controller in binary using `std::bitset`, which helped in identifying bit-level issues during
+testing.
 
 #### GUI Color Selector
 
-Placeholder Text
+In addition to working on the controller, I also implemented a color selection feature for the
+graphical user interface (GUI). The color selector allows users to customize the color of moving
+parts in the game after the execution stage begins. This was integrated into the `onExecute()`
+function in the GUI component.
+
+To implement this, I created a `wxColourDialog` to present a color picker to the user. The selected
+color is retrieved and passed to the `console->filter.setColor()` function to update the game's
+display. I also added logging using `std::cerr` to track issues with creating the color dialog and
+to confirm the color selection process. If the user confirmed the color, the selected RGB values
+were applied to the game’s display filter.
+
+The color selection feature significantly improved the user experience by allowing customization and
+better visual engagement during gameplay.
 
 #### Problem With Color Setting
 
-Placeholder Text
+Initially, the color picker was working correctly, and the RGB values were being read and set, but
+the graphical elements still displayed the default gray color. This happened because SDL textures
+don’t automatically reflect color changes unless explicitly updated. After setting the color, the
+texture needed to be locked, updated, and rendered for the change to appear visually. Fixing it
+involved updating the texture using `SDL_RenderCopy()` and refreshing the renderer.
 
 ---
 
