@@ -1,3 +1,9 @@
+---
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+---
+
 # CSE 111 Team 9 Report
 
 ## Contributions and Highlights
@@ -249,9 +255,18 @@ binary libraries that our program needs with no extra effort from the user.
 
 ### Disassembler
 
-Sample of disassembled Slug instructions.
+Sample of disassembled Slug file.
 
 ```txt
+Copyright (c) 2025 Ethan Sifferman. All rights reserved.
+
+Distribution of this work, in any part, to individuals outside of UCSC
+Winter 2025 CSE 111 Team9 Members, or UCSC Winter 2025 CSE 111 Instructors,
+or to those not explicitly granted permissionby the copyright holder(s),
+will result in adherence to the UCSC Academic Misconduct Policy. Legal
+action may be pursued against individuals to whom the UCSC Academic
+Misconduct Policy does not apply
+
 8200		ADDI ZERO,r1,128
 8204		AND r4,r1,r2
 8208		JR r31,ZERO,ZERO
@@ -262,19 +277,25 @@ Sample of disassembled Slug instructions.
 821c		SLL ZERO,ZERO,ZERO
 8220		ADDI ZERO,r1,32
 8224		AND r4,r1,r2
+8228		JR r31,ZERO,ZERO
+822c		SLL ZERO,ZERO,ZERO
+8230		ADDI ZERO,r1,16
+8234		AND r4,r1,r2
+8238		JR r31,ZERO,ZERO
+823c		SLL ZERO,ZERO,ZERO
 ```
-
-### Graphical User Interface (GUI)
-
-![Graphical User Interface](./report/gui.png){ width=50% }
 
 ### Pixel Filter
 
-![Snake With a Purple Pixel Filter Applied](./report/filtered-snake.png){ width=50% }
+![Snake With a Purple Pixel Filter Applied](./report/filtered-snake.png){ width=55% }
 
 ### Game Recorder and Playback
 
-![Playback of a Recorded Flappy Bird Game](./report/flappy-bird-recorder.png){ width=50% }
+![Playback of a Recorded Flappy Bird Game](./report/flappy-bird-recorder.png){ width=55% }
+
+### Graphical User Interface (GUI)
+
+![Graphical User Interface](./report/gui.png){ width=55% }
 
 ## File Organization
 
