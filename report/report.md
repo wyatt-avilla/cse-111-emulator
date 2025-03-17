@@ -297,6 +297,17 @@ Misconduct Policy does not apply
 
 ![Graphical User Interface](./report/gui.png){ width=55% }
 
+## Cmake Flags
+
+The CMAKE_BUILD_TYPE flag allows users to select the desired build mode. Setting it to Debug enables
+debugging symbols (`-ggdb -O0`), making it easier to troubleshoot issues. The Release mode applies
+high-level optimizations (`-O3 -Werror`) for maximum performance while treating warnings as errors.
+For a balance between debugging and optimization, RelWithDebInfo (`-O2 -g`) retains debug symbols
+without sacrificing too much speed. MinSizeRel (`-Os`) optimizes for smaller binary size.
+Additionally, we provide a Headless mode (`-O3 -Werror -DHEADLESS_BUILD`), which removes the GUI
+components for systems that don't require a graphical interface. By default, if no build type is
+specified, we set it to Release to ensure the best runtime performance.
+
 ## File Organization
 
 Our file organization strategy is straightforward. From the top down, we used the `build/` directory
@@ -308,27 +319,21 @@ project is included in `starter-code/` as a git submodule for easy reference and
 
 ### File Tree
 
+Output of the `tree` command in the root of our project.
+
 ```txt
 .
-├── build
-│   ├── CMakeCache.txt
-│   ├── CMakeFiles
-│   ├── cmake_install.cmake
-│   ├── compile_commands.json
-│   ├── emulator
-│   ├── external
-│   └── Makefile
 ├── CMakeLists.txt
 ├── external
-│   ├── SDL
-│   └── wxWidgets
-├── helper_tools
+│   ├── SDL/
+│   └── wxWidgets/
+├── helper_tools/
 │   └── opcode_analyzer.py
-├── report
+├── report/
 │   ├── report.md
 │   └── report.pdf
 ├── readme.md
-├── src
+├── src/
 │   ├── banana.png
 │   ├── bit_definitions.h
 │   ├── console.cpp
@@ -352,23 +357,12 @@ project is included in `starter-code/` as a git submodule for easy reference and
 │   ├── os.h
 │   ├── vr.cpp
 │   └── vr.h
-└── starter-code
+└── starter-code/
     ├── bananaslug_documentation.pdf
-    ├── games
-    ├── gpu
-    ├── hws
+    ├── games/
+    ├── gpu/
+    ├── hws/
     ├── LICENSE
     ├── README.md
-    └── tests
+    └── tests/
 ```
-
-## Cmake Flags
-
-The CMAKE_BUILD_TYPE flag allows users to select the desired build mode. Setting it to Debug enables
-debugging symbols (`-ggdb -O0`), making it easier to troubleshoot issues. The Release mode applies
-high-level optimizations (`-O3 -Werror`) for maximum performance while treating warnings as errors.
-For a balance between debugging and optimization, RelWithDebInfo (`-O2 -g`) retains debug symbols
-without sacrificing too much speed. MinSizeRel (`-Os`) optimizes for smaller binary size.
-Additionally, we provide a Headless mode (`-O3 -Werror -DHEADLESS_BUILD`), which removes the GUI
-components for systems that don't require a graphical interface. By default, if no build type is
-specified, we set it to Release to ensure the best runtime performance.
