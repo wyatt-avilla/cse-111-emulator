@@ -242,6 +242,7 @@ void VideoRecorder::initializeProgressBar() {
         static_cast<float>(window_height) *
         RenderColors::PROGRESS_BAR_HEIGHT_RATIO
     );
+    progress_bar.x = (window_width - progress_bar.w) / 2;
     progress_bar.y =
         window_height - (progress_bar.h * RenderColors::PROGRESS_BAR_Y_OFFSET);
 
