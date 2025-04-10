@@ -1,5 +1,13 @@
 # CSE 111 Emulator
 
+## Team Members
+
+- Ryan Welter
+- Wyatt Avilla
+- Monisha Garika
+- Michelle Gurovith
+- Michael Kamensky
+
 ## How to Build and Run
 
 In the root of a freshly cloned repo run:
@@ -27,10 +35,3 @@ GUI.
 | `Release` (default) | `-O3 -Werror`                  |
 | `Headless`          | `-O3 -Werror -DHEADLESS_BUILD` |
 
-## Team Members
-
-- Ryan Welter
-- Wyatt Avilla
-- Monisha Garika
-- Michelle Gurovith
-- Michael Kamensky
