@@ -34,4 +34,3 @@ GUI.
 - Monisha Garika
 - Michelle Gurovith
 - Michael Kamensky
-
